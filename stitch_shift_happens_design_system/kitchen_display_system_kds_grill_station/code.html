@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+
+<html class="dark" data-qb-installed="true" lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_dashboard" name="shell-type"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@500;700&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        "colors": {
+          "bg-surface": "#111827",
+          "on-surface-variant": "#cfc2d6",
+          "secondary-container": "#03b5d3",
+          "text-subtle": "#4b5563",
+          "accent-lime": "#bef754",
+          "bg-canvas": "#000000",
+          "outline": "#988d9f",
+          "on-primary-container": "#400071",
+          "status-caution": "#f59e0b",
+          "on-tertiary-container": "#002a51",
+          "primary-container": "#b76dff",
+          "border-subtle": "#1f2937",
+          "text-secondary": "#d1d5db",
+          "surface-bright": "#323949",
+          "surface-container": "#191f2f",
+          "inverse-primary": "#842bd2",
+          "status-info": "#3b82f6",
+          "tertiary-container": "#4c93e7",
+          "surface-container-low": "#141b2b",
+          "surface": "#0c1322",
+          "on-error": "#690005",
+          "surface-dim": "#0c1322",
+          "surface-container-highest": "#2e3545",
+          "on-primary-fixed": "#2c0051",
+          "tertiary-fixed-dim": "#a4c9ff",
+          "on-tertiary-fixed-variant": "#004883",
+          "primary": "#ddb7ff",
+          "bg-card": "#2a2a2a",
+          "on-primary-fixed-variant": "#6900b3",
+          "status-ready": "#22c55e",
+          "inverse-on-surface": "#293040",
+          "text-primary": "#ffffff",
+          "text-tertiary": "#9ca3af",
+          "secondary-fixed": "#acedff",
+          "accent-cyan-bright": "#22d3ee",
+          "text-muted": "#6b7280",
+          "on-background": "#dce2f7",
+          "primary-fixed": "#f0dbff",
+          "primary-fixed-dim": "#ddb7ff",
+          "status-urgent": "#ef4444",
+          "outline-variant": "#4d4354",
+          "on-secondary-fixed-variant": "#004e5c",
+          "tertiary": "#a4c9ff",
+          "on-error-container": "#ffdad6",
+          "surface-variant": "#2e3545",
+          "border-emphasis": "#ffffff",
+          "secondary-fixed-dim": "#4cd7f6",
+          "on-secondary-fixed": "#001f26",
+          "surface-container-high": "#232a3a",
+          "on-surface": "#dce2f7",
+          "on-tertiary": "#00315d",
+          "on-primary": "#490080",
+          "bg-chrome": "#0a0a0a",
+          "bg-card-subtle": "#1e1e1e",
+          "on-tertiary-fixed": "#001c39",
+          "secondary": "#4cd7f6",
+          "inverse-surface": "#dce2f7",
+          "on-secondary": "#003640",
+          "on-secondary-container": "#00424e",
+          "surface-tint": "#ddb7ff",
+          "accent-shift-blue": "#0000ff",
+          "bg-sidebar": "#1a1a1a",
+          "surface-container-lowest": "#070e1d",
+          "error-container": "#93000a",
+          "accent-purple-glow": "#c084fc",
+          "tertiary-fixed": "#d4e3ff",
+          "error": "#ffb4ab",
+          "background": "#0c1322"
+        },
+        "borderRadius": {
+          "DEFAULT": "0.25rem",
+          "lg": "0.5rem",
+          "xl": "0.75rem",
+          "full": "9999px"
+        },
+        "spacing": {
+          "space-xs": "0.25rem",
+          "gutter": "1rem",
+          "space-md": "1rem",
+          "margin": "1rem",
+          "space-lg": "1.5rem",
+          "margin-lg": "2rem",
+          "gutter-lg": "1.5rem",
+          "margin-md": "1.5rem",
+          "space-sm": "0.5rem",
+          "space-xl": "2rem"
+        },
+        "fontFamily": {
+          "body-lg": [
+            "Inter"
+          ],
+          "headline-xl": [
+            "Inter"
+          ],
+          "label-badge": [
+            "JetBrains Mono"
+          ],
+          "mono-metric-lg": [
+            "JetBrains Mono"
+          ],
+          "headline-lg": [
+            "Inter"
+          ],
+          "body-sm": [
+            "Inter"
+          ],
+          "mono-metric-md": [
+            "JetBrains Mono"
+          ],
+          "label-eyebrow": [
+            "JetBrains Mono"
+          ],
+          "headline-md": [
+            "Inter"
+          ],
+          "headline-hero": [
+            "Inter"
+          ],
+          "mono-metric-sm": [
+            "JetBrains Mono"
+          ],
+          "headline-hero-mobile": [
+            "Inter"
+          ],
+          "body-base": [
+            "Inter"
+          ]
+        },
+        "fontSize": {
+          "body-lg": [
+            "16px",
+            {
+              "lineHeight": "24px",
+              "fontWeight": "500"
+            }
+          ],
+          "headline-xl": [
+            "30px",
+            {
+              "lineHeight": "38px",
+              "letterSpacing": "-0.02em",
+              "fontWeight": "700"
+            }
+          ],
+          "label-badge": [
+            "10px",
+            {
+              "lineHeight": "12px",
+              "letterSpacing": "0.05em",
+              "fontWeight": "700"
+            }
+          ],
+          "mono-metric-lg": [
+            "24px",
+            {
+              "lineHeight": "30px",
+              "fontWeight": "700"
+            }
+          ],
+          "headline-lg": [
+            "24px",
+            {
+              "lineHeight": "32px",
+              "letterSpacing": "-0.01em",
+              "fontWeight": "700"
+            }
+          ],
+          "body-sm": [
+            "12px",
+            {
+              "lineHeight": "18px",
+              "fontWeight": "400"
+            }
+          ],
+          "mono-metric-md": [
+            "16px",
+            {
+              "lineHeight": "24px",
+              "fontWeight": "700"
+            }
+          ],
+          "label-eyebrow": [
+            "11px",
+            {
+              "lineHeight": "14px",
+              "letterSpacing": "0.08em",
+              "fontWeight": "700"
+            }
+          ],
+          "headline-md": [
+            "18px",
+            {
+              "lineHeight": "26px",
+              "letterSpacing": "-0.01em",
+              "fontWeight": "700"
+            }
+          ],
+          "headline-hero": [
+            "72px",
+            {
+              "lineHeight": "76px",
+              "letterSpacing": "-0.03em",
+              "fontWeight": "800"
+            }
+          ],
+          "mono-metric-sm": [
+            "13px",
+            {
+              "lineHeight": "18px",
+              "fontWeight": "500"
+            }
+          ],
+          "headline-hero-mobile": [
+            "36px",
+            {
+              "lineHeight": "42px",
+              "letterSpacing": "-0.02em",
+              "fontWeight": "800"
+            }
+          ],
+          "body-base": [
+            "14px",
+            {
+              "lineHeight": "22px",
+              "fontWeight": "400"
+            }
+          ]
+        }
+      },
+    },
+  }</script><style></style></head><body class="bg-bg-canvas font-body-base text-body-base text-on-surface antialiased selection:bg-primary selection:text-on-primary-fixed" data-new-gr-c-s-loaded="14.1348.0"><aside class="fixed left-0 top-0 h-full w-64 bg-bg-chrome z-50 flex flex-col justify-between shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="flex flex-col"><div class="h-16 flex items-center gap-space-sm px-space-md bg-surface-container-lowest"><img alt="SHIFT HAPPENS Logo" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/ALJJyrA7z54LxK-mWn3_cEFcaVA841lrwYa-RjeCLO4ZUOoe7YWMCYym99OJOQCt7-30bh_prcMk_kWor80Wvn_d-pXhdvE9XiVSlxPeT9t3N0xccj-12_OMWLACQQJ6d0ObGpm3vl-00hoX6CyGL9l5lAoQusfoaGGriVVjN2DkJCudf-yUgaQsbO7SxBUkwHn9V5ga-eGd4K9RKVG0lgbR00C8we-WGlnqxEBhl9XFkQD9"/><div class="flex flex-col min-w-0"><span class="font-headline-md text-headline-md tracking-tight text-text-primary uppercase truncate">SHIFT HAPPENS!</span><span class="font-label-badge text-label-badge text-secondary font-bold tracking-widest uppercase truncate">HYDRAFORGE AI</span></div></div><div class="px-space-md py-space-sm"><div class="p-space-sm rounded-lg bg-surface-container-low flex items-center justify-between"><div class="flex items-center gap-space-xs"><span class="relative flex h-2 w-2"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-status-ready opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-status-ready"></span></span><span class="font-label-badge text-label-badge text-text-secondary uppercase">PWA Live</span></div><span class="font-label-badge text-label-badge text-secondary">99.98% SYNC</span></div></div><nav class="flex flex-col gap-space-xs px-space-sm mt-space-xs" data-active-classes="bg-gradient-to-r from-accent-purple-glow/20 to-secondary/20 text-text-primary font-bold shadow-[inset_2px_0_0_0_#4cd7f6]"><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors" data-path="pos-&amp;-orders" href="#"><span class="material-symbols-outlined text-secondary">point_of_sale</span><span class="font-body-base text-body-base font-semibold">POS &amp; Orders</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors" data-path="floor-plan-&amp;-seating" href="#"><span class="material-symbols-outlined text-secondary">table_restaurant</span><span class="font-body-base text-body-base font-semibold">Floor Plan &amp; Seating</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors" data-path="kitchen-kds" href="#"><span class="material-symbols-outlined text-status-caution">skillet</span><span class="font-body-base text-body-base font-semibold">Kitchen KDS</span><span class="ml-auto px-space-xs py-0.5 rounded bg-status-urgent/20 text-status-urgent font-mono-metric-sm text-mono-metric-sm">4</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors" data-path="reservations-&amp;-crm" href="#"><span class="material-symbols-outlined text-secondary">book_online</span><span class="font-body-base text-body-base font-semibold">Reservations &amp; CRM</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors" data-path="inventory-management" href="#"><span class="material-symbols-outlined text-secondary">inventory_2</span><span class="font-body-base text-body-base font-semibold">Inventory Management</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors" data-path="voice-ai-agent" href="#"><span class="material-symbols-outlined text-accent-purple-glow">neurology</span><span class="font-body-base text-body-base font-semibold">Voice AI Agent</span><span class="ml-auto h-2 w-2 rounded-full bg-accent-purple-glow animate-pulse"></span></a></nav></div><div class="p-space-md flex flex-col gap-space-sm bg-surface-container-lowest"><div class="flex items-center justify-between text-text-subtle font-mono-metric-sm text-mono-metric-sm"><span>HOTKEYS</span><span class="px-space-xs py-0.5 rounded bg-surface-variant text-text-secondary">⌘ + K</span></div><div class="flex items-center gap-space-sm p-space-sm rounded-lg bg-surface-container-low"><div class="flex flex-col"><span class="font-label-eyebrow text-label-eyebrow text-secondary uppercase">Active Grid</span><span class="font-body-sm text-body-sm text-text-secondary truncate">Downtown Flagship</span></div></div></div></aside><div class="pl-64"><header class="fixed top-0 left-64 right-0 h-16 bg-bg-chrome/90 backdrop-blur-xl z-40 flex items-center justify-between px-space-lg shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="flex items-center gap-space-md"><div class="flex items-center gap-space-xs px-space-md py-space-xs rounded-full bg-surface-container-high"><span class="relative flex h-2.5 w-2.5"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-status-ready opacity-75"></span><span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-status-ready"></span></span><span class="font-label-badge text-label-badge text-text-primary uppercase tracking-wider">Dinner Rush • 84% Occupancy • Online</span></div><div class="hidden xl:flex items-center gap-space-xs text-text-secondary font-body-sm text-body-sm px-space-sm py-space-xs rounded bg-surface-container-low"><span class="material-symbols-outlined text-body-base text-text-subtle">store</span><span>Main Dining &amp; Bar — Downtown Flagship</span><span class="material-symbols-outlined text-body-base text-text-subtle">unfold_more</span></div></div><div class="flex items-center gap-space-md"><div class="flex items-center gap-space-xs px-space-sm py-space-xs rounded-full bg-surface-container-high"><span class="material-symbols-outlined text-accent-purple-glow text-body-base animate-pulse">graphic_eq</span><span class="font-label-badge text-label-badge text-accent-purple-glow font-bold">VOICE AI ACTIVE</span></div><button class="relative p-space-xs rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors"><span class="material-symbols-outlined text-status-caution">notifications</span><span class="absolute top-1 right-1 h-2 w-2 rounded-full bg-status-urgent"></span></button><div class="flex items-center gap-space-sm pl-space-sm"><div class="text-right hidden sm:flex flex-col"><span class="font-body-base text-body-base font-bold text-text-primary leading-tight">Chef Marco Vance</span><span class="font-label-eyebrow text-label-eyebrow text-secondary uppercase">GM &amp; Head of Ops</span></div><img alt="Profile" class="w-8 h-8 rounded-full object-cover ring-2 ring-primary/40" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDy9ZhtpNDXaG86Ys-0Q1j4OyrTEO-l2Q6rHSk5sbNKIy3_rAMsoV5LbPeVUZG92h1-x4C-c6cJNmPbKaFCGNrUOJIuE6wsbqRqH3KxaNwKL9aVLphQ_bqcAwsR1UW006mNBYrsfewRyzDJo27GYvuKAOBdOAVf7GTWqNZAJMhDXajzqoPDsNxZQhVoNTs7RZp8Sm5QF-D2X2GsLV4r51fpUfWj41xLLFIKS8MxEVY"/></div></div></header><main class="w-full pt-16 bg-bg-canvas min-h-screen"><div class="flex flex-col w-full">
+<!-- Station HUD / Top Telemetry & Filters Bar -->
+<section class="bg-surface-container-lowest px-space-md py-space-sm shadow-md">
+<div class="flex flex-wrap items-center justify-between gap-space-sm mb-space-xs">
+<!-- Station Navigation Tabs -->
+<div class="flex items-center gap-space-xs overflow-x-auto pb-0.5">
+<button class="px-space-md py-space-xs rounded bg-surface-container text-on-surface-variant font-label-eyebrow text-label-eyebrow hover:text-text-primary transition-colors flex items-center gap-1.5 shrink-0">
+<span class="material-symbols-outlined text-body-base">splitscreen</span>
+<span>ALL STATIONS (EXPO)</span>
+<span class="ml-1 px-1.5 py-0.2 rounded bg-surface-variant text-text-secondary text-label-badge font-mono-metric-sm">14</span>
+</button>
+<button class="px-space-md py-space-xs rounded bg-gradient-to-r from-accent-purple-glow/30 to-secondary/30 text-text-primary font-label-eyebrow text-label-eyebrow font-bold shadow-sm flex items-center gap-1.5 shrink-0">
+<span class="h-2 w-2 rounded-full bg-secondary animate-ping"></span>
+<span>GRILL STATION 1 (ACTIVE)</span>
+<span class="ml-1 px-1.5 py-0.2 rounded bg-secondary text-on-secondary font-mono-metric-sm text-mono-metric-sm font-bold">4</span>
+</button>
+<button class="px-space-md py-space-xs rounded bg-surface-container text-on-surface-variant font-label-eyebrow text-label-eyebrow hover:text-text-primary transition-colors flex items-center gap-1.5 shrink-0">
+<span>SAUTÉ &amp; FRYER</span>
+<span class="ml-1 px-1.5 py-0.2 rounded bg-surface-variant text-text-secondary font-mono-metric-sm text-mono-metric-sm">3</span>
+</button>
+<button class="px-space-md py-space-xs rounded bg-surface-container text-on-surface-variant font-label-eyebrow text-label-eyebrow hover:text-text-primary transition-colors flex items-center gap-1.5 shrink-0">
+<span>COLD LARDER</span>
+<span class="ml-1 px-1.5 py-0.2 rounded bg-surface-variant text-text-secondary font-mono-metric-sm text-mono-metric-sm">2</span>
+</button>
+<button class="px-space-md py-space-xs rounded bg-surface-container text-on-surface-variant font-label-eyebrow text-label-eyebrow hover:text-text-primary transition-colors flex items-center gap-1.5 shrink-0">
+<span>PASTRY &amp; DESSERT</span>
+<span class="ml-1 px-1.5 py-0.2 rounded bg-surface-variant text-text-secondary font-mono-metric-sm text-mono-metric-sm">1</span>
+</button>
+</div>
+<!-- Quick System Telemetry & Chime Toggle -->
+<div class="flex items-center gap-space-sm shrink-0">
+<div class="flex items-center gap-space-xs px-space-sm py-1 rounded bg-surface-container-high">
+<span class="material-symbols-outlined text-body-base text-status-ready">volume_up</span>
+<span class="font-label-badge text-label-badge text-text-primary">CHIME: LOUD 100%</span>
+</div>
+<div class="flex items-center gap-space-xs px-space-sm py-1 rounded bg-surface-container-high">
+<span class="font-label-eyebrow text-label-eyebrow text-text-subtle">AVG TICKET:</span>
+<span class="font-mono-metric-sm text-mono-metric-sm text-status-ready font-bold">11m 40s</span>
+<span class="font-label-badge text-label-badge text-text-subtle">(TARGET &lt;14m)</span>
+</div>
+<div class="flex items-center gap-space-xs px-space-sm py-1 rounded bg-status-urgent/20 text-status-urgent font-label-badge text-label-badge font-bold animate-pulse">
+<span class="material-symbols-outlined text-body-base">local_fire_department</span>
+<span>RUSH MODE</span>
+</div>
+</div>
+</div>
+<!-- Live Alerts Bar: Sync with Floor Plan & Global 86 List -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-sm items-center">
+<div class="lg:col-span-7 bg-surface-container-high px-space-md py-1.5 rounded flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-secondary text-body-base shrink-0">bolt</span>
+<p class="font-body-sm text-body-sm text-text-primary leading-tight truncate">
+<strong class="text-secondary font-semibold">KDS SYNC ENGAGED:</strong> Bumping mains will auto-advance Floor Plan <span class="px-1.5 py-0.5 rounded bg-surface-container font-mono-metric-sm text-mono-metric-sm text-secondary">Table 03</span> to Stage 2: Entrée.
+        </p>
+</div>
+<div class="lg:col-span-5 bg-error-container/30 px-space-md py-1.5 rounded flex items-center justify-between gap-space-xs">
+<div class="flex items-center gap-space-xs truncate">
+<span class="material-symbols-outlined text-status-urgent text-body-base shrink-0">block</span>
+<span class="font-label-eyebrow text-label-eyebrow text-status-urgent uppercase shrink-0">86'D TICKER:</span>
+<span class="font-body-sm text-body-sm text-on-surface truncate">Black Truffle (SOLD OUT) • Low: Artisan Burrata (3 left)</span>
+</div>
+<span class="font-label-badge text-label-badge text-status-caution shrink-0 ml-1">STATION ALERT</span>
+</div>
+</div>
+</section>
+<!-- KDS Operational Command Grid -->
+<section class="p-space-md grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-space-md">
+<!-- TICKET 1: TABLE 03 (HERO / FEATURED SPOTLIGHT TICKET) -->
+<article class="xl:col-span-2 bg-surface-container-low rounded-lg shadow-xl flex flex-col justify-between relative overflow-hidden transition-all duration-200">
+<!-- Glow & Warning Header Strip -->
+<div class="bg-status-caution h-2 w-full"></div>
+<!-- Ticket Header Info -->
+<div class="p-space-md bg-surface-container flex flex-col gap-space-xs">
+<div class="flex items-start justify-between gap-space-sm">
+<div class="flex flex-col">
+<div class="flex items-center gap-space-xs">
+<span class="font-headline-lg text-headline-lg text-text-primary font-bold">TABLE 03</span>
+<span class="px-2 py-0.5 rounded bg-primary-container text-on-primary-container font-mono-metric-sm text-mono-metric-sm font-bold">CHIT #8842</span>
+<span class="px-2 py-0.5 rounded bg-surface-variant font-label-badge text-label-badge text-secondary">4 GUESTS</span>
+</div>
+<div class="flex items-center gap-space-sm mt-0.5 text-text-secondary font-body-sm text-body-sm">
+<span>Server: <strong class="text-text-primary">Jerry K.</strong></span>
+<span>•</span>
+<span class="font-mono-metric-sm text-mono-metric-sm text-text-tertiary">Ordered: 19:22:10</span>
+</div>
+</div>
+<!-- Large Glanceable Timer -->
+<div class="flex flex-col items-end">
+<div class="flex items-center gap-1.5 px-space-sm py-1 rounded bg-status-caution/20 text-status-caution">
+<span class="material-symbols-outlined text-body-base animate-spin">timelapse</span>
+<span class="font-mono-metric-lg text-mono-metric-lg tracking-wider" id="chit-timer-8842">12:45</span>
+</div>
+<span class="font-label-badge text-label-badge text-status-caution mt-1 uppercase font-bold">MAINS FIRING</span>
+</div>
+</div>
+<!-- Severe Life-Safety Allergy Notification Banner -->
+<div class="bg-status-urgent/20 px-space-sm py-2 rounded flex items-center gap-space-sm shadow-sm">
+<span class="material-symbols-outlined text-status-urgent text-headline-md shrink-0">emergency</span>
+<div class="flex flex-col">
+<span class="font-label-eyebrow text-label-eyebrow text-status-urgent uppercase font-bold tracking-wider">CRITICAL ALLERGY PROTOCOL</span>
+<span class="font-body-base text-body-base text-text-primary font-semibold leading-tight">SEVERE PEANUT ALLERGY (SEAT 2) — USE SANITIZED TONGS &amp; DEDICATED PREP BOARD</span>
+</div>
+</div>
+<!-- Course Header -->
+<div class="flex items-center justify-between pt-1">
+<span class="font-label-eyebrow text-label-eyebrow text-secondary uppercase tracking-widest font-bold">COURSE 2: ENTRÉES / MAINS</span>
+<span class="font-label-badge text-label-badge text-status-ready">✓ STARTERS CLEARED 19:35</span>
+</div>
+</div>
+<!-- Ticket Items List -->
+<div class="p-space-md flex flex-col gap-space-md flex-1">
+<!-- PRIMARY FOCUS DISH: 28-Day Dry-Aged Ribeye -->
+<div class="bg-surface-container p-space-md rounded-lg shadow-sm flex flex-col gap-space-sm">
+<div class="flex items-start gap-space-md">
+<img class="w-24 h-24 rounded object-cover shrink-0 bg-surface-container-highest" data-alt="Gourmet thick-cut bone-in dry aged prime ribeye steak searing on high heat commercial iron grill bars with crosshatch char marks, rosemary butter glaze melting, cinematic dramatic restaurant kitchen lighting with deep obsidian shadows and warm orange embers" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC07uu_1IXhy1tNSbjKgop158upuS9irwAgNw9iiRKZFFn2xnkqtcKLYcStqhqHRXacIHPw4ih3rXW1h2HVCUfd-U4Pi1My3tiNaiaeSjV7FexSH3aClkyrGSq9BRo4tfYQdMGi5yW3l4abDt7RMlYXXUwCPWY8pernWqcEJ-TvaBZs5PrQi_LJf_AL1kRoOuUaXWaT32N_newCmzKwKjPfdzq9K2boo52wchBAtRU"/>
+<div class="flex flex-col min-w-0 flex-1">
+<div class="flex items-center justify-between gap-space-xs">
+<span class="font-headline-md text-headline-md text-text-primary leading-tight">1x 28-Day Dry-Aged Ribeye</span>
+<span class="font-mono-metric-sm text-mono-metric-sm text-accent-cyan-bright font-bold shrink-0">GRILL 1 (SLOT 14)</span>
+</div>
+<span class="font-label-eyebrow text-label-eyebrow text-primary font-mono mt-0.5">18oz Bone-In • USDA Prime Reserve</span>
+<!-- Modifiers Callout -->
+<div class="mt-space-xs p-space-xs rounded bg-surface-container-lowest flex flex-col gap-1">
+<div class="flex items-center gap-1.5 text-text-primary font-body-sm text-body-sm">
+<span class="material-symbols-outlined text-secondary text-body-base">save_as</span>
+<span class="font-bold text-accent-cyan-bright">TEMP: MEDIUM-RARE (54°C CORE)</span>
+</div>
+<div class="flex items-center gap-1.5 text-text-secondary font-body-sm text-body-sm">
+<span class="material-symbols-outlined text-text-tertiary text-body-base">check</span>
+<span>Melted Rosemary-Garlic Compound Butter</span>
+</div>
+<div class="flex items-center gap-1.5 text-text-secondary font-body-sm text-body-sm">
+<span class="material-symbols-outlined text-text-tertiary text-body-base">check</span>
+<span>Charred Rosemary Sprig &amp; Maldon Flakes</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Live Grill Status Telemetry -->
+<div class="flex items-center justify-between pt-1">
+<div class="flex items-center gap-space-xs">
+<span class="relative flex h-2.5 w-2.5">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-status-caution opacity-75"></span>
+<span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-status-caution"></span>
+</span>
+<span class="font-label-eyebrow text-label-eyebrow text-text-primary font-mono">SEARING STAGE 2 OF 3</span>
+</div>
+<span class="font-mono-metric-sm text-mono-metric-sm text-secondary font-bold">REMAINING: ~03:15</span>
+</div>
+</div>
+<!-- Item 2: Chilean Seabass (Checked Plated) -->
+<div class="bg-surface-container-high/60 p-space-sm rounded flex items-center justify-between gap-space-sm opacity-90">
+<div class="flex items-center gap-space-sm min-w-0">
+<span class="material-symbols-outlined text-status-ready text-headline-md">check_circle</span>
+<div class="flex flex-col min-w-0">
+<span class="font-body-base text-body-base text-text-primary font-semibold truncate">2x Pan-Seared Chilean Seabass</span>
+<span class="font-body-sm text-body-sm text-text-secondary truncate">Fish Station #2 • PLATED &amp; UNDER HEAT LAMP</span>
+</div>
+</div>
+<span class="px-2 py-0.5 rounded bg-status-ready/20 text-status-ready font-label-badge text-label-badge font-bold shrink-0">READY AT PASS</span>
+</div>
+<!-- Item 3: Cold Larder Item (Burrata - Completed) -->
+<div class="bg-surface-container-high/40 p-space-sm rounded flex items-center justify-between gap-space-sm opacity-60">
+<div class="flex items-center gap-space-sm min-w-0">
+<span class="material-symbols-outlined text-text-subtle text-headline-md">done_all</span>
+<div class="flex flex-col min-w-0">
+<span class="font-body-base text-body-base text-text-tertiary line-through truncate">1x Artisan Burrata D.O.P.</span>
+<span class="font-body-sm text-body-sm text-text-muted truncate">Cold Larder • Cleared &amp; Consumed (Course 1)</span>
+</div>
+</div>
+<span class="font-label-badge text-label-badge text-text-muted">SERVED</span>
+</div>
+</div>
+<!-- Action Panel & Large Bump Target -->
+<div class="p-space-md bg-surface-container flex flex-col gap-space-xs">
+<button class="w-full py-space-sm px-space-md rounded-lg bg-gradient-to-r from-secondary to-accent-purple-glow text-bg-chrome font-headline-md text-headline-md font-bold shadow-lg hover:opacity-95 active:scale-95 transition-all flex items-center justify-center gap-space-xs">
+<span class="material-symbols-outlined text-headline-lg">done</span>
+<span>BUMP MAINS → ADVANCE TABLE 03 TO ENTRÉE</span>
+</button>
+<div class="grid grid-cols-3 gap-space-xs mt-1">
+<button class="py-space-xs px-space-sm rounded bg-surface-variant text-text-secondary font-label-eyebrow text-label-eyebrow hover:text-text-primary transition-colors flex items-center justify-center gap-1">
+<span class="material-symbols-outlined text-body-sm">more_time</span>
+<span>HOLD 2M</span>
+</button>
+<button class="py-space-xs px-space-sm rounded bg-surface-variant text-text-secondary font-label-eyebrow text-label-eyebrow hover:text-text-primary transition-colors flex items-center justify-center gap-1">
+<span class="material-symbols-outlined text-body-sm">print</span>
+<span>PRINT CHIT</span>
+</button>
+<button class="py-space-xs px-space-sm rounded bg-surface-variant text-text-secondary font-label-eyebrow text-label-eyebrow hover:text-text-primary transition-colors flex items-center justify-center gap-1">
+<span class="material-symbols-outlined text-body-sm">undo</span>
+<span>RECALL</span>
+</button>
+</div>
+</div>
+</article>
+<!-- TICKET 2: TABLE 07 (URGENT / OVERDUE TICKET) -->
+<article class="bg-surface-container-low rounded-lg shadow-xl flex flex-col justify-between relative overflow-hidden transition-all duration-200">
+<!-- Pulse top alert for Overdue Ticket -->
+<div class="bg-status-urgent h-2 w-full animate-pulse"></div>
+<div class="p-space-md bg-surface-container flex flex-col gap-space-xs">
+<div class="flex items-start justify-between">
+<div class="flex flex-col">
+<div class="flex items-center gap-space-xs">
+<span class="font-headline-lg text-headline-lg text-text-primary font-bold">TABLE 07</span>
+<span class="px-1.5 py-0.5 rounded bg-surface-variant font-mono-metric-sm text-mono-metric-sm text-text-secondary">#8839</span>
+</div>
+<span class="font-body-sm text-body-sm text-text-secondary mt-0.5">Server: Sarah B. • 2 Guests</span>
+</div>
+<div class="flex flex-col items-end">
+<div class="px-space-sm py-1 rounded bg-status-urgent/20 text-status-urgent flex items-center gap-1 animate-pulse">
+<span class="material-symbols-outlined text-body-base">warning</span>
+<span class="font-mono-metric-md text-mono-metric-md font-bold">18:42</span>
+</div>
+<span class="font-label-badge text-label-badge text-status-urgent uppercase font-bold mt-1">OVERDUE +4M</span>
+</div>
+</div>
+<div class="px-space-sm py-1 rounded bg-status-urgent/30 flex items-center gap-1.5">
+<span class="material-symbols-outlined text-status-urgent text-body-base shrink-0">priority_high</span>
+<span class="font-label-badge text-label-badge text-status-urgent font-bold">EXPEDITE EXPEDITER CALL — RUSH TICKET</span>
+</div>
+</div>
+<!-- Ticket Items List -->
+<div class="p-space-md flex flex-col gap-space-sm flex-1">
+<div class="p-space-sm rounded bg-surface-container flex flex-col gap-1">
+<div class="flex items-center justify-between">
+<span class="font-body-base text-body-base font-semibold text-text-primary">1x A5 Miyazaki Wagyu</span>
+<span class="px-1.5 py-0.5 rounded bg-status-caution/20 text-status-caution font-label-badge text-label-badge">MED-RARE</span>
+</div>
+<span class="font-body-sm text-body-sm text-status-urgent font-semibold">• NO TRUFFLE OIL (PREP CONFLICT)</span>
+<span class="font-body-sm text-body-sm text-text-tertiary">Side: Roasted Bone Marrow Butter</span>
+</div>
+<div class="p-space-sm rounded bg-surface-container flex items-center justify-between">
+<span class="font-body-base text-body-base font-semibold text-text-primary">1x Hand-Cut Parmesan Fries</span>
+<span class="material-symbols-outlined text-status-ready text-body-base">check_circle</span>
+</div>
+<div class="p-space-sm rounded bg-surface-container flex items-center justify-between">
+<span class="font-body-base text-body-base font-semibold text-text-primary">1x Charred Broccolini</span>
+<span class="material-symbols-outlined text-status-ready text-body-base">check_circle</span>
+</div>
+</div>
+<div class="p-space-md bg-surface-container flex flex-col gap-space-xs">
+<button class="w-full py-space-sm px-space-md rounded-lg bg-status-urgent text-text-primary font-headline-md text-headline-md font-bold shadow hover:opacity-90 active:scale-95 transition-all flex items-center justify-center gap-1">
+<span class="material-symbols-outlined text-headline-md">done_all</span>
+<span>BUMP OVERDUE TABLE 07</span>
+</button>
+</div>
+</article>
+<!-- TICKET 3: TABLE 05 (IN-FLIGHT ORDER - REGULAR PRIORITY) -->
+<article class="bg-surface-container-low rounded-lg shadow-xl flex flex-col justify-between relative overflow-hidden transition-all duration-200">
+<div class="bg-status-ready h-2 w-full"></div>
+<div class="p-space-md bg-surface-container flex flex-col gap-space-xs">
+<div class="flex items-start justify-between">
+<div class="flex flex-col">
+<div class="flex items-center gap-space-xs">
+<span class="font-headline-lg text-headline-lg text-text-primary font-bold">TABLE 05</span>
+<span class="px-1.5 py-0.5 rounded bg-surface-variant font-mono-metric-sm text-mono-metric-sm text-text-secondary">#8844</span>
+</div>
+<span class="font-body-sm text-body-sm text-text-secondary mt-0.5">Server: David M. • 3 Guests</span>
+</div>
+<div class="flex flex-col items-end">
+<div class="px-space-sm py-1 rounded bg-status-ready/20 text-status-ready flex items-center gap-1">
+<span class="material-symbols-outlined text-body-base">timer</span>
+<span class="font-mono-metric-md text-mono-metric-md font-bold">06:15</span>
+</div>
+<span class="font-label-badge text-label-badge text-status-ready uppercase font-bold mt-1">STARTERS IN-PROGRESS</span>
+</div>
+</div>
+</div>
+<!-- Ticket Items List -->
+<div class="p-space-md flex flex-col gap-space-sm flex-1">
+<div class="p-space-sm rounded bg-surface-container flex flex-col gap-1">
+<div class="flex items-center justify-between">
+<span class="font-body-base text-body-base font-semibold text-text-primary">2x Crispy Calamari Fritti</span>
+<span class="font-label-badge text-label-badge text-secondary font-mono">FRYER #1</span>
+</div>
+<span class="font-body-sm text-body-sm text-text-tertiary">• Extra Lemon Aioli on Side</span>
+</div>
+<div class="p-space-sm rounded bg-surface-container flex items-center justify-between">
+<div class="flex flex-col">
+<span class="font-body-base text-body-base font-semibold text-text-primary">1x Little Gem Caesar</span>
+<span class="font-body-sm text-body-sm text-text-tertiary">• Light Anchovy Dressing</span>
+</div>
+<span class="font-label-badge text-label-badge text-text-muted">COLD</span>
+</div>
+<div class="p-space-sm rounded bg-surface-container-high/40 flex items-center justify-between text-text-tertiary">
+<span>1x Tomato Bisque</span>
+<span class="material-symbols-outlined text-status-ready text-body-base">check_circle</span>
+</div>
+</div>
+<div class="p-space-md bg-surface-container flex flex-col gap-space-xs">
+<button class="w-full py-space-sm px-space-md rounded-lg bg-surface-bright text-text-primary font-headline-md text-headline-md font-semibold hover:bg-surface-variant active:scale-95 transition-all flex items-center justify-center gap-1">
+<span class="material-symbols-outlined text-headline-md">check</span>
+<span>MARK STARTERS DONE</span>
+</button>
+</div>
+</article>
+<!-- TICKET 4: TABLE 12 (NEW ARRIVAL TICKET) -->
+<article class="bg-surface-container-low rounded-lg shadow-xl flex flex-col justify-between relative overflow-hidden transition-all duration-200">
+<div class="bg-secondary h-2 w-full"></div>
+<div class="p-space-md bg-surface-container flex flex-col gap-space-xs">
+<div class="flex items-start justify-between">
+<div class="flex flex-col">
+<div class="flex items-center gap-space-xs">
+<span class="font-headline-lg text-headline-lg text-text-primary font-bold">TABLE 12</span>
+<span class="px-1.5 py-0.5 rounded bg-surface-variant font-mono-metric-sm text-mono-metric-sm text-text-secondary">#8845</span>
+</div>
+<span class="font-body-sm text-body-sm text-text-secondary mt-0.5">Server: Elena R. • 2 Guests</span>
+</div>
+<div class="flex flex-col items-end">
+<div class="px-space-sm py-1 rounded bg-secondary/20 text-secondary flex items-center gap-1">
+<span class="material-symbols-outlined text-body-base animate-pulse">new_releases</span>
+<span class="font-mono-metric-md text-mono-metric-md font-bold">02:10</span>
+</div>
+<span class="font-label-badge text-label-badge text-secondary uppercase font-bold mt-1">NEW FIRE</span>
+</div>
+</div>
+</div>
+<!-- Ticket Items List -->
+<div class="p-space-md flex flex-col gap-space-sm flex-1">
+<div class="p-space-sm rounded bg-surface-container flex flex-col gap-1">
+<div class="flex items-center justify-between">
+<span class="font-body-base text-body-base font-semibold text-text-primary">1x 28-Day Dry-Aged Ribeye</span>
+<span class="px-1.5 py-0.5 rounded bg-status-caution/20 text-status-caution font-label-badge text-label-badge">MEDIUM</span>
+</div>
+<span class="font-body-sm text-body-sm text-text-secondary">• Extra Herb Compound Butter</span>
+<span class="font-mono-metric-sm text-mono-metric-sm text-secondary">QUEUE: GRILL SLOT #15</span>
+</div>
+<div class="p-space-sm rounded bg-surface-container flex items-center justify-between">
+<div class="flex flex-col">
+<span class="font-body-base text-body-base font-semibold text-text-primary">1x Pan-Seared Chilean Seabass</span>
+<span class="font-body-sm text-body-sm text-text-tertiary">• Citrus Beurre Blanc</span>
+</div>
+<span class="font-label-badge text-label-badge text-text-muted">FISH PASS</span>
+</div>
+</div>
+<div class="p-space-md bg-surface-container flex flex-col gap-space-xs">
+<button class="w-full py-space-sm px-space-md rounded-lg bg-surface-bright text-text-primary font-headline-md text-headline-md font-semibold hover:bg-surface-variant active:scale-95 transition-all flex items-center justify-center gap-1">
+<span class="material-symbols-outlined text-headline-md">play_arrow</span>
+<span>ACKNOWLEDGE &amp; FIRE</span>
+</button>
+</div>
+</article>
+<!-- TICKET 5: BAR 02 (WALK-UP BAR SEATING) -->
+<article class="bg-surface-container-low rounded-lg shadow-xl flex flex-col justify-between relative overflow-hidden transition-all duration-200">
+<div class="bg-status-ready h-2 w-full"></div>
+<div class="p-space-md bg-surface-container flex flex-col gap-space-xs">
+<div class="flex items-start justify-between">
+<div class="flex flex-col">
+<div class="flex items-center gap-space-xs">
+<span class="font-headline-lg text-headline-lg text-text-primary font-bold">BAR 02</span>
+<span class="px-1.5 py-0.5 rounded bg-surface-variant font-mono-metric-sm text-mono-metric-sm text-text-secondary">#8841</span>
+</div>
+<span class="font-body-sm text-body-sm text-text-secondary mt-0.5">Bartender: Sam T. • Walk-Up</span>
+</div>
+<div class="flex flex-col items-end">
+<div class="px-space-sm py-1 rounded bg-status-ready/20 text-status-ready flex items-center gap-1">
+<span class="material-symbols-outlined text-body-base">timer</span>
+<span class="font-mono-metric-md text-mono-metric-md font-bold">04:30</span>
+</div>
+<span class="font-label-badge text-label-badge text-status-ready uppercase font-bold mt-1">FIRING</span>
+</div>
+</div>
+</div>
+<div class="p-space-md flex flex-col gap-space-sm flex-1">
+<div class="p-space-sm rounded bg-surface-container flex flex-col gap-1">
+<div class="flex items-center justify-between">
+<span class="font-body-base text-body-base font-semibold text-text-primary">1x Wagyu Sliders (3pc)</span>
+<span class="font-label-badge text-label-badge text-status-caution font-mono">GRILL FLATTOP</span>
+</div>
+<span class="font-body-sm text-body-sm text-text-tertiary">• Truffle Mayo on Side • Well Done</span>
+</div>
+<div class="p-space-sm rounded bg-surface-container flex items-center justify-between">
+<span class="font-body-base text-body-base font-semibold text-text-primary">1x Hand-Cut Parmesan Fries</span>
+<span class="material-symbols-outlined text-status-ready text-body-base">check_circle</span>
+</div>
+</div>
+<div class="p-space-md bg-surface-container flex flex-col gap-space-xs">
+<button class="w-full py-space-sm px-space-md rounded-lg bg-surface-bright text-text-primary font-headline-md text-headline-md font-semibold hover:bg-surface-variant active:scale-95 transition-all flex items-center justify-center gap-1">
+<span class="material-symbols-outlined text-headline-md">done</span>
+<span>BUMP BAR ORDER</span>
+</button>
+</div>
+</article>
+<!-- INLINE EXPO PASS LIVE MONITORING CARD (TELEMETRY / WORKLOAD) -->
+<article class="bg-surface-container-low rounded-lg shadow-xl flex flex-col justify-between overflow-hidden">
+<div class="bg-primary h-2 w-full"></div>
+<div class="p-space-md bg-surface-container flex items-center justify-between">
+<div class="flex flex-col">
+<span class="font-label-eyebrow text-label-eyebrow text-primary uppercase">GRILL REAL-TIME CADENCE</span>
+<span class="font-headline-md text-headline-md text-text-primary">Station Load: 86%</span>
+</div>
+<span class="material-symbols-outlined text-secondary text-headline-xl">skillet</span>
+</div>
+<div class="p-space-md flex flex-col gap-space-sm flex-1">
+<!-- SVG Workload Distribution Chart -->
+<div class="w-full bg-surface-container p-space-sm rounded">
+<span class="font-label-eyebrow text-label-eyebrow text-text-tertiary uppercase">Tickets In Flight</span>
+<div class="h-16 w-full mt-2">
+<svg class="w-full h-full" fill="none" preserveaspectratio="none" viewbox="0 0 200 60">
+<path class="text-secondary" d="M0,50 L25,45 L50,30 L75,38 L100,15 L125,22 L150,8 L175,14 L200,5" stroke="currentColor" stroke-linecap="round" stroke-width="3" vector-effect="non-scaling-stroke"></path>
+<polygon class="text-secondary/10" fill="currentColor" points="0,50 25,45 50,30 75,38 100,15 125,22 150,8 175,14 200,5 200,60 0,60"></polygon>
+</svg>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-space-xs">
+<div class="p-space-xs rounded bg-surface-container flex flex-col">
+<span class="font-label-badge text-label-badge text-text-subtle uppercase">Target Pace</span>
+<span class="font-mono-metric-md text-mono-metric-md text-text-primary">&lt; 14 min</span>
+</div>
+<div class="p-space-xs rounded bg-surface-container flex flex-col">
+<span class="font-label-badge text-label-badge text-text-subtle uppercase">Longest Chit</span>
+<span class="font-mono-metric-md text-mono-metric-md text-status-urgent">18m 42s</span>
+</div>
+</div>
+</div>
+<div class="p-space-md bg-surface-container flex items-center justify-between text-body-sm text-body-sm text-text-secondary">
+<span>Lead Cook: <strong>Chef Marco V.</strong></span>
+<span class="font-mono-metric-sm text-mono-metric-sm text-status-ready">98.4% ON-TIME</span>
+</div>
+</article>
+</section>
+<!-- Expediter Sticky Bottom Live Item Shelf -->
+<footer class="bg-surface-container-lowest p-space-md shadow-2xl flex flex-wrap items-center justify-between gap-space-md sticky bottom-0 z-30">
+<!-- Active Cut Aggregator -->
+<div class="flex items-center gap-space-md overflow-x-auto min-w-0">
+<div class="flex items-center gap-space-xs text-text-primary shrink-0">
+<span class="material-symbols-outlined text-secondary text-headline-md">summarize</span>
+<span class="font-label-eyebrow text-label-eyebrow uppercase font-bold text-text-primary">GRILL 1 ITEM SUM:</span>
+</div>
+<div class="flex items-center gap-space-sm shrink-0">
+<div class="flex items-center gap-1.5 px-space-sm py-1 rounded bg-surface-container-high">
+<span class="font-mono-metric-md text-mono-metric-md text-accent-cyan-bright font-bold">5x</span>
+<span class="font-body-sm text-body-sm text-text-primary font-medium">Dry-Aged Ribeye</span>
+</div>
+<div class="flex items-center gap-1.5 px-space-sm py-1 rounded bg-surface-container-high">
+<span class="font-mono-metric-md text-mono-metric-md text-secondary font-bold">2x</span>
+<span class="font-body-sm text-body-sm text-text-primary font-medium">A5 Miyazaki Wagyu</span>
+</div>
+<div class="flex items-center gap-1.5 px-space-sm py-1 rounded bg-surface-container-high">
+<span class="font-mono-metric-md text-mono-metric-md text-status-caution font-bold">4x</span>
+<span class="font-body-sm text-body-sm text-text-primary font-medium">Chilean Seabass</span>
+</div>
+<div class="flex items-center gap-1.5 px-space-sm py-1 rounded bg-surface-container-high">
+<span class="font-mono-metric-md text-mono-metric-md text-text-secondary font-bold">3x</span>
+<span class="font-body-sm text-body-sm text-text-primary font-medium">Wagyu Sliders</span>
+</div>
+</div>
+</div>
+<!-- Quick Expediter Command Buttons -->
+<div class="flex items-center gap-space-xs shrink-0">
+<button class="px-space-md py-space-xs rounded bg-surface-container hover:bg-surface-bright text-text-primary font-label-eyebrow text-label-eyebrow transition-colors flex items-center gap-1">
+<span class="material-symbols-outlined text-body-base">history</span>
+<span>RECENT BUMPS (8)</span>
+</button>
+<button class="px-space-md py-space-xs rounded bg-surface-container hover:bg-surface-bright text-text-primary font-label-eyebrow text-label-eyebrow transition-colors flex items-center gap-1">
+<span class="material-symbols-outlined text-body-base">call_split</span>
+<span>SPLIT PASS</span>
+</button>
+<button class="px-space-md py-space-xs rounded bg-secondary text-bg-chrome font-label-eyebrow text-label-eyebrow font-bold hover:bg-accent-cyan-bright transition-colors flex items-center gap-1">
+<span class="material-symbols-outlined text-body-base">volume_off</span>
+<span>MUTE ALARMS</span>
+</button>
+</div>
+</footer>
+</div>
+<script>
+  // Simple BOH KDS Timer incrementer micro-interaction simulation
+  (function initKdsTimers() {
+    let seconds = 765; // 12m 45s for Table 03
+    const timerEl = document.getElementById('chit-timer-8842');
+    if (!timerEl) return;
+    
+    setInterval(() => {
+      seconds++;
+      const m = Math.floor(seconds / 60);
+      const s = seconds % 60;
+      timerEl.textContent = `${m < 10 ? '0' : ''}${m}:${s < 10 ? '0' : ''}${s}`;
+    }, 1000);
+  })();
+</script></main></div>
+<grammarly-desktop-integration data-grammarly-shadow-root="true" style="visibility: visible !important;"></grammarly-desktop-integration></body></html>

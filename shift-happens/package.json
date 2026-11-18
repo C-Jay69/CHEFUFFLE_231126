@@ -1,0 +1,27 @@
+{
+  "name": "shift-happens",
+  "private": true,
+  "version": "1.0.0",
+  "description": "SHIFT HAPPENS! by HYDRAFORGE AI - restaurant operations engine",
+  "packageManager": "pnpm@12.21.0",
+  "scripts": {
+    "db:up": "bash scripts/db-up.sh",
+    "db:down": "bash scripts/db-down.sh",
+    "db:push": "pnpm --filter @shift-happens/db db:push",
+    "db:seed": "pnpm --filter @shift-happens/db seed",
+    "db:reset": "pnpm --filter @shift-happens/db db:reset",
+    "gen:screens": "node scripts/gen-screens.mjs",
+    "dev": "pnpm gen:screens && turbo run dev --parallel",
+    "dev:api": "pnpm --filter @shift-happens/api dev",
+    "dev:web": "pnpm --filter @shift-happens/web dev",
+    "build": "pnpm gen:screens && turbo run build",
+    "start": "turbo run start --parallel",
+    "test": "pnpm --filter @shift-happens/api test",
+    "typecheck": "turbo run typecheck"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.0",
+    "turbo": "^2.3.3",
+    "typescript": "^5.6.3"
+  }
+}

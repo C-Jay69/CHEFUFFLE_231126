@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_dashboard" name="shell-type"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@500;700&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        "colors": {
+          "bg-surface": "#111827",
+          "on-surface-variant": "#cfc2d6",
+          "secondary-container": "#03b5d3",
+          "text-subtle": "#4b5563",
+          "accent-lime": "#bef754",
+          "bg-canvas": "#000000",
+          "outline": "#988d9f",
+          "on-primary-container": "#400071",
+          "status-caution": "#f59e0b",
+          "on-tertiary-container": "#002a51",
+          "primary-container": "#b76dff",
+          "border-subtle": "#1f2937",
+          "text-secondary": "#d1d5db",
+          "surface-bright": "#323949",
+          "surface-container": "#191f2f",
+          "inverse-primary": "#842bd2",
+          "status-info": "#3b82f6",
+          "tertiary-container": "#4c93e7",
+          "surface-container-low": "#141b2b",
+          "surface": "#0c1322",
+          "on-error": "#690005",
+          "surface-dim": "#0c1322",
+          "surface-container-highest": "#2e3545",
+          "on-primary-fixed": "#2c0051",
+          "tertiary-fixed-dim": "#a4c9ff",
+          "on-tertiary-fixed-variant": "#004883",
+          "primary": "#ddb7ff",
+          "bg-card": "#2a2a2a",
+          "on-primary-fixed-variant": "#6900b3",
+          "status-ready": "#22c55e",
+          "inverse-on-surface": "#293040",
+          "text-primary": "#ffffff",
+          "text-tertiary": "#9ca3af",
+          "secondary-fixed": "#acedff",
+          "accent-cyan-bright": "#22d3ee",
+          "text-muted": "#6b7280",
+          "on-background": "#dce2f7",
+          "primary-fixed": "#f0dbff",
+          "primary-fixed-dim": "#ddb7ff",
+          "status-urgent": "#ef4444",
+          "outline-variant": "#4d4354",
+          "on-secondary-fixed-variant": "#004e5c",
+          "tertiary": "#a4c9ff",
+          "on-error-container": "#ffdad6",
+          "surface-variant": "#2e3545",
+          "border-emphasis": "#ffffff",
+          "secondary-fixed-dim": "#4cd7f6",
+          "on-secondary-fixed": "#001f26",
+          "surface-container-high": "#232a3a",
+          "on-surface": "#dce2f7",
+          "on-tertiary": "#00315d",
+          "on-primary": "#490080",
+          "bg-chrome": "#0a0a0a",
+          "bg-card-subtle": "#1e1e1e",
+          "on-tertiary-fixed": "#001c39",
+          "secondary": "#4cd7f6",
+          "inverse-surface": "#dce2f7",
+          "on-secondary": "#003640",
+          "on-secondary-container": "#00424e",
+          "surface-tint": "#ddb7ff",
+          "accent-shift-blue": "#0000ff",
+          "bg-sidebar": "#1a1a1a",
+          "surface-container-lowest": "#070e1d",
+          "error-container": "#93000a",
+          "accent-purple-glow": "#c084fc",
+          "tertiary-fixed": "#d4e3ff",
+          "error": "#ffb4ab",
+          "background": "#0c1322"
+        },
+        "borderRadius": {
+          "DEFAULT": "0.25rem",
+          "lg": "0.5rem",
+          "xl": "0.75rem",
+          "full": "9999px"
+        },
+        "spacing": {
+          "gutter": "1rem",
+          "space-sm": "0.5rem",
+          "space-xs": "0.25rem",
+          "space-xl": "2rem",
+          "margin": "1rem",
+          "margin-lg": "2rem",
+          "space-lg": "1.5rem",
+          "margin-md": "1.5rem",
+          "space-md": "1rem",
+          "gutter-lg": "1.5rem"
+        },
+        "fontFamily": {
+          "headline-lg": ["Inter"],
+          "body-sm": ["Inter"],
+          "label-eyebrow": ["JetBrains Mono"],
+          "body-base": ["Inter"],
+          "headline-hero-mobile": ["Inter"],
+          "headline-md": ["Inter"],
+          "body-lg": ["Inter"],
+          "label-badge": ["JetBrains Mono"],
+          "mono-metric-md": ["JetBrains Mono"],
+          "headline-xl": ["Inter"],
+          "mono-metric-sm": ["JetBrains Mono"],
+          "headline-hero": ["Inter"],
+          "mono-metric-lg": ["JetBrains Mono"]
+        },
+        "fontSize": {
+          "headline-lg": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+          "body-sm": ["12px", {"lineHeight": "18px", "fontWeight": "400"}],
+          "label-eyebrow": ["11px", {"lineHeight": "14px", "letterSpacing": "0.08em", "fontWeight": "700"}],
+          "body-base": ["14px", {"lineHeight": "22px", "fontWeight": "400"}],
+          "headline-hero-mobile": ["36px", {"lineHeight": "42px", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+          "headline-md": ["18px", {"lineHeight": "26px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+          "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "500"}],
+          "label-badge": ["10px", {"lineHeight": "12px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+          "mono-metric-md": ["16px", {"lineHeight": "24px", "fontWeight": "700"}],
+          "headline-xl": ["30px", {"lineHeight": "38px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+          "mono-metric-sm": ["13px", {"lineHeight": "18px", "fontWeight": "500"}],
+          "headline-hero": ["72px", {"lineHeight": "76px", "letterSpacing": "-0.03em", "fontWeight": "800"}],
+          "mono-metric-lg": ["24px", {"lineHeight": "30px", "fontWeight": "700"}]
+        }
+      }
+    }
+  }</script></head><body class="bg-bg-canvas font-body-base text-body-base text-on-surface antialiased selection:bg-primary selection:text-on-primary-fixed"><aside class="fixed left-0 top-0 h-full w-64 bg-bg-chrome z-50 flex flex-col justify-between shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="flex flex-col"><div class="h-16 flex items-center gap-space-sm px-space-md bg-surface-container-lowest"><img alt="SHIFT HAPPENS Logo" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/ALJJyrA7z54LxK-mWn3_cEFcaVA841lrwYa-RjeCLO4ZUOoe7YWMCYym99OJOQCt7-30bh_prcMk_kWor80Wvn_d-pXhdvE9XiVSlxPeT9t3N0xccj-12_OMWLACQQJ6d0ObGpm3vl-00hoX6CyGL9l5lAoQusfoaGGriVVjN2DkJCudf-yUgaQsbO7SxBUkwHn9V5ga-eGd4K9RKVG0lgbR00C8we-WGlnqxEBhl9XFkQD9"/><div class="flex flex-col min-w-0"><span class="font-headline-md text-headline-md tracking-tight text-text-primary uppercase truncate">SHIFT HAPPENS!</span><span class="font-label-badge text-label-badge text-secondary font-bold tracking-widest uppercase truncate">HYDRAFORGE AI</span></div></div><div class="px-space-md py-space-sm"><div class="p-space-sm rounded-lg bg-surface-container-low flex items-center justify-between"><div class="flex items-center gap-space-xs"><span class="relative flex h-2 w-2"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-status-ready opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-status-ready"></span></span><span class="font-label-badge text-label-badge text-text-secondary uppercase">PWA Live</span></div><span class="font-label-badge text-label-badge text-secondary">99.98% SYNC</span></div></div><nav class="flex flex-col gap-space-xs px-space-sm mt-space-xs" data-active-classes="bg-gradient-to-r from-accent-purple-glow/20 to-secondary/20 text-text-primary font-bold shadow-[inset_2px_0_0_0_#4cd7f6]"><a class="flex items-center px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors font-body-base text-body-base font-semibold" data-path="pos-&amp;-orders" href="#">POS &amp; Orders</a><a class="flex items-center px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors font-body-base text-body-base font-semibold" data-path="floor-plan-&amp;-seating" href="#">Floor Plan &amp; Seating</a><a class="flex items-center px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors font-body-base text-body-base font-semibold" data-path="kitchen-kds" href="#">Kitchen KDS</a><a class="flex items-center px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors font-body-base text-body-base font-semibold" data-path="reservations-&amp;-crm" href="#">Reservations &amp; CRM</a><a class="flex items-center px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors font-body-base text-body-base font-semibold" data-path="inventory-management" href="#">Inventory Management</a><a class="flex items-center px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors font-body-base text-body-base font-semibold" data-path="staff-scheduling-&amp;-shifts" href="#">Staff Scheduling &amp; Shifts</a><a class="flex items-center px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors font-body-base text-body-base font-semibold" data-path="team-onboarding-&amp;-training" href="#">Team Onboarding &amp; Training</a><a class="flex items-center px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors font-body-base text-body-base font-semibold" data-path="voice-ai-agent" href="#">Voice AI Agent</a></nav></div><div class="p-space-md flex flex-col gap-space-sm bg-surface-container-lowest"><div class="flex items-center justify-between text-text-subtle font-mono-metric-sm text-mono-metric-sm"><span>HOTKEYS</span><span class="px-space-xs py-0.5 rounded bg-surface-variant text-text-secondary">⌘ + K</span></div><div class="flex items-center gap-space-sm p-space-sm rounded-lg bg-surface-container-low"><div class="flex flex-col"><span class="font-label-eyebrow text-label-eyebrow text-secondary uppercase">Active Grid</span><span class="font-body-sm text-body-sm text-text-secondary truncate">Downtown Flagship</span></div></div></div></aside><div class="pl-64"><header class="fixed top-0 left-64 right-0 h-16 bg-bg-chrome/90 backdrop-blur-xl z-40 flex items-center justify-between px-space-lg shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="flex items-center gap-space-md"><div class="flex items-center gap-space-xs px-space-md py-space-xs rounded-full bg-surface-container-high"><span class="relative flex h-2.5 w-2.5"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-status-ready opacity-75"></span><span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-status-ready"></span></span><span class="font-label-badge text-label-badge text-text-primary uppercase tracking-wider">Dinner Rush • 84% Occupancy • ONLINE</span></div><div class="hidden xl:flex items-center gap-space-xs text-text-secondary font-body-sm text-body-sm px-space-sm py-space-xs rounded bg-surface-container-low"><span class="material-symbols-outlined text-body-base text-text-subtle">store</span><span>Main Dining &amp; Bar — Downtown Flagship</span><span class="material-symbols-outlined text-body-base text-text-subtle">unfold_more</span></div></div><div class="flex items-center gap-space-md"><div class="flex items-center gap-space-xs px-space-sm py-space-xs rounded-full bg-surface-container-high"><span class="material-symbols-outlined text-accent-purple-glow text-body-base animate-pulse">graphic_eq</span><span class="font-label-badge text-label-badge text-accent-purple-glow font-bold">VOICE AI ACTIVE</span></div><button class="relative p-space-xs rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors"><span class="material-symbols-outlined text-status-caution">notifications</span><span class="absolute top-1 right-1 h-2 w-2 rounded-full bg-status-urgent"></span></button><div class="flex items-center gap-space-sm pl-space-sm"><div class="text-right hidden sm:flex flex-col"><span class="font-body-base text-body-base font-bold text-text-primary leading-tight">Chef Marco Vance</span><span class="font-label-eyebrow text-label-eyebrow text-secondary uppercase">GM &amp; Head of Ops</span></div><img alt="Profile" class="w-8 h-8 rounded-full object-cover ring-2 ring-primary/40" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDy9ZhtpNDXaG86Ys-0Q1j4OyrTEO-l2Q6rHSk5sbNKIy3_rAMsoV5LbPeVUZG92h1-x4C-c6cJNmPbKaFCGNrUOJIuE6wsbqRqH3KxaNwKL9aVLphQ_bqcAwsR1UW006mNBYrsfewRyzDJo27GYvuKAOBdOAVf7GTWqNZAJMhDXajzqoPDsNxZQhVoNTs7RZp8Sm5QF-D2X2GsLV4r51fpUfWj41xLLFIKS8MxEVY"/></div></div></header><main class="w-full pt-16 bg-bg-canvas min-h-screen"><div class="flex flex-col w-full px-space-md py-space-md gap-space-md">
+<!-- TOP EMERGENCY STATUS & 86 TICKER -->
+<div class="flex flex-col gap-space-xs">
+<div class="flex items-center justify-between bg-surface-container-high px-space-md py-space-sm rounded-lg shadow-md">
+<div class="flex items-center gap-space-xs min-w-0">
+<span class="relative flex h-2 w-2 flex-shrink-0">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-status-urgent opacity-75"></span>
+<span class="relative inline-flex rounded-full h-2 w-2 bg-status-urgent"></span>
+</span>
+<span class="font-label-eyebrow text-label-eyebrow text-status-urgent uppercase tracking-wider truncate">LIVE PACING • 84% OCCUPANCY</span>
+</div>
+<div class="flex items-center gap-space-xs flex-shrink-0">
+<span class="font-mono-metric-sm text-mono-metric-sm text-secondary bg-surface-container-lowest px-space-xs py-0.5 rounded">SYNC 0.3s</span>
+</div>
+</div>
+<!-- Active 86'd / Critical Ticker -->
+<div class="flex items-center gap-space-xs bg-error-container text-on-error-container px-space-md py-space-xs rounded-lg shadow-sm">
+<span class="material-symbols-outlined text-body-base text-status-urgent animate-pulse flex-shrink-0">fmd_bad</span>
+<div class="flex-1 overflow-hidden">
+<p class="font-label-badge text-label-badge font-bold uppercase truncate">
+          86'D: Black Winter Truffle (Voice AI Synced) | Burrata (2 Left Par)
+        </p>
+</div>
+<button class="bg-surface-container-lowest text-status-urgent px-space-xs py-0.5 rounded text-label-badge font-label-badge font-bold uppercase flex-shrink-0">
+        Audit 86s
+      </button>
+</div>
+<!-- View Context Toggle -->
+<div class="grid grid-cols-3 gap-space-xs bg-surface-container-lowest p-1 rounded-lg">
+<button class="py-space-xs text-center font-label-badge text-label-badge rounded font-bold transition-all bg-gradient-to-r from-accent-purple-glow to-secondary text-bg-canvas shadow" id="tab-floor" onclick="switchCompanionView('floor')">
+        FLOOR OPS
+      </button>
+<button class="py-space-xs text-center font-label-badge text-label-badge rounded font-bold transition-all text-text-tertiary hover:text-text-primary" id="tab-labor" onclick="switchCompanionView('labor')">
+        LABOR (19.4%)
+      </button>
+<button class="py-space-xs text-center font-label-badge text-label-badge rounded font-bold transition-all text-text-tertiary hover:text-text-primary flex items-center justify-center gap-1" id="tab-vip" onclick="switchCompanionView('vip')">
+<span>VIP RADAR</span>
+<span class="h-1.5 w-1.5 rounded-full bg-status-caution"></span>
+</button>
+</div>
+</div>
+<!-- SECTION 1: ONE-SWIPE SMART LABOR CUT ACTION CARD -->
+<div class="bg-surface-container-high rounded-xl p-space-md flex flex-col gap-space-sm shadow-xl relative overflow-hidden" id="labor-cut-card">
+<div class="absolute -right-8 -top-8 w-28 h-28 bg-status-urgent/10 rounded-full blur-xl pointer-events-none"></div>
+<div class="flex items-start justify-between">
+<div class="flex items-center gap-space-xs">
+<div class="w-8 h-8 rounded-lg bg-status-urgent/20 flex items-center justify-center flex-shrink-0">
+<span class="material-symbols-outlined text-status-urgent text-body-lg">trending_up</span>
+</div>
+<div>
+<span class="font-label-eyebrow text-label-eyebrow text-status-urgent uppercase tracking-widest block">CRITICAL PACING SPIKE</span>
+<h2 class="font-headline-md text-headline-md text-text-primary leading-tight">Labor Cost 19.4%</h2>
+</div>
+</div>
+<div class="text-right">
+<span class="font-mono-metric-sm text-mono-metric-sm text-status-urgent block">-$5,800</span>
+<span class="font-label-badge text-label-badge text-text-tertiary uppercase">+6.4% Lag vs Par</span>
+</div>
+</div>
+<!-- AI Recommendation Box -->
+<div class="bg-surface-container p-space-sm rounded-lg flex flex-col gap-space-xs">
+<div class="flex items-center justify-between">
+<span class="font-label-badge text-label-badge text-accent-cyan-bright font-bold uppercase flex items-center gap-1">
+<span class="material-symbols-outlined text-body-sm">bolt</span>
+          HYDRAFORGE SMART CUT ALGORITHM
+        </span>
+<span class="font-label-badge text-label-badge text-status-ready font-bold">RECOVERS 13.9% TARGET</span>
+</div>
+<p class="font-body-sm text-body-sm text-text-secondary leading-snug">
+        Floor velocity plateaued at 84%. Recommending immediate voluntary release for 2 shift personnel:
+      </p>
+<!-- Staff Recommendation Pills -->
+<div class="grid grid-cols-2 gap-space-xs pt-1">
+<div class="bg-surface-container-low p-space-xs rounded flex items-center justify-between">
+<div class="min-w-0 pr-1">
+<span class="font-body-sm text-body-sm font-bold text-text-primary block truncate">Zach A.</span>
+<span class="font-label-badge text-label-badge text-text-tertiary uppercase">Floor Server • 6.2h</span>
+</div>
+<span class="material-symbols-outlined text-accent-purple-glow text-body-sm">schedule</span>
+</div>
+<div class="bg-surface-container-low p-space-xs rounded flex items-center justify-between">
+<div class="min-w-0 pr-1">
+<span class="font-body-sm text-body-sm font-bold text-text-primary block truncate">Jordan B.</span>
+<span class="font-label-badge text-label-badge text-text-tertiary uppercase">Dish Prep • 7.5h</span>
+</div>
+<span class="material-symbols-outlined text-accent-purple-glow text-body-sm">schedule</span>
+</div>
+</div>
+</div>
+<!-- Savings Callout -->
+<div class="flex items-center justify-between px-space-xs">
+<span class="font-label-badge text-label-badge text-text-secondary">Projected Savings: <strong class="text-status-ready font-mono-metric-sm text-mono-metric-sm">+$320 / Shift</strong></span>
+<span class="font-label-badge text-label-badge text-text-tertiary">Direct Automated PUSH</span>
+</div>
+<!-- Action Button -->
+<button class="w-full h-12 bg-gradient-to-r from-accent-purple-glow to-secondary text-bg-canvas rounded-lg font-body-base text-body-base font-bold flex items-center justify-center gap-space-xs active:scale-95 transition-all shadow-lg shadow-accent-purple-glow/20" id="broadcast-early-cut-btn" onclick="executeLaborCut()">
+<span class="material-symbols-outlined text-body-base">send</span>
+<span>Broadcast Voluntary Early Cut (SMS to 2 Staff)</span>
+</button>
+</div>
+<!-- SECTION 2: EXPEDITE & KDS BOTTLENECK PULSE -->
+<div class="bg-surface-container-high rounded-xl p-space-md flex flex-col gap-space-sm shadow-md">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-status-urgent text-body-lg">microwave</span>
+<span class="font-label-eyebrow text-label-eyebrow text-text-primary uppercase tracking-wider">KDS Bottleneck Pulse</span>
+</div>
+<span class="font-label-badge text-label-badge bg-status-urgent/20 text-status-urgent px-space-xs py-0.5 rounded font-bold uppercase">1 Overdue Grill</span>
+</div>
+<div class="bg-surface-container-lowest p-space-sm rounded-lg flex items-center justify-between">
+<div class="flex items-center gap-space-sm min-w-0">
+<div class="w-10 h-10 rounded-lg bg-surface-container-high flex flex-col items-center justify-center flex-shrink-0">
+<span class="font-label-badge text-label-badge text-text-tertiary uppercase">TBL</span>
+<span class="font-mono-metric-md text-mono-metric-md text-text-primary font-bold">07</span>
+</div>
+<div class="min-w-0">
+<div class="flex items-center gap-space-xs">
+<span class="font-body-base text-body-base font-bold text-text-primary truncate">Prime Dry-Aged Ribeye</span>
+<span class="font-label-badge text-label-badge text-status-urgent font-bold bg-status-urgent/15 px-1 rounded">18m 42s</span>
+</div>
+<span class="font-body-sm text-body-sm text-text-secondary truncate block">Grill Pass Station • Chef Vance Expediting</span>
+</div>
+</div>
+<button class="bg-surface-variant hover:bg-surface-bright text-text-primary px-space-sm py-space-xs rounded-lg font-label-badge text-label-badge font-bold uppercase flex-shrink-0 flex items-center gap-1 active:scale-95 transition-all" onclick="pageExpediter(this)">
+<span class="material-symbols-outlined text-body-sm text-accent-cyan-bright">campaign</span>
+<span>Page Lead</span>
+</button>
+</div>
+</div>
+<!-- SECTION 3: VIP DOOR ARRIVAL RADAR -->
+<div class="bg-surface-container-high rounded-xl p-space-md flex flex-col gap-space-sm shadow-xl relative">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="relative flex h-2.5 w-2.5">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-status-caution opacity-75"></span>
+<span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-status-caution"></span>
+</span>
+<span class="font-label-eyebrow text-label-eyebrow text-status-caution uppercase tracking-wider">GEOFENCE RADAR ALERT</span>
+</div>
+<span class="font-mono-metric-sm text-mono-metric-sm text-accent-cyan-bright bg-surface-container px-space-xs py-0.5 rounded font-bold">ETA 3 MINS</span>
+</div>
+<!-- Guest Card -->
+<div class="bg-surface-container p-space-sm rounded-lg flex flex-col gap-space-xs">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs min-w-0">
+<div class="w-10 h-10 rounded-full bg-surface-bright flex items-center justify-center text-text-primary font-bold flex-shrink-0">
+            MS
+          </div>
+<div class="min-w-0">
+<div class="flex items-center gap-space-xs">
+<span class="font-body-base text-body-base font-bold text-text-primary truncate">Marcus Sterling</span>
+<span class="font-label-badge text-label-badge text-on-primary-fixed bg-primary-fixed px-1.5 py-0.5 rounded font-bold uppercase">TIER 1 VIP</span>
+</div>
+<span class="font-body-sm text-body-sm text-text-tertiary truncate block">Private Equity • Table 03 (Booth Reserved)</span>
+</div>
+</div>
+</div>
+<!-- Live Directives -->
+<div class="bg-surface-container-low p-space-xs rounded flex flex-col gap-1 mt-1">
+<div class="flex items-center gap-1.5 text-status-urgent">
+<span class="material-symbols-outlined text-body-sm flex-shrink-0">report_problem</span>
+<span class="font-label-badge text-label-badge font-bold uppercase truncate">SEVERE PEANUT ALLERGY (ALL DISHES FLAGGED)</span>
+</div>
+<div class="flex items-center gap-1.5 text-accent-cyan-bright">
+<span class="material-symbols-outlined text-body-sm flex-shrink-0">wine_bar</span>
+<span class="font-body-sm text-body-sm text-text-secondary truncate">Preference: 2019 Caymus Cabernet • Dom Pérignon pour queued</span>
+</div>
+</div>
+</div>
+<button class="w-full h-11 bg-surface-container-lowest hover:bg-surface-bright text-text-primary rounded-lg font-body-base text-body-base font-bold flex items-center justify-center gap-space-xs active:scale-95 transition-all" id="alert-host-btn" onclick="alertHostAndServer(this)">
+<span class="material-symbols-outlined text-accent-purple-glow text-body-base">notifications_active</span>
+<span>Alert Hostess &amp; Lead Server (Table 03)</span>
+</button>
+</div>
+<!-- SECTION 4: LIVE 86-ITEM QUICK TOGGLE SHELF -->
+<div class="flex flex-col gap-space-xs">
+<div class="flex items-center justify-between px-space-xs">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-accent-cyan-bright text-body-base">toggle_on</span>
+<span class="font-label-eyebrow text-label-eyebrow text-text-primary uppercase tracking-wider">Fast 86 Multi-System Shelf</span>
+</div>
+<span class="font-label-badge text-label-badge text-text-tertiary uppercase">500ms Push to POS &amp; Voice AI</span>
+</div>
+<!-- Toggle Grid -->
+<div class="grid grid-cols-1 gap-space-xs">
+<!-- Item 1: Sea Bass -->
+<div class="bg-surface-container-high p-space-sm rounded-lg flex items-center justify-between shadow-sm">
+<div class="flex items-center gap-space-sm min-w-0">
+<div class="w-8 h-8 rounded bg-surface-container flex items-center justify-center flex-shrink-0">
+<span class="material-symbols-outlined text-text-secondary text-body-base">set_meal</span>
+</div>
+<div class="min-w-0">
+<span class="font-body-base text-body-base font-bold text-text-primary block truncate">Chilean Sea Bass Filet</span>
+<span class="font-label-badge text-label-badge text-status-caution font-bold uppercase">1 Portion Critical</span>
+</div>
+</div>
+<button class="bg-status-urgent hover:bg-status-urgent/80 text-text-primary px-space-md py-space-xs rounded-lg font-label-badge text-label-badge font-bold uppercase active:scale-95 transition-all flex items-center gap-1" id="toggle-seabass" onclick="toggleItem86('Sea Bass', this)">
+<span class="material-symbols-outlined text-body-sm">block</span>
+<span>86 It Now</span>
+</button>
+</div>
+<!-- Item 2: Burrata -->
+<div class="bg-surface-container-high p-space-sm rounded-lg flex items-center justify-between shadow-sm">
+<div class="flex items-center gap-space-sm min-w-0">
+<div class="w-8 h-8 rounded bg-surface-container flex items-center justify-center flex-shrink-0">
+<span class="material-symbols-outlined text-text-secondary text-body-base">lunch_dining</span>
+</div>
+<div class="min-w-0">
+<span class="font-body-base text-body-base font-bold text-text-primary block truncate">Artisan Burrata Pugliese</span>
+<span class="font-label-badge text-label-badge text-status-caution font-bold uppercase">3 Portions Left (Par Warning)</span>
+</div>
+</div>
+<button class="bg-surface-variant hover:bg-status-urgent text-text-secondary hover:text-text-primary px-space-md py-space-xs rounded-lg font-label-badge text-label-badge font-bold uppercase active:scale-95 transition-all flex items-center gap-1" id="toggle-burrata" onclick="toggleItem86('Burrata', this)">
+<span class="material-symbols-outlined text-body-sm">block</span>
+<span>86 Item</span>
+</button>
+</div>
+<!-- Item 3: Wagyu Strips -->
+<div class="bg-surface-container-high p-space-sm rounded-lg flex items-center justify-between shadow-sm">
+<div class="flex items-center gap-space-sm min-w-0">
+<div class="w-8 h-8 rounded bg-surface-container flex items-center justify-center flex-shrink-0">
+<span class="material-symbols-outlined text-text-secondary text-body-base">restaurant</span>
+</div>
+<div class="min-w-0">
+<span class="font-body-base text-body-base font-bold text-text-primary block truncate">A5 Miyazaki Wagyu Strips</span>
+<span class="font-label-badge text-label-badge text-status-ready font-bold uppercase">12 Portions in stock</span>
+</div>
+</div>
+<button class="bg-surface-variant hover:bg-status-urgent text-text-secondary hover:text-text-primary px-space-md py-space-xs rounded-lg font-label-badge text-label-badge font-bold uppercase active:scale-95 transition-all flex items-center gap-1" id="toggle-wagyu" onclick="toggleItem86('Wagyu Strips', this)">
+<span class="material-symbols-outlined text-body-sm">block</span>
+<span>86 Item</span>
+</button>
+</div>
+</div>
+</div>
+<!-- TOAST NOTIFICATION DOCK (Hidden by default, triggered by actions) -->
+<div class="fixed bottom-4 left-4 right-4 z-50 transform translate-y-24 opacity-0 transition-all duration-300 pointer-events-none flex justify-center" id="status-toast">
+<div class="bg-surface-bright text-text-primary px-space-md py-space-sm rounded-xl shadow-2xl flex items-center gap-space-sm max-w-sm w-full">
+<span class="material-symbols-outlined text-accent-cyan-bright" id="toast-icon">check_circle</span>
+<span class="font-body-sm text-body-sm font-semibold truncate flex-1" id="toast-message">Action Dispatched to Nodes</span>
+</div>
+</div>
+</div>
+<script>
+  function showToast(message, iconName = 'check_circle') {
+    const toast = document.getElementById('status-toast');
+    const msgEl = document.getElementById('toast-message');
+    const iconEl = document.getElementById('toast-icon');
+    if (!toast) return;
+    
+    msgEl.textContent = message;
+    iconEl.textContent = iconName;
+    toast.classList.remove('translate-y-24', 'opacity-0');
+    toast.classList.add('translate-y-0', 'opacity-100');
+    
+    setTimeout(() => {
+      toast.classList.remove('translate-y-0', 'opacity-100');
+      toast.classList.add('translate-y-24', 'opacity-0');
+    }, 2400);
+  }
+
+  function switchCompanionView(view) {
+    const tabs = ['floor', 'labor', 'vip'];
+    tabs.forEach(t => {
+      const el = document.getElementById('tab-' + t);
+      if (el) {
+        if (t === view) {
+          el.className = "py-space-xs text-center font-label-badge text-label-badge rounded font-bold transition-all bg-gradient-to-r from-accent-purple-glow to-secondary text-bg-canvas shadow";
+        } else {
+          el.className = "py-space-xs text-center font-label-badge text-label-badge rounded font-bold transition-all text-text-tertiary hover:text-text-primary";
+        }
+      }
+    });
+
+    if (view === 'labor') {
+      const card = document.getElementById('labor-cut-card');
+      card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      showToast('Switched to Labor Telemetry View', 'finance');
+    } else if (view === 'vip') {
+      showToast('Proximity Radar: 1 Geofenced VIP active', 'radar');
+    } else {
+      showToast('Viewing All Live Floor Nodes', 'grid_view');
+    }
+  }
+
+  function executeLaborCut() {
+    const btn = document.getElementById('broadcast-early-cut-btn');
+    btn.disabled = true;
+    btn.classList.remove('bg-gradient-to-r', 'from-accent-purple-glow', 'to-secondary');
+    btn.classList.add('bg-status-ready', 'text-text-primary');
+    btn.innerHTML = `<span class="material-symbols-outlined text-body-base animate-spin">refresh</span><span>Transmitting SMS Offers...</span>`;
+    
+    setTimeout(() => {
+      btn.innerHTML = `<span class="material-symbols-outlined text-body-base">check</span><span>Sent Voluntary Cuts to Zach & Jordan</span>`;
+      showToast('SMS Dispatched! Projected +$320 shift savings locked', 'send_and_archive');
+    }, 700);
+  }
+
+  function toggleItem86(item, btn) {
+    if (btn.classList.contains('bg-status-urgent')) {
+      btn.classList.remove('bg-status-urgent', 'text-text-primary');
+      btn.classList.add('bg-surface-variant', 'text-text-secondary');
+      btn.innerHTML = `<span class="material-symbols-outlined text-body-sm">block</span><span>86 Item</span>`;
+      showToast(item + ' restored to Active Menu & Voice AI', 'restaurant_menu');
+    } else {
+      btn.classList.remove('bg-surface-variant', 'text-text-secondary');
+      btn.classList.add('bg-status-urgent', 'text-text-primary');
+      btn.innerHTML = `<span class="material-symbols-outlined text-body-sm">check</span><span>86&#39;D NOW</span>`;
+      showToast(item + " successfully 86'd across POS & Voice AI in 240ms", 'block');
+    }
+  }
+
+  function alertHostAndServer(btn) {
+    btn.classList.add('bg-surface-variant', 'text-accent-cyan-bright');
+    btn.innerHTML = `<span class="material-symbols-outlined text-body-base animate-pulse">done_all</span><span>Alert Sent to Hostess + Lead Server</span>`;
+    showToast('Host stand notified: Champagne pour ready at Bar Pass', 'campaign');
+  }
+
+  function pageExpediter(btn) {
+    btn.classList.add('bg-status-ready', 'text-text-primary');
+    btn.innerHTML = `<span class="material-symbols-outlined text-body-sm">done</span><span>Paged Vance</span>`;
+    showToast('Haptic pulse sent to Chef Vance smartwatch', 'vibration');
+  }
+</script></main></div></body></html>

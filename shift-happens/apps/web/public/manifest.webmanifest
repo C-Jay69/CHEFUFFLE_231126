@@ -1,0 +1,20 @@
+{
+  "name": "SHIFT HAPPENS! by HYDRAFORGE AI",
+  "short_name": "SHIFT HAPPENS",
+  "description": "Real-time restaurant operations engine for POS, KDS, floor plan, labor, inventory, reservations and voice AI.",
+  "start_url": "/pos",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#000000",
+  "theme_color": "#0c1322",
+  "categories": ["business", "productivity"],
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
