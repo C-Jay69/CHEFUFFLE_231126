@@ -12,7 +12,7 @@ import { showToast } from '@/lib/toast';
 import type { KdsTicket } from '@/lib/types';
 
 type StationId = 'expo' | 'grill' | 'saute_fryer' | 'cold_larder' | 'pastry_dessert' | 'bar';
-type BumpAction = 'bump' | 'hold' | 'recall';
+type BumpAction = 'bump' | 'hold' | 'recall' | 'fire';
 
 interface KdsTicketsResponse {
   tickets: KdsTicket[];
@@ -38,6 +38,14 @@ const ITEM_STATION_LABEL: Record<string, string> = {
   cold_larder: 'Cold',
   pastry_dessert: 'Pastry',
   bar: 'Bar',
+};
+
+const COURSE_ORDER = ['starter', 'main', 'dessert', 'drink'] as const;
+const COURSE_LABEL: Record<string, string> = {
+  starter: 'Starters',
+  main: 'Mains',
+  dessert: 'Desserts',
+  drink: 'Drinks',
 };
 
 const cardTone: Record<KdsTicket['priority'], string> = {
@@ -77,6 +85,14 @@ function TicketCard({
   const priority = priorityFor(seconds);
   const tone = overdue ? 'urgent' : priority;
   const busy = Boolean(busyAction);
+  const courseGroups = COURSE_ORDER.map((course) => ({
+    course,
+    items: ticket.items.filter((item) => (item.course || 'main') === course),
+  })).filter((group) => group.items.length > 0);
+  const heldCount = ticket.items.filter((item) => item.prepStatus === 'held').length;
+  const hasFireable = ticket.items.some(
+    (item) => item.prepStatus !== 'bumped' && item.prepStatus !== 'held',
+  );
 
   return (
     <article
@@ -119,6 +135,7 @@ function TicketCard({
           </span>
           <span className="font-label-badge text-label-badge uppercase text-text-tertiary">
             {ticket.itemCount} items
+            {heldCount > 0 ? ` · ${heldCount} held` : ''}
           </span>
         </div>
       </div>
@@ -148,67 +165,118 @@ function TicketCard({
         </div>
       )}
 
-      <ul className="flex flex-col divide-y divide-border-subtle/80">
-        {ticket.items.map((item) => {
-          const bumped = item.prepStatus === 'bumped';
-          return (
-            <li key={item.id} className="flex items-start gap-2 py-2 first:pt-0 last:pb-0">
-              <span
-                className={cn(
-                  'mt-0.5 inline-flex h-6 min-w-[28px] shrink-0 items-center justify-center rounded-md px-1 font-mono-metric-sm text-mono-metric-sm',
-                  bumped
-                    ? 'bg-surface-container text-text-subtle line-through'
-                    : 'bg-surface-container-highest text-text-primary',
-                )}
-              >
-                {item.quantity}×
-              </span>
-              <div className="min-w-0 flex-1">
-                <div className="flex items-start justify-between gap-2">
-                  <span
-                    className={cn(
-                      'font-body-base text-body-base font-semibold',
-                      bumped ? 'text-text-tertiary line-through' : 'text-text-primary',
-                    )}
-                  >
-                    {item.name}
-                  </span>
-                  {item.seat && (
-                    <span className="shrink-0 rounded bg-surface-container px-1.5 py-0.5 font-label-badge text-label-badge text-text-tertiary">
-                      Seat {item.seat}
-                    </span>
-                  )}
-                </div>
-                {item.modifiers.length > 0 && (
-                  <p className="font-body-sm text-body-sm text-text-tertiary">
-                    {item.modifiers.map((modifier) => modifier.name).join(' · ')}
-                  </p>
-                )}
-                {item.notes && (
-                  <p className="mt-0.5 flex items-start gap-1 font-body-sm text-body-sm font-semibold text-status-caution">
-                    <span className="material-symbols-outlined text-body-base">sticky_note_2</span>
-                    {item.notes}
-                  </p>
-                )}
-                {showStation && (
-                  <span className="mt-1 inline-block rounded bg-surface-container px-1.5 py-0.5 font-label-badge text-label-badge uppercase text-text-tertiary">
-                    {ITEM_STATION_LABEL[item.station] ?? titleCase(item.station)}
-                  </span>
-                )}
+      <div className="flex flex-col">
+        {courseGroups.map((group, groupIndex) => (
+          <div key={group.course} className="flex flex-col">
+            {groupIndex > 0 && (
+              <div className="my-1 flex items-center gap-2" aria-label="Course break">
+                <span className="h-px flex-1 bg-border-subtle" />
+                <span className="font-mono-metric-sm text-[10px] tracking-widest text-text-subtle">
+                  **************
+                </span>
+                <span className="h-px flex-1 bg-border-subtle" />
               </div>
-            </li>
-          );
-        })}
-      </ul>
+            )}
+            <div className="flex items-center justify-between gap-2 py-1">
+              <span className="font-label-badge text-label-badge font-bold uppercase tracking-widest text-text-tertiary">
+                {COURSE_LABEL[group.course] ?? titleCase(group.course)}
+              </span>
+              {group.course === 'main' &&
+                group.items.some((item) => item.prepStatus === 'held') && (
+                  <Badge tone="caution">Held until starters clear</Badge>
+                )}
+            </div>
+            <ul className="flex flex-col divide-y divide-border-subtle/80">
+              {group.items.map((item) => {
+                const bumped = item.prepStatus === 'bumped';
+                const held = item.prepStatus === 'held';
+                return (
+                  <li key={item.id} className="flex items-start gap-2 py-2 first:pt-0 last:pb-0">
+                    <span
+                      className={cn(
+                        'mt-0.5 inline-flex h-6 min-w-[28px] shrink-0 items-center justify-center rounded-md px-1 font-mono-metric-sm text-mono-metric-sm',
+                        bumped
+                          ? 'bg-surface-container text-text-subtle line-through'
+                          : held
+                            ? 'bg-status-caution/20 text-status-caution'
+                            : 'bg-surface-container-highest text-text-primary',
+                      )}
+                    >
+                      {item.quantity}×
+                    </span>
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-start justify-between gap-2">
+                        <span
+                          className={cn(
+                            'font-body-base text-body-base font-semibold',
+                            bumped
+                              ? 'text-text-tertiary line-through'
+                              : held
+                                ? 'text-status-caution'
+                                : 'text-text-primary',
+                          )}
+                        >
+                          {item.name}
+                        </span>
+                        <div className="flex shrink-0 items-center gap-1">
+                          {held && (
+                            <span className="rounded bg-status-caution/15 px-1.5 py-0.5 font-label-badge text-label-badge font-bold uppercase text-status-caution">
+                              Hold
+                            </span>
+                          )}
+                          {item.seat && (
+                            <span className="rounded bg-surface-container px-1.5 py-0.5 font-label-badge text-label-badge text-text-tertiary">
+                              Seat {item.seat}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                      {item.modifiers.length > 0 && (
+                        <p className="font-body-sm text-body-sm text-text-tertiary">
+                          {item.modifiers.map((modifier) => modifier.name).join(' · ')}
+                        </p>
+                      )}
+                      {item.notes && (
+                        <p className="mt-0.5 flex items-start gap-1 font-body-sm text-body-sm font-semibold text-status-caution">
+                          <span className="material-symbols-outlined text-body-base">sticky_note_2</span>
+                          {item.notes}
+                        </p>
+                      )}
+                      {showStation && (
+                        <span className="mt-1 inline-block rounded bg-surface-container px-1.5 py-0.5 font-label-badge text-label-badge uppercase text-text-tertiary">
+                          {ITEM_STATION_LABEL[item.station] ?? titleCase(item.station)}
+                        </span>
+                      )}
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        ))}
+      </div>
 
       <div className="mt-auto grid grid-cols-2 gap-2 border-t border-border-subtle pt-3">
+        {heldCount > 0 && (
+          <Button
+            variant="primary"
+            size="lg"
+            className="col-span-2"
+            icon="local_fire_department"
+            loading={busyAction === 'fire'}
+            disabled={busy && busyAction !== 'fire'}
+            onClick={() => onAction('fire')}
+          >
+            Fire mains
+          </Button>
+        )}
         <Button
           variant="success"
           size="lg"
           className="col-span-2"
           icon="check"
           loading={busyAction === 'bump'}
-          disabled={busy && busyAction !== 'bump'}
+          disabled={!hasFireable || (busy && busyAction !== 'bump')}
           onClick={() => onAction('bump')}
         >
           Bump
@@ -378,6 +446,8 @@ export default function KdsPage() {
           );
           await new Promise((resolve) => setTimeout(resolve, 220));
           setTickets((current) => current.filter((entry) => entry.id !== ticket.id));
+        } else if (action === 'fire') {
+          showToast(`Ticket #${ticket.orderNumber} — mains fired.`, 'success');
         } else if (action === 'hold') {
           showToast(`Ticket #${ticket.orderNumber} held.`, 'info');
         } else {

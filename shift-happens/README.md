@@ -85,6 +85,29 @@ for the terminal session. This is a demo gate, not a hardened auth boundary.
 6. The order posts to `/api/orders` with each item’s `seat` set to its guest
    number, so the KDS and floor plan update immediately.
 
+### Courses: starters versus mains
+
+Every item carries a course derived from its menu category:
+
+* **Starters** fire immediately (Start + Share, Eats, Features, Sushi, Greens).
+* **Food mains are held** when the same round contains starters (Bowls, Casual
+  Favourites, Burgers, Mains, Steaks).
+* **Desserts and drinks** fire immediately.
+
+The server sees a `**************` divider between courses in the guest cart and
+review. The KDS ticket shows the same break, marks held mains as **HOLD**, and
+exposes a **Fire mains** button. Mains are not sent to the line until the chef
+fires them after the starters are cleared; bumping the mains then advances the
+table as usual. A mains-only round fires immediately.
+
+### Menu source
+
+The seed uses the actual **Cactus Club Coal Harbour** food & drinks menu from
+`MENU/Cactus themed_my_food&drinks_men u_creation.md`: 44 menu items across 15
+categories, with real prices, descriptions, kitchen stations, 85 stock
+ingredients and recipes. Prices using the source CSV’s `¼`, `½`, `¾` notation
+are converted to decimals.
+
 `/pos` is the manager view now: **Open Checks** lists active tickets so a
 manager can add items (deep-links back into Serve), settle, or void. The full
 ordering cockpit was removed.
@@ -307,6 +330,9 @@ See `.env.example`. Every integration degrades gracefully:
 * The seeded labor window is a **rolling four-hour trading window** so the
   cockpit stays useful before the first sale; the prompt's pseudocode used the
   current hour. Both `currentHourSales` and `windowSales` are returned.
+* The seed’s stock levels and recipes are mapped from the menu descriptions, so
+  ordering a dish depletes the relevant ingredients; the quantities are
+  demo-grade rather than a full costing exercise.
 * Menu Studio images are intentionally unmapped in the seed. Paste an image URL
   in the dish preview and press **Publish dish**; coverage updates live.
 * `/login` is a PIN terminal demo; all seeded staff share the roster PINs shown

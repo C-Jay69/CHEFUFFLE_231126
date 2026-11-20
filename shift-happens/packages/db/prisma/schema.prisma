@@ -259,6 +259,7 @@ model OrderItem {
   modifiers    Json        @default("[]")
   prepStatus   String      @default("firing") @map("prep_status") @db.VarChar(50)
   station      KdsStation
+  course       String      @default("main") @db.VarChar(20)
   seat         String?     @db.VarChar(20)
   notes        String?     @db.VarChar(500)
   bumpedAt     DateTime?   @map("bumped_at") @db.Timestamptz

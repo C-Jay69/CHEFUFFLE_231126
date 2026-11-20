@@ -1,7 +1,8 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { COURSE_LABELS, courseForCategory, type Course } from '@/lib/course';
 import AppShell from '@/components/AppShell';
 import { api } from '@/lib/api';
 import { playChime } from '@/lib/audio';
@@ -22,7 +23,10 @@ interface CartLine {
   guest: number;
   item: MenuItem;
   quantity: number;
+  course: Course;
 }
+
+const COURSE_ORDER: Course[] = ['starter', 'main', 'dessert', 'drink'];
 
 type Step = 'map' | 'order' | 'review' | 'sent';
 
@@ -183,6 +187,9 @@ export default function ServePage() {
   );
   const gratuity = gratuityApplies ? subtotal * GRATUITY_RATE : 0;
   const total = subtotal + tax + gratuity;
+  const hasStarters = lines.some((line) => line.course === 'starter');
+  const hasMains = lines.some((line) => line.course === 'main');
+  const mainsWillHold = hasStarters && hasMains;
 
   const addItem = (item: MenuItem) => {
     if (item.is86ed || item.stockStatus === 'out') {
@@ -205,6 +212,7 @@ export default function ServePage() {
           guest: activeGuest,
           item,
           quantity: 1,
+          course: courseForCategory(item.category, item.name),
         },
       ];
     });
@@ -259,6 +267,7 @@ export default function ServePage() {
             menuItemId: line.item.id,
             quantity: line.quantity,
             modifiers: [],
+            course: line.course,
             seat: String(line.guest),
           })),
           allergyNotes: notes.trim() || null,
@@ -528,6 +537,7 @@ export default function ServePage() {
                 <div className="grid grid-cols-2 gap-space-sm md:grid-cols-3">
                   {filteredMenu.map((item) => {
                     const out = item.is86ed || item.stockStatus === 'out';
+                    const course = courseForCategory(item.category, item.name);
                     const inGuest = lines.some(
                       (line) => line.item.id === item.id && line.guest === activeGuest,
                     );
@@ -556,16 +566,21 @@ export default function ServePage() {
                         <p className="mt-1 line-clamp-2 font-body-sm text-body-sm text-text-tertiary">
                           {item.description}
                         </p>
-                        <div className="mt-space-sm flex items-center justify-between border-t border-border-subtle pt-1.5">
-                          <span className={`rounded px-1.5 py-0.5 font-label-badge text-label-badge uppercase font-bold ${
-                            out
-                              ? 'bg-status-urgent/20 text-status-urgent'
-                              : item.stockStatus === 'low'
-                                ? 'bg-status-caution/20 text-status-caution'
-                                : 'bg-status-ready/15 text-status-ready'
-                          }`}>
-                            {out ? 'Unavailable' : item.stockStatus === 'low' ? `Only ${item.portionsLeft} left` : 'In stock'}
-                          </span>
+                        <div className="mt-space-sm flex items-center justify-between gap-1 border-t border-border-subtle pt-1.5">
+                          <div className="flex items-center gap-1">
+                            <span className={`rounded px-1.5 py-0.5 font-label-badge text-label-badge uppercase font-bold ${
+                              out
+                                ? 'bg-status-urgent/20 text-status-urgent'
+                                : item.stockStatus === 'low'
+                                  ? 'bg-status-caution/20 text-status-caution'
+                                  : 'bg-status-ready/15 text-status-ready'
+                            }`}>
+                              {out ? 'Unavailable' : item.stockStatus === 'low' ? `Only ${item.portionsLeft} left` : 'In stock'}
+                            </span>
+                            <span className="rounded bg-surface-container px-1.5 py-0.5 font-label-badge text-label-badge uppercase text-text-subtle">
+                              {COURSE_LABELS[course]}
+                            </span>
+                          </div>
                           <span className={`material-symbols-outlined text-body-base ${out ? 'text-text-subtle' : inGuest ? 'text-accent-cyan-bright' : 'text-secondary'}`}>
                             {out ? 'do_not_disturb_on' : inGuest ? 'add_circle' : 'add_circle_outline'}
                           </span>
@@ -599,41 +614,60 @@ export default function ServePage() {
                         </span>
                       </div>
                     ) : (
-                      guestLines(activeGuest).map((line) => (
-                        <div
-                          key={line.key}
-                          className="flex items-center gap-space-sm rounded-lg bg-surface-container p-space-sm"
-                        >
-                          <div className="flex min-w-0 flex-1 flex-col">
-                            <span className="truncate font-body-sm text-body-sm font-bold text-text-primary">
-                              {line.item.name}
-                            </span>
-                            <span className="font-mono-metric-sm text-mono-metric-sm text-text-tertiary">
-                              {money(line.item.price)} each
-                            </span>
+                      COURSE_ORDER.map((course) => {
+                        const courseLines = guestLines(activeGuest)
+                          .filter((line) => line.course === course)
+                          .sort((a, b) => a.item.name.localeCompare(b.item.name));
+                        if (courseLines.length === 0) return null;
+                        return (
+                          <div key={course} className="flex flex-col gap-1">
+                            <div className="flex items-center gap-2 pt-1">
+                              <span className="font-label-badge text-label-badge font-bold uppercase tracking-widest text-text-tertiary">
+                                {COURSE_LABELS[course]}
+                              </span>
+                              <span className="h-px flex-1 bg-border-subtle" />
+                              <span className="font-mono-metric-sm text-[10px] tracking-widest text-text-subtle">
+                                **************
+                              </span>
+                            </div>
+                            {courseLines.map((line) => (
+                              <div
+                                key={line.key}
+                                className="flex items-center gap-space-sm rounded-lg bg-surface-container p-space-sm"
+                              >
+                                <div className="flex min-w-0 flex-1 flex-col">
+                                  <span className="truncate font-body-sm text-body-sm font-bold text-text-primary">
+                                    {line.item.name}
+                                  </span>
+                                  <span className="font-mono-metric-sm text-mono-metric-sm text-text-tertiary">
+                                    {money(line.item.price)} each
+                                  </span>
+                                </div>
+                                <div className="flex items-center gap-1">
+                                  <button
+                                    onClick={() => adjustLine(line.key, -1)}
+                                    className="flex h-9 w-9 items-center justify-center rounded-lg bg-surface-variant font-bold text-text-primary hover:bg-surface-bright"
+                                  >
+                                    −
+                                  </button>
+                                  <span className="w-6 text-center font-mono-metric-md text-mono-metric-md font-bold text-text-primary">
+                                    {line.quantity}
+                                  </span>
+                                  <button
+                                    onClick={() => adjustLine(line.key, 1)}
+                                    className="flex h-9 w-9 items-center justify-center rounded-lg bg-surface-variant font-bold text-text-primary hover:bg-surface-bright"
+                                  >
+                                    +
+                                  </button>
+                                </div>
+                                <span className="w-16 text-right font-mono-metric-sm text-mono-metric-sm font-bold text-text-primary">
+                                  {money(line.item.price * line.quantity)}
+                                </span>
+                              </div>
+                            ))}
                           </div>
-                          <div className="flex items-center gap-1">
-                            <button
-                              onClick={() => adjustLine(line.key, -1)}
-                              className="flex h-9 w-9 items-center justify-center rounded-lg bg-surface-variant font-bold text-text-primary hover:bg-surface-bright"
-                            >
-                              −
-                            </button>
-                            <span className="w-6 text-center font-mono-metric-md text-mono-metric-md font-bold text-text-primary">
-                              {line.quantity}
-                            </span>
-                            <button
-                              onClick={() => adjustLine(line.key, 1)}
-                              className="flex h-9 w-9 items-center justify-center rounded-lg bg-surface-variant font-bold text-text-primary hover:bg-surface-bright"
-                            >
-                              +
-                            </button>
-                          </div>
-                          <span className="w-16 text-right font-mono-metric-sm text-mono-metric-sm font-bold text-text-primary">
-                            {money(line.item.price * line.quantity)}
-                          </span>
-                        </div>
-                      ))
+                        );
+                      })
                     )}
                   </div>
 
@@ -739,19 +773,38 @@ export default function ServePage() {
                           No items for this guest.
                         </span>
                       ) : (
-                        guestLines(guest).map((line) => (
-                          <div
-                            key={line.key}
-                            className="flex items-center justify-between rounded-lg bg-surface-container px-space-sm py-1.5"
-                          >
-                            <span className="font-body-sm text-body-sm text-text-primary">
-                              {line.quantity} × {line.item.name}
-                            </span>
-                            <span className="font-mono-metric-sm text-mono-metric-sm text-text-secondary">
-                              {money(line.item.price * line.quantity)}
-                            </span>
-                          </div>
-                        ))
+                        COURSE_ORDER.map((course) => {
+                          const courseLines = guestLines(guest)
+                            .filter((line) => line.course === course)
+                            .sort((a, b) => a.item.name.localeCompare(b.item.name));
+                          if (courseLines.length === 0) return null;
+                          return (
+                            <div key={course} className="flex flex-col gap-1">
+                              <div className="flex items-center gap-2 pt-1">
+                                <span className="font-label-badge text-label-badge font-bold uppercase tracking-widest text-text-tertiary">
+                                  {COURSE_LABELS[course]}
+                                </span>
+                                <span className="h-px flex-1 bg-border-subtle" />
+                                <span className="font-mono-metric-sm text-[10px] tracking-widest text-text-subtle">
+                                  **************
+                                </span>
+                              </div>
+                              {courseLines.map((line) => (
+                                <div
+                                  key={line.key}
+                                  className="flex items-center justify-between rounded-lg bg-surface-container px-space-sm py-1.5"
+                                >
+                                  <span className="font-body-sm text-body-sm text-text-primary">
+                                    {line.quantity} × {line.item.name}
+                                  </span>
+                                  <span className="font-mono-metric-sm text-mono-metric-sm text-text-secondary">
+                                    {money(line.item.price * line.quantity)}
+                                  </span>
+                                </div>
+                              ))}
+                            </div>
+                          );
+                        })
                       )}
                     </div>
                   </div>
@@ -798,6 +851,17 @@ export default function ServePage() {
                       </span>
                     </div>
                   </div>
+                  {mainsWillHold && (
+                    <div className="rounded-xl border border-status-caution/30 bg-status-caution/10 p-3">
+                      <span className="font-label-badge text-label-badge font-bold uppercase text-status-caution">
+                        Course hold
+                      </span>
+                      <p className="mt-0.5 font-body-sm text-body-sm text-text-secondary">
+                        Starters fire now. Mains are held on the kitchen screen until
+                        the chef clears the starters with <strong>Fire mains</strong>.
+                      </p>
+                    </div>
+                  )}
                   <button
                     data-action="send-order"
                     onClick={() => void sendOrder()}

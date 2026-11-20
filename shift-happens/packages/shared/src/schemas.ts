@@ -13,6 +13,7 @@ export const uuidSchema = z.string().uuid();
 export const orderItemInputSchema = z.object({
   menuItemId: uuidSchema,
   quantity: z.number().int().min(1).max(50).default(1),
+  course: z.enum(['starter', 'main', 'dessert', 'drink']).optional(),
   modifiers: z
     .array(
       z.object({

@@ -172,15 +172,21 @@ async function main() {
 
   console.log('→ menu');
   const categories = [
-    { n: 1, name: 'Chef Favorites', order: 1 },
-    { n: 2, name: 'Shareables', order: 2 },
-    { n: 3, name: 'Woodfired Pizza', order: 3 },
-    { n: 4, name: 'Burgers & Mains', order: 4 },
-    { n: 5, name: 'Cocktails & Spirits', order: 5 },
-    { n: 6, name: 'Curated Wines', order: 6 },
-    { n: 7, name: 'Coffee & Cold Tea', order: 7 },
-    { n: 8, name: 'Craft Desserts', order: 8 },
-    { n: 9, name: 'Raw Bar & Cold Larder', order: 9 },
+    { n: 1, name: 'Frozen Cocktails', order: 1 },
+    { n: 2, name: 'Margaritas', order: 2 },
+    { n: 3, name: 'Wine', order: 3 },
+    { n: 4, name: 'Eats', order: 4 },
+    { n: 5, name: 'Drinks', order: 5 },
+    { n: 6, name: 'Features', order: 6 },
+    { n: 7, name: 'Sushi', order: 7 },
+    { n: 8, name: 'Start + Share', order: 8 },
+    { n: 9, name: 'Bowls', order: 9 },
+    { n: 10, name: 'Greens', order: 10 },
+    { n: 11, name: 'Casual Favourites', order: 11 },
+    { n: 12, name: 'Burgers', order: 12 },
+    { n: 13, name: 'Mains', order: 13 },
+    { n: 14, name: 'Steaks', order: 14 },
+    { n: 15, name: 'Desserts', order: 15 },
   ];
   await prisma.menuCategory.createMany({
     data: categories.map((c) => ({
@@ -188,31 +194,55 @@ async function main() {
     })),
   });
 
+  // The actual Cactus Club Coal Harbour food & drinks menu.
   const menuSeed: Array<{
     n: number; cat: number; name: string; desc: string; price: string;
     station: KdsStation; prep: number; tags: string[]; is86?: boolean; reason?: string;
   }> = [
-    { n: 1, cat: 3, name: 'Margherita D.O.P.', desc: 'San Marzano tomatoes, buffalo mozzarella, fresh basil, cold-pressed EVOO.', price: '22.00', station: 'grill', prep: 780, tags: ['Vegetarian', 'Chef Favorite'] },
-    { n: 2, cat: 4, name: 'Wagyu Smash Burger', desc: 'Double American Wagyu patties, smoked gouda, caramelized onion jam, brioche.', price: '24.50', station: 'grill', prep: 720, tags: ['Popular'] },
-    { n: 3, cat: 2, name: 'Crispy Calamari', desc: 'Point Judith squid, shaved jalapeños, smoked lemon aioli, fresh parsley.', price: '18.00', station: 'saute_fryer', prep: 540, tags: ['Shareable'] },
-    { n: 4, cat: 1, name: 'Truffle Cacio e Pepe', desc: 'Housemade tonnarelli, toasted black peppercorn medley, aged Pecorino Romano.', price: '26.00', station: 'saute_fryer', prep: 660, tags: ['Vegetarian'], is86: true, reason: 'Black Winter Truffle out of stock' },
-    { n: 5, cat: 2, name: 'Charred Broccolini', desc: 'Calabrian chili crisps, roasted garlic purée, lemon zest, toasted almonds.', price: '14.00', station: 'saute_fryer', prep: 480, tags: ['Vegan', 'GF'] },
-    { n: 6, cat: 5, name: 'Hibiscus Paloma', desc: 'Casamigos Blanco, organic hibiscus infusion, fresh lime, grapefruit soda, pink salt.', price: '17.00', station: 'bar', prep: 240, tags: ['Popular', 'Cocktail'] },
-    { n: 7, cat: 2, name: 'Truffle Parmesan Fries', desc: 'Triple-cooked fries, white truffle oil, shaved pecorino, chive.', price: '16.00', station: 'saute_fryer', prep: 420, tags: ['Shareable', 'Vegetarian'] },
-    { n: 8, cat: 4, name: 'Crispy Chicken Sandwich', desc: 'Buttermilk-brined chicken, spicy chipotle mayo, pickles, sesame bun.', price: '19.50', station: 'saute_fryer', prep: 720, tags: ['Spicy'] },
-    { n: 9, cat: 3, name: 'Woodfired Margherita', desc: 'Buffalo burrata, hot honey drizzle, San Marzano base, woodfired crust.', price: '27.00', station: 'grill', prep: 780, tags: ['Chef Favorite'] },
-    { n: 10, cat: 5, name: 'Smoked Old Fashioned', desc: 'Woodford Bourbon Reserve, king cube, orange peel, hickory smoke.', price: '22.00', station: 'bar', prep: 300, tags: ['Cocktail'] },
-    { n: 11, cat: 4, name: '28-Day Dry-Aged Ribeye', desc: 'Prime ribeye, compound rosemary garlic butter, charred lemon.', price: '68.00', station: 'grill', prep: 1080, tags: ['GF', 'Signature'] },
-    { n: 12, cat: 4, name: 'Pan-Seared Seabass', desc: 'Chilean seabass, saffron beurre blanc, fennel confit.', price: '38.00', station: 'saute_fryer', prep: 900, tags: ['GF'] },
-    { n: 13, cat: 4, name: 'Wagyu Striploin', desc: 'A5 wagyu striploin, bone marrow crust, pommes purée.', price: '72.00', station: 'grill', prep: 1020, tags: ['Signature'] },
-    { n: 14, cat: 9, name: 'Artisan Burrata', desc: 'Pugliese burrata, heirloom tomatoes, basil oil, aged balsamic.', price: '18.00', station: 'cold_larder', prep: 300, tags: ['Vegetarian', 'GF'] },
-    { n: 15, cat: 9, name: 'Yellowfin Tuna Crudo', desc: 'Yellowfin tuna, yuzu ponzu, radish, micro shiso.', price: '21.00', station: 'cold_larder', prep: 360, tags: ['GF', 'Raw'] },
-    { n: 16, cat: 8, name: 'Basque Cheesecake', desc: 'Burnt Basque cheesecake, macerated berries, crème fraîche.', price: '14.00', station: 'pastry_dessert', prep: 240, tags: ['Dessert'] },
-    { n: 17, cat: 8, name: 'Dark Chocolate Torte', desc: '70% Valrhona torte, olive oil, flaky sea salt.', price: '15.00', station: 'pastry_dessert', prep: 240, tags: ['Dessert'] },
-    { n: 18, cat: 5, name: 'Espresso Martini', desc: 'Cold brew, vodka, coffee liqueur, vanilla bean.', price: '16.00', station: 'bar', prep: 240, tags: ['Cocktail'] },
-    { n: 19, cat: 6, name: 'Sommelier Pour — Sangiovese', desc: 'Brunello di Montalcino, 6oz pour.', price: '19.00', station: 'bar', prep: 120, tags: ['Wine'] },
-    { n: 20, cat: 7, name: 'Cold Brew Tonic', desc: 'Single-origin cold brew, tonic, orange twist.', price: '9.00', station: 'bar', prep: 180, tags: ['NA'] },
-    { n: 21, cat: 1, name: 'Black Winter Truffle Supplement', desc: 'Fresh-shaved black winter truffle, per gram.', price: '12.00', station: 'cold_larder', prep: 120, tags: ['Supplement'], is86: true, reason: 'Black Winter Truffle out of stock' },
+    { n: 1, cat: 1, name: "Piña Colada", desc: "Appleton 8 rum, white rum, maui gold pineapple, toasted coconut, pineapple chip (dairy-free).", price: '14.00', station: 'bar', prep: 180, tags: ["Cocktail", "Dairy-Free"] },
+    { n: 2, cat: 1, name: "The Bellini", desc: "White rum, peach schnapps, sparkling wine, peach and sangria.", price: '12.25', station: 'bar', prep: 180, tags: ["Cocktail"] },
+    { n: 3, cat: 2, name: "Blood N Blanco", desc: "Casamigos blanco, triple sec, mango soju, blood orange, lime, orange.", price: '17.25', station: 'bar', prep: 180, tags: ["Cocktail"] },
+    { n: 4, cat: 2, name: "Sugar-Free Margarita", desc: "Cazadores reposado, fresh lime, zero sugar, all the flavour.", price: '14.25', station: 'bar', prep: 180, tags: ["Cocktail", "Sugar-Free"] },
+    { n: 5, cat: 2, name: "Jalapeño Margarita", desc: "Cazadores reposado tequila, triple sec, lime, jalapeño, cilantro, smoked chili salt.", price: '13.50', station: 'bar', prep: 180, tags: ["Cocktail", "Spicy"] },
+    { n: 6, cat: 2, name: "Classic Margarita", desc: "Cazadores reposado, triple sec, fresh lime.", price: '13.50', station: 'bar', prep: 180, tags: ["Cocktail"] },
+    { n: 7, cat: 3, name: "Codorníu Brut Clasico Cava (200ml)", desc: "Penedes, Spain.", price: '15.50', station: 'bar', prep: 120, tags: ["Wine", "Sparkling"] },
+    { n: 8, cat: 3, name: "Blue Mountain Gold Label Sparkling", desc: "South Okanagan, BC.", price: '85.00', station: 'bar', prep: 120, tags: ["Wine", "Sparkling"] },
+    { n: 9, cat: 3, name: "Veuve Clicquot Champagne", desc: "Champagne, France.", price: '523.00', station: 'bar', prep: 120, tags: ["Wine", "Champagne"] },
+    { n: 10, cat: 3, name: "Dom Pérignon Champagne", desc: "Champagne, France.", price: '523.00', station: 'bar', prep: 120, tags: ["Wine", "Champagne"] },
+    { n: 11, cat: 4, name: "Sea Salted Fries", desc: "Crispy golden fries with sea salt.", price: '5.50', station: 'saute_fryer', prep: 420, tags: ["Starter", "GF"] },
+    { n: 12, cat: 4, name: "London Fog Crème Brûlée", desc: "Blueberries, brown sugar, vanilla.", price: '7.50', station: 'pastry_dessert', prep: 420, tags: ["Dessert"] },
+    { n: 13, cat: 4, name: "Avocado Dip", desc: "Pico de gallo, feta, chili oil, cilantro, fresh lime.", price: '8.00', station: 'cold_larder', prep: 420, tags: ["Starter", "Vegetarian"] },
+    { n: 14, cat: 4, name: "Truffle Fries", desc: "Truffle, herbs, grana padano, garlic aioli.", price: '8.50', station: 'saute_fryer', prep: 420, tags: ["Starter", "Vegetarian"] },
+    { n: 15, cat: 4, name: "New York Cheesecake", desc: "Graham cracker crust, raspberry compote, hand-whipped cream.", price: '8.50', station: 'pastry_dessert', prep: 420, tags: ["Dessert"] },
+    { n: 16, cat: 5, name: "Sunset Soda", desc: "Absolut mandrin vodka, soda, bellini slush.", price: '5.00', station: 'bar', prep: 180, tags: ["Cocktail"] },
+    { n: 17, cat: 5, name: "The Bellini", desc: "White rum, peach schnapps, sparkling wine, peach and sangria.", price: '8.00', station: 'bar', prep: 180, tags: ["Cocktail"] },
+    { n: 18, cat: 5, name: "Heineken", desc: "Netherlands (5%).", price: '10.00', station: 'bar', prep: 180, tags: ["Beer"] },
+    { n: 19, cat: 5, name: "Piña Colada", desc: "Appleton 8 rum, white rum, maui gold pineapple, toasted coconut, pineapple chip (dairy-free).", price: '10.00', station: 'bar', prep: 180, tags: ["Cocktail", "Dairy-Free"] },
+    { n: 20, cat: 6, name: "Tuna Temaki", desc: "Ocean wise™ ahi, toasted sesame, cucumber, serrano pepper, nori, green onion.", price: '13.75', station: 'cold_larder', prep: 420, tags: ["Starter", "Raw"] },
+    { n: 21, cat: 6, name: "Creole Crab & Spinach Dip", desc: "Corn tortilla chips.", price: '18.00', station: 'saute_fryer', prep: 420, tags: ["Starter"] },
+    { n: 22, cat: 7, name: "Salmon Aburi", desc: "Flame torched salmon, crispy tempura, serrano pepper, soy glaze.", price: '20.25', station: 'cold_larder', prep: 360, tags: ["Starter", "Raw"] },
+    { n: 23, cat: 7, name: "Prawn Crunch", desc: "Crispy prawn, mango, avocado, sesame soy paper, sriracha mayo, soy glaze.", price: '19.75', station: 'cold_larder', prep: 360, tags: ["Starter", "Raw"] },
+    { n: 24, cat: 8, name: "Warm Pull Apart Brioche", desc: "Baked in-house, honey truffle chive butter.", price: '10.00', station: 'pastry_dessert', prep: 420, tags: ["Starter", "Vegetarian"] },
+    { n: 25, cat: 8, name: "Scallop & Prawn Ceviche", desc: "Leche de tigre, avocado, chili, thai basil, mint, cilantro, corn tortilla chips.", price: '19.00', station: 'cold_larder', prep: 420, tags: ["Starter", "Raw"] },
+    { n: 26, cat: 8, name: "Truffle Fries", desc: "Truffle, herbs, grana padano, garlic aioli.", price: '13.25', station: 'cold_larder', prep: 420, tags: ["Starter", "Vegetarian"] },
+    { n: 27, cat: 9, name: "The Med Bowl", desc: "Turmeric rice, beetroot hummus, kale, cucumber, red onion, tomatoes, macedonian feta, kalamata olives, yogurt, pickled red cabbage.", price: '25.25', station: 'cold_larder', prep: 420, tags: ["Main", "Vegetarian"] },
+    { n: 28, cat: 9, name: "Tuna Poke Bowl", desc: "Sesame ginger ocean wise™ ahi, jasmine rice, mango, cucumber, avocado, edamame, ginger, radish, crispy tempura.", price: '24.75', station: 'cold_larder', prep: 420, tags: ["Main", "Raw"] },
+    { n: 29, cat: 9, name: "Crispy Tofu Bowl", desc: "Soy chili tofu, jasmine rice, mango, cucumber, avocado, edamame, ginger, radish.", price: '19.75', station: 'saute_fryer', prep: 420, tags: ["Main", "Vegan"] },
+    { n: 30, cat: 10, name: "Green Goddess Salad", desc: "Avocado, tomatoes, macedonian feta, spicy pecans, egg, green goddess dressing.", price: '19.00', station: 'cold_larder', prep: 300, tags: ["Starter", "Vegetarian"] },
+    { n: 31, cat: 10, name: "Lemongrass Noodle Salad", desc: "Rice noodles, fresh greens, peanuts, avocado, green papaya, cabbage, thai basil, tomato, sweet chili nuoc cham.", price: '17.25', station: 'cold_larder', prep: 300, tags: ["Starter", "Vegetarian"] },
+    { n: 32, cat: 10, name: "Avocado Kale Salad", desc: "Crispy chickpeas, grilled avocado, pickled red cabbage, fennel chili crumb, grana padano, lemon garlic dressing.", price: '17.75', station: 'cold_larder', prep: 300, tags: ["Starter", "Vegetarian"] },
+    { n: 33, cat: 11, name: "Chipotle Chicken Tacos", desc: "Achiote chicken, pineapple, cilantro, avocado crema.", price: '18.75', station: 'grill', prep: 540, tags: ["Main", "Spicy"] },
+    { n: 34, cat: 11, name: "Baja Fish Tacos", desc: "Beer battered ocean wise™ pacific cod, pico de gallo, pickled cabbage, valentina garlic mayo, avocado crema, flour tortilla.", price: '21.00', station: 'saute_fryer', prep: 540, tags: ["Main"] },
+    { n: 35, cat: 11, name: "Rob’s Crispy Chicken Sandwich", desc: "Spicy panko-crusted chicken, swiss cheese, sambal mayo, lettuce, tomato, pickle, onion, sea salted fries.", price: '24.00', station: 'saute_fryer', prep: 540, tags: ["Main", "Spicy"] },
+    { n: 36, cat: 12, name: "The Feenie Burger", desc: "Smashed certified angus beef®, sautéed mushrooms, aged cheddar, smoked bacon, red relish, mayonnaise, ketchup, mustard.", price: '26.50', station: 'grill', prep: 600, tags: ["Main", "Signature"] },
+    { n: 37, cat: 12, name: "Cheddar Bacon Burger", desc: "Smashed certified angus beef®, aged cheddar, smoked bacon, red relish, mayonnaise, ketchup, mustard.", price: '25.00', station: 'grill', prep: 600, tags: ["Main"] },
+    { n: 38, cat: 12, name: "Gardenburger®", desc: "Aged cheddar, red relish, mayonnaise, ketchup, mustard, brioche bun.", price: '23.00', station: 'grill', prep: 600, tags: ["Main", "Vegetarian"] },
+    { n: 39, cat: 13, name: "Thai Red Curry", desc: "Red coconut curry, jasmine rice, bok choy, baby corn, bamboo shoots, crispy rice, thai basil, cilantro, chilis.", price: '24.25', station: 'saute_fryer', prep: 720, tags: ["Main", "Spicy"] },
+    { n: 40, cat: 13, name: "Truffle Parmesan Chicken", desc: "Parmesan crusted chicken breast, roasted and grilled mushrooms, potato gnocchi, truffle mushroom cream sauce, arugula.", price: '28.25', station: 'saute_fryer', prep: 720, tags: ["Main", "Signature"] },
+    { n: 41, cat: 14, name: "Peppercorn Ribeye", desc: "45 day aged 14oz CAB® ribeye, brandy peppercorn sauce, buttered mashed potatoes, seasonal vegetables.", price: '68.50', station: 'grill', prep: 900, tags: ["Main", "Signature", "GF"] },
+    { n: 42, cat: 15, name: "London Fog Crème Brûlée", desc: "Blueberries, brown sugar, vanilla.", price: '11.25', station: 'pastry_dessert', prep: 240, tags: ["Dessert"] },
+    { n: 43, cat: 15, name: "Key Lime Pie", desc: "Freshly squeezed key limes, graham cracker crust, hand-whipped cream.", price: '13.25', station: 'pastry_dessert', prep: 240, tags: ["Dessert"] },
+    { n: 44, cat: 15, name: "New York Cheesecake", desc: "Graham cracker crust, raspberry compote, hand-whipped cream.", price: '13.50', station: 'pastry_dessert', prep: 240, tags: ["Dessert"] },
   ];
   await prisma.menuItem.createMany({
     data: menuSeed.map((m) => ({
@@ -235,26 +265,91 @@ async function main() {
     n: number; name: string; cat: string; stock: string; par: string; unit: string;
     cost: string; supplier: string; reorder: string;
   }> = [
-    { n: 1, name: '28-Day Dry-Aged Ribeye', cat: 'Proteins', stock: '8.500', par: '20.000', unit: 'kg', cost: '42.00', supplier: 'Prime Meats Co.', reorder: '6.000' },
-    { n: 2, name: 'American Wagyu Patties', cat: 'Proteins', stock: '42.000', par: '80.000', unit: 'piece', cost: '6.50', supplier: 'Prime Meats Co.', reorder: '20.000' },
-    { n: 3, name: 'Chicken Breast', cat: 'Proteins', stock: '18.000', par: '40.000', unit: 'kg', cost: '9.00', supplier: 'Halal Poultry Direct', reorder: '12.000' },
-    { n: 4, name: 'Point Judith Squid', cat: 'Proteins', stock: '3.200', par: '15.000', unit: 'kg', cost: '14.00', supplier: 'Atlantic Fish Co.', reorder: '5.000' },
-    { n: 5, name: 'Chilean Seabass', cat: 'Proteins', stock: '6.000', par: '12.000', unit: 'kg', cost: '31.00', supplier: 'Atlantic Fish Co.', reorder: '4.000' },
-    { n: 6, name: 'Buffalo Mozzarella', cat: 'Dairy & Cheeses', stock: '6.500', par: '18.000', unit: 'kg', cost: '12.00', supplier: 'Latteria Dairy', reorder: '5.000' },
-    { n: 7, name: 'Artisan Burrata', cat: 'Dairy & Cheeses', stock: '3.000', par: '24.000', unit: 'piece', cost: '4.50', supplier: 'Latteria Dairy', reorder: '8.000' },
-    { n: 8, name: 'Aged Pecorino Romano', cat: 'Dairy & Cheeses', stock: '4.000', par: '10.000', unit: 'kg', cost: '23.00', supplier: 'Latteria Dairy', reorder: '3.000' },
-    { n: 9, name: 'Smoked Gouda', cat: 'Dairy & Cheeses', stock: '5.500', par: '12.000', unit: 'kg', cost: '14.00', supplier: 'Latteria Dairy', reorder: '3.000' },
-    { n: 10, name: 'Black Winter Truffle', cat: 'Produce', stock: '0.000', par: '2.000', unit: 'kg', cost: '850.00', supplier: 'Tartufi Italia', reorder: '0.500' },
-    { n: 11, name: 'San Marzano Tomatoes', cat: 'Produce', stock: '22.000', par: '30.000', unit: 'kg', cost: '4.20', supplier: 'Green Valley Produce', reorder: '10.000' },
-    { n: 12, name: 'Fresh Basil', cat: 'Produce', stock: '1.800', par: '5.000', unit: 'kg', cost: '18.00', supplier: 'Green Valley Produce', reorder: '2.000' },
-    { n: 13, name: 'Broccolini', cat: 'Produce', stock: '7.000', par: '12.000', unit: 'kg', cost: '6.50', supplier: 'Green Valley Produce', reorder: '4.000' },
-    { n: 14, name: 'Tipo 00 Flour', cat: 'Dry Goods', stock: '34.000', par: '50.000', unit: 'kg', cost: '2.10', supplier: 'Molino Rossi', reorder: '15.000' },
-    { n: 15, name: 'Tonnarelli Pasta', cat: 'Dry Goods', stock: '9.000', par: '20.000', unit: 'kg', cost: '5.80', supplier: 'Molino Rossi', reorder: '6.000' },
-    { n: 16, name: 'Canola Fry Oil', cat: 'Dry Goods', stock: '12.000', par: '30.000', unit: 'litre', cost: '3.40', supplier: 'Sysco', reorder: '10.000' },
-    { n: 17, name: 'Brioche Buns', cat: 'Packaging', stock: '24.000', par: '120.000', unit: 'piece', cost: '0.85', supplier: 'Sysco', reorder: '30.000' },
-    { n: 18, name: '8oz Kraft Containers', cat: 'Packaging', stock: '300.000', par: '500.000', unit: 'piece', cost: '0.22', supplier: 'EcoPack', reorder: '150.000' },
-    { n: 19, name: 'Casamigos Blanco', cat: 'Bar & Beverage', stock: '6.000', par: '12.000', unit: 'bottle', cost: '38.00', supplier: 'Southern Glazer', reorder: '3.000' },
-    { n: 20, name: 'Woodford Bourbon Reserve', cat: 'Bar & Beverage', stock: '8.000', par: '10.000', unit: 'bottle', cost: '44.00', supplier: 'Southern Glazer', reorder: '2.000' },
+    { n: 1, name: "Certified Angus Beef", cat: 'Proteins', stock: '28.000', par: '45.000', unit: 'kg', cost: '18.50', supplier: "Premium Meats", reorder: '10.000' },
+    { n: 2, name: "45-Day Aged Ribeye", cat: 'Proteins', stock: '22.000', par: '35.000', unit: 'kg', cost: '52.00', supplier: "Premium Meats", reorder: '8.000' },
+    { n: 3, name: "Chicken Breast", cat: 'Proteins', stock: '24.000', par: '40.000', unit: 'kg', cost: '9.00', supplier: "Poultry Direct", reorder: '12.000' },
+    { n: 4, name: "Ocean Wise Ahi Tuna", cat: 'Proteins', stock: '4.000', par: '15.000', unit: 'kg', cost: '34.00', supplier: "Pacific Fisheries", reorder: '5.000' },
+    { n: 5, name: "Pacific Cod", cat: 'Proteins', stock: '10.000', par: '20.000', unit: 'kg', cost: '14.00', supplier: "Pacific Fisheries", reorder: '6.000' },
+    { n: 6, name: "Scallops", cat: 'Proteins', stock: '5.000', par: '10.000', unit: 'kg', cost: '38.00', supplier: "Pacific Fisheries", reorder: '3.000' },
+    { n: 7, name: "Prawns", cat: 'Proteins', stock: '8.000', par: '15.000', unit: 'kg', cost: '24.00', supplier: "Pacific Fisheries", reorder: '5.000' },
+    { n: 8, name: "Smoked Bacon", cat: 'Proteins', stock: '6.000', par: '12.000', unit: 'kg', cost: '16.00', supplier: "Premium Meats", reorder: '3.000' },
+    { n: 9, name: "Tofu", cat: 'Proteins', stock: '9.000', par: '18.000', unit: 'kg', cost: '5.00', supplier: "Green Valley Produce", reorder: '4.000' },
+    { n: 10, name: "Eggs", cat: 'Proteins', stock: '120.000', par: '200.000', unit: 'piece', cost: '0.40', supplier: "Dairyland", reorder: '60.000' },
+    { n: 11, name: "Crab Meat", cat: 'Proteins', stock: '3.000', par: '8.000', unit: 'kg', cost: '28.00', supplier: "Pacific Fisheries", reorder: '2.000' },
+    { n: 12, name: "Salmon", cat: 'Proteins', stock: '7.000', par: '12.000', unit: 'kg', cost: '26.00', supplier: "Pacific Fisheries", reorder: '4.000' },
+    { n: 13, name: "Veggie Patty", cat: 'Proteins', stock: '18.000', par: '30.000', unit: 'piece', cost: '2.20', supplier: "Sysco", reorder: '10.000' },
+    { n: 14, name: "Grana Padano", cat: 'Dairy & Cheeses', stock: '5.000', par: '10.000', unit: 'kg', cost: '28.00', supplier: "Latteria Dairy", reorder: '2.000' },
+    { n: 15, name: "Aged Cheddar", cat: 'Dairy & Cheeses', stock: '7.000', par: '12.000', unit: 'kg', cost: '15.00', supplier: "Latteria Dairy", reorder: '3.000' },
+    { n: 16, name: "Macedonian Feta", cat: 'Dairy & Cheeses', stock: '4.000', par: '8.000', unit: 'kg', cost: '14.00', supplier: "Latteria Dairy", reorder: '2.000' },
+    { n: 17, name: "Swiss Cheese", cat: 'Dairy & Cheeses', stock: '3.000', par: '6.000', unit: 'kg', cost: '13.00', supplier: "Latteria Dairy", reorder: '1.500' },
+    { n: 18, name: "Butter", cat: 'Dairy & Cheeses', stock: '8.000', par: '15.000', unit: 'kg', cost: '8.00', supplier: "Dairyland", reorder: '3.000' },
+    { n: 19, name: "Cream", cat: 'Dairy & Cheeses', stock: '12.000', par: '20.000', unit: 'litre', cost: '4.00', supplier: "Dairyland", reorder: '5.000' },
+    { n: 20, name: "Greek Yogurt", cat: 'Dairy & Cheeses', stock: '5.000', par: '10.000', unit: 'kg', cost: '5.00', supplier: "Dairyland", reorder: '3.000' },
+    { n: 21, name: "Avocado", cat: 'Produce', stock: '15.000', par: '60.000', unit: 'piece', cost: '1.20', supplier: "Green Valley Produce", reorder: '20.000' },
+    { n: 22, name: "Tomatoes", cat: 'Produce', stock: '20.000', par: '30.000', unit: 'kg', cost: '4.00', supplier: "Green Valley Produce", reorder: '8.000' },
+    { n: 23, name: "Cucumber", cat: 'Produce', stock: '10.000', par: '20.000', unit: 'kg', cost: '2.50', supplier: "Green Valley Produce", reorder: '6.000' },
+    { n: 24, name: "Mango", cat: 'Produce', stock: '20.000', par: '40.000', unit: 'piece', cost: '1.50', supplier: "Green Valley Produce", reorder: '10.000' },
+    { n: 25, name: "Pineapple", cat: 'Produce', stock: '12.000', par: '25.000', unit: 'piece', cost: '3.00', supplier: "Green Valley Produce", reorder: '6.000' },
+    { n: 26, name: "Kale", cat: 'Produce', stock: '5.000', par: '10.000', unit: 'kg', cost: '4.00', supplier: "Green Valley Produce", reorder: '3.000' },
+    { n: 27, name: "Mixed Greens", cat: 'Produce', stock: '6.000', par: '12.000', unit: 'kg', cost: '5.00', supplier: "Green Valley Produce", reorder: '3.000' },
+    { n: 28, name: "Cilantro", cat: 'Produce', stock: '2.000', par: '5.000', unit: 'kg', cost: '12.00', supplier: "Green Valley Produce", reorder: '1.500' },
+    { n: 29, name: "Thai Basil", cat: 'Produce', stock: '1.500', par: '4.000', unit: 'kg', cost: '14.00', supplier: "Green Valley Produce", reorder: '1.000' },
+    { n: 30, name: "Jalapeño", cat: 'Produce', stock: '3.000', par: '6.000', unit: 'kg', cost: '6.00', supplier: "Green Valley Produce", reorder: '2.000' },
+    { n: 31, name: "Lime", cat: 'Produce', stock: '60.000', par: '120.000', unit: 'piece', cost: '0.40', supplier: "Green Valley Produce", reorder: '30.000' },
+    { n: 32, name: "Lemon", cat: 'Produce', stock: '40.000', par: '80.000', unit: 'piece', cost: '0.40', supplier: "Green Valley Produce", reorder: '20.000' },
+    { n: 33, name: "Red Onion", cat: 'Produce', stock: '8.000', par: '15.000', unit: 'kg', cost: '2.00', supplier: "Green Valley Produce", reorder: '4.000' },
+    { n: 34, name: "Garlic", cat: 'Produce', stock: '3.000', par: '6.000', unit: 'kg', cost: '8.00', supplier: "Green Valley Produce", reorder: '2.000' },
+    { n: 35, name: "Mushrooms", cat: 'Produce', stock: '6.000', par: '12.000', unit: 'kg', cost: '7.00', supplier: "Green Valley Produce", reorder: '3.000' },
+    { n: 36, name: "Potatoes", cat: 'Produce', stock: '40.000', par: '60.000', unit: 'kg', cost: '2.20', supplier: "Green Valley Produce", reorder: '15.000' },
+    { n: 37, name: "Blueberries", cat: 'Produce', stock: '4.000', par: '8.000', unit: 'kg', cost: '12.00', supplier: "Green Valley Produce", reorder: '2.000' },
+    { n: 38, name: "Key Limes", cat: 'Produce', stock: '50.000', par: '100.000', unit: 'piece', cost: '0.35', supplier: "Green Valley Produce", reorder: '25.000' },
+    { n: 39, name: "Bok Choy", cat: 'Produce', stock: '5.000', par: '10.000', unit: 'kg', cost: '4.00', supplier: "Green Valley Produce", reorder: '2.000' },
+    { n: 40, name: "Edamame", cat: 'Produce', stock: '4.000', par: '8.000', unit: 'kg', cost: '6.00', supplier: "Green Valley Produce", reorder: '2.000' },
+    { n: 41, name: "Red Cabbage", cat: 'Produce', stock: '5.000', par: '10.000', unit: 'kg', cost: '3.00', supplier: "Green Valley Produce", reorder: '2.000' },
+    { n: 42, name: "Green Papaya", cat: 'Produce', stock: '3.000', par: '6.000', unit: 'kg', cost: '5.00', supplier: "Green Valley Produce", reorder: '1.500' },
+    { n: 43, name: "Arugula", cat: 'Produce', stock: '3.000', par: '6.000', unit: 'kg', cost: '9.00', supplier: "Green Valley Produce", reorder: '1.500' },
+    { n: 44, name: "Seasonal Vegetables", cat: 'Produce', stock: '8.000', par: '15.000', unit: 'kg', cost: '5.00', supplier: "Green Valley Produce", reorder: '4.000' },
+    { n: 45, name: "Ginger", cat: 'Produce', stock: '2.000', par: '5.000', unit: 'kg', cost: '8.00', supplier: "Green Valley Produce", reorder: '1.000' },
+    { n: 46, name: "Radish", cat: 'Produce', stock: '2.000', par: '5.000', unit: 'kg', cost: '4.00', supplier: "Green Valley Produce", reorder: '1.000' },
+    { n: 47, name: "Jasmine Rice", cat: 'Dry Goods', stock: '25.000', par: '40.000', unit: 'kg', cost: '2.50', supplier: "Sysco", reorder: '10.000' },
+    { n: 48, name: "Turmeric Rice", cat: 'Dry Goods', stock: '10.000', par: '20.000', unit: 'kg', cost: '3.50', supplier: "Sysco", reorder: '5.000' },
+    { n: 49, name: "Rice Noodles", cat: 'Dry Goods', stock: '8.000', par: '15.000', unit: 'kg', cost: '4.00', supplier: "Sysco", reorder: '3.000' },
+    { n: 50, name: "Flour Tortilla", cat: 'Dry Goods', stock: '80.000', par: '150.000', unit: 'piece', cost: '0.50', supplier: "Sysco", reorder: '30.000' },
+    { n: 51, name: "Corn Tortilla Chips", cat: 'Dry Goods', stock: '6.000', par: '12.000', unit: 'kg', cost: '6.00', supplier: "Sysco", reorder: '3.000' },
+    { n: 52, name: "Brioche Bun", cat: 'Dry Goods', stock: '40.000', par: '100.000', unit: 'piece', cost: '1.20', supplier: "Sysco", reorder: '25.000' },
+    { n: 53, name: "Brioche Loaf", cat: 'Dry Goods', stock: '15.000', par: '30.000', unit: 'piece', cost: '4.50', supplier: "Sysco", reorder: '8.000' },
+    { n: 54, name: "Panko Breadcrumbs", cat: 'Dry Goods', stock: '5.000', par: '10.000', unit: 'kg', cost: '5.00', supplier: "Sysco", reorder: '2.000' },
+    { n: 55, name: "Tempura Batter", cat: 'Dry Goods', stock: '4.000', par: '8.000', unit: 'kg', cost: '5.00', supplier: "Sysco", reorder: '2.000' },
+    { n: 56, name: "Soy Sauce", cat: 'Dry Goods', stock: '6.000', par: '12.000', unit: 'litre', cost: '7.00', supplier: "Sysco", reorder: '3.000' },
+    { n: 57, name: "Truffle Oil", cat: 'Dry Goods', stock: '1.200', par: '3.000', unit: 'litre', cost: '65.00', supplier: "Tartufi Italia", reorder: '1.500' },
+    { n: 58, name: "Honey", cat: 'Dry Goods', stock: '4.000', par: '8.000', unit: 'kg', cost: '9.00', supplier: "Sysco", reorder: '2.000' },
+    { n: 59, name: "Graham Cracker Crust", cat: 'Dry Goods', stock: '20.000', par: '40.000', unit: 'piece', cost: '1.50', supplier: "Sysco", reorder: '10.000' },
+    { n: 60, name: "Sugar", cat: 'Dry Goods', stock: '15.000', par: '25.000', unit: 'kg', cost: '1.50', supplier: "Sysco", reorder: '8.000' },
+    { n: 61, name: "Coconut Milk", cat: 'Dry Goods', stock: '8.000', par: '15.000', unit: 'litre', cost: '4.50', supplier: "Sysco", reorder: '4.000' },
+    { n: 62, name: "Red Curry Paste", cat: 'Dry Goods', stock: '3.000', par: '6.000', unit: 'kg', cost: '9.00', supplier: "Sysco", reorder: '2.000' },
+    { n: 63, name: "Nori", cat: 'Dry Goods', stock: '50.000', par: '100.000', unit: 'piece', cost: '0.30', supplier: "Sysco", reorder: '20.000' },
+    { n: 64, name: "Burger Sauce", cat: 'Dry Goods', stock: '8.000', par: '15.000', unit: 'litre', cost: '4.00', supplier: "Sysco", reorder: '4.000' },
+    { n: 65, name: "Spicy Mayo", cat: 'Dry Goods', stock: '4.000', par: '8.000', unit: 'litre', cost: '5.00', supplier: "Sysco", reorder: '2.000' },
+    { n: 66, name: "Peanuts", cat: 'Dry Goods', stock: '2.000', par: '5.000', unit: 'kg', cost: '7.00', supplier: "Sysco", reorder: '1.000' },
+    { n: 67, name: "Chickpeas", cat: 'Dry Goods', stock: '5.000', par: '10.000', unit: 'kg', cost: '3.00', supplier: "Sysco", reorder: '2.000' },
+    { n: 68, name: "Potato Gnocchi", cat: 'Dry Goods', stock: '5.000', par: '10.000', unit: 'kg', cost: '6.00', supplier: "Sysco", reorder: '2.000' },
+    { n: 69, name: "Casamigos Blanco", cat: 'Bar & Beverage', stock: '5.000', par: '10.000', unit: 'bottle', cost: '38.00', supplier: "Southern Glazer", reorder: '2.000' },
+    { n: 70, name: "Cazadores Reposado", cat: 'Bar & Beverage', stock: '6.000', par: '10.000', unit: 'bottle', cost: '34.00', supplier: "Southern Glazer", reorder: '2.000' },
+    { n: 71, name: "Appleton 8 Rum", cat: 'Bar & Beverage', stock: '4.000', par: '8.000', unit: 'bottle', cost: '32.00', supplier: "Southern Glazer", reorder: '2.000' },
+    { n: 72, name: "White Rum", cat: 'Bar & Beverage', stock: '5.000', par: '8.000', unit: 'bottle', cost: '22.00', supplier: "Southern Glazer", reorder: '2.000' },
+    { n: 73, name: "Absolut Mandrin Vodka", cat: 'Bar & Beverage', stock: '4.000', par: '8.000', unit: 'bottle', cost: '28.00', supplier: "Southern Glazer", reorder: '2.000' },
+    { n: 74, name: "Triple Sec", cat: 'Bar & Beverage', stock: '4.000', par: '6.000', unit: 'bottle', cost: '18.00', supplier: "Southern Glazer", reorder: '1.000' },
+    { n: 75, name: "Peach Schnapps", cat: 'Bar & Beverage', stock: '3.000', par: '6.000', unit: 'bottle', cost: '16.00', supplier: "Southern Glazer", reorder: '1.000' },
+    { n: 76, name: "Sparkling Wine", cat: 'Bar & Beverage', stock: '10.000', par: '15.000', unit: 'bottle', cost: '18.00', supplier: "Southern Glazer", reorder: '4.000' },
+    { n: 77, name: "Cava", cat: 'Bar & Beverage', stock: '8.000', par: '12.000', unit: 'bottle', cost: '16.00', supplier: "Southern Glazer", reorder: '3.000' },
+    { n: 78, name: "Veuve Clicquot", cat: 'Bar & Beverage', stock: '3.000', par: '6.000', unit: 'bottle', cost: '240.00', supplier: "Southern Glazer", reorder: '1.000' },
+    { n: 79, name: "Dom Pérignon", cat: 'Bar & Beverage', stock: '2.000', par: '4.000', unit: 'bottle', cost: '300.00', supplier: "Southern Glazer", reorder: '1.000' },
+    { n: 80, name: "Heineken", cat: 'Bar & Beverage', stock: '24.000', par: '48.000', unit: 'bottle', cost: '3.50', supplier: "Southern Glazer", reorder: '12.000' },
+    { n: 81, name: "Soda Water", cat: 'Bar & Beverage', stock: '20.000', par: '30.000', unit: 'litre', cost: '1.50', supplier: "Sysco", reorder: '8.000' },
+    { n: 82, name: "Pineapple Juice", cat: 'Bar & Beverage', stock: '8.000', par: '15.000', unit: 'litre', cost: '3.00', supplier: "Sysco", reorder: '3.000' },
+    { n: 83, name: "Peach Purée", cat: 'Bar & Beverage', stock: '4.000', par: '8.000', unit: 'litre', cost: '5.00', supplier: "Sysco", reorder: '2.000' },
+    { n: 84, name: "Blood Orange Juice", cat: 'Bar & Beverage', stock: '5.000', par: '10.000', unit: 'litre', cost: '4.00', supplier: "Sysco", reorder: '2.000' },
+    { n: 85, name: "Mango Soju", cat: 'Bar & Beverage', stock: '4.000', par: '8.000', unit: 'bottle', cost: '20.00', supplier: "Southern Glazer", reorder: '2.000' },
   ];
   await prisma.ingredient.createMany({
     data: ingredientSeed.map((i) => ({
@@ -273,28 +368,52 @@ async function main() {
 
   console.log('→ recipes');
   const recipeMap: Record<number, Array<[number, string]>> = {
-    1: [[14, '0.250'], [11, '0.200'], [6, '0.150'], [12, '0.020']],
-    2: [[2, '1.000'], [17, '1.000'], [9, '0.050']],
-    3: [[4, '0.180'], [16, '0.050']],
-    4: [[15, '0.200'], [8, '0.060'], [10, '0.010']],
-    5: [[13, '0.180'], [16, '0.020']],
-    6: [[19, '0.060']],
-    7: [[16, '0.080'], [8, '0.020']],
-    8: [[3, '0.180'], [17, '1.000'], [16, '0.040']],
-    9: [[14, '0.250'], [11, '0.200'], [7, '1.000']],
-    10: [[20, '0.070']],
-    11: [[1, '0.350']],
-    12: [[5, '0.220'], [16, '0.030']],
-    13: [[1, '0.300']],
-    14: [[7, '1.000'], [11, '0.120'], [12, '0.010']],
-    15: [[5, '0.120']],
-    16: [[6, '0.080']],
-    17: [[6, '0.020']],
-    18: [[19, '0.040']],
-    19: [[20, '0.060']],
-    20: [[14, '0.010']],
-    21: [[10, '0.005']],
+    1: [[71, '0.060'], [72, '0.060'], [82, '0.100'], [61, '0.030']],
+    2: [[72, '0.050'], [75, '0.050'], [76, '0.080'], [83, '0.100']],
+    3: [[69, '0.060'], [74, '0.030'], [85, '0.040'], [84, '0.120'], [31, '1']],
+    4: [[70, '0.060'], [31, '2']],
+    5: [[70, '0.060'], [74, '0.030'], [31, '2'], [30, '0.010'], [28, '0.010']],
+    6: [[70, '0.060'], [74, '0.030'], [31, '2']],
+    7: [[77, '0.270']],
+    8: [[76, '1']],
+    9: [[78, '1']],
+    10: [[79, '1']],
+    11: [[36, '0.220']],
+    12: [[19, '0.100'], [37, '0.050'], [60, '0.020']],
+    13: [[21, '1'], [22, '0.080'], [16, '0.030'], [51, '0.050']],
+    14: [[36, '0.220'], [57, '0.010'], [14, '0.020']],
+    15: [[19, '0.080'], [59, '1']],
+    16: [[73, '0.060'], [81, '0.150'], [83, '0.050']],
+    17: [[72, '0.050'], [75, '0.040'], [76, '0.080'], [83, '0.100']],
+    18: [[80, '1']],
+    19: [[71, '0.060'], [72, '0.060'], [82, '0.100'], [61, '0.030']],
+    20: [[4, '0.080'], [63, '1'], [47, '0.050'], [23, '0.020'], [56, '0.010']],
+    21: [[11, '0.120'], [19, '0.080'], [51, '0.050']],
+    22: [[12, '0.120'], [55, '0.030'], [56, '0.020']],
+    23: [[7, '0.100'], [24, '0.500'], [21, '0.500'], [65, '0.020'], [56, '0.010']],
+    24: [[53, '0.500'], [58, '0.030'], [57, '0.010'], [18, '0.030']],
+    25: [[6, '0.080'], [7, '0.080'], [31, '2'], [21, '0.500'], [51, '0.040'], [29, '0.010']],
+    26: [[36, '0.350'], [57, '0.020'], [14, '0.030']],
+    27: [[48, '0.150'], [67, '0.080'], [26, '0.050'], [23, '0.050'], [22, '0.050'], [33, '0.020'], [16, '0.040'], [20, '0.040'], [41, '0.040']],
+    28: [[4, '0.120'], [47, '0.200'], [24, '0.500'], [23, '0.050'], [21, '0.500'], [40, '0.050'], [45, '0.010'], [55, '0.030'], [46, '0.020']],
+    29: [[9, '0.150'], [47, '0.200'], [24, '0.500'], [23, '0.050'], [21, '0.500'], [40, '0.050'], [45, '0.010'], [46, '0.020']],
+    30: [[27, '0.120'], [21, '1'], [22, '0.080'], [16, '0.040'], [66, '0.030'], [10, '1']],
+    31: [[49, '0.150'], [27, '0.080'], [66, '0.030'], [21, '0.500'], [42, '0.050'], [41, '0.040'], [29, '0.010'], [22, '0.050']],
+    32: [[67, '0.080'], [21, '1'], [41, '0.040'], [14, '0.030'], [32, '1'], [27, '0.100']],
+    33: [[3, '0.150'], [25, '0.100'], [28, '0.010'], [21, '0.500'], [50, '2']],
+    34: [[5, '0.150'], [50, '2'], [41, '0.040'], [21, '0.500'], [22, '0.050'], [55, '0.040']],
+    35: [[3, '0.150'], [54, '0.040'], [17, '0.030'], [52, '1'], [64, '0.020'], [36, '0.200']],
+    36: [[1, '0.180'], [15, '0.030'], [8, '0.030'], [52, '1'], [35, '0.040'], [34, '0.010']],
+    37: [[1, '0.180'], [15, '0.030'], [8, '0.030'], [52, '1']],
+    38: [[13, '1'], [15, '0.030'], [52, '1']],
+    39: [[62, '0.030'], [61, '0.150'], [47, '0.180'], [39, '0.060'], [44, '0.040'], [29, '0.010']],
+    40: [[3, '0.200'], [14, '0.040'], [35, '0.060'], [68, '0.150'], [19, '0.100'], [57, '0.015'], [43, '0.030'], [34, '0.010']],
+    41: [[2, '0.350'], [36, '0.200'], [18, '0.040'], [44, '0.100']],
+    42: [[19, '0.100'], [37, '0.050'], [60, '0.020']],
+    43: [[38, '2'], [59, '1'], [19, '0.070'], [60, '0.020']],
+    44: [[19, '0.080'], [59, '1'], [37, '0.040']],
   };
+
   for (const [menuN, ings] of Object.entries(recipeMap)) {
     const recipeId = RECIPE(Number(menuN));
     await prisma.recipe.create({ data: { id: recipeId, menuItemId: MENU(Number(menuN)) } });
@@ -364,119 +483,69 @@ async function main() {
   console.log('→ live orders + paid sales');
   type OrderSeed = {
     n: number; table: number; server: number; status: 'open' | 'sent_to_kitchen' | 'preparing' | 'ready_at_pass' | 'served' | 'paid' | 'void';
-    mins: number; items: Array<{ menu: number; qty: number; prep?: string; seat?: string; notes?: string }>;
+    mins: number; items: Array<{ menu: number; qty: number; seat?: string; notes?: string }>;
     allergy?: string; tip?: string;
   };
   const orderSeed: OrderSeed[] = [
-    {
-      n: 1, table: 3, server: 5, status: 'preparing', mins: 18,
-      allergy: 'Shellfish allergy at seat 3 — no cross-contact',
-      items: [
-        { menu: 11, qty: 2, seat: '1' },
-        { menu: 7, qty: 1, seat: '2' },
-        { menu: 11, qty: 1, seat: '3', notes: 'SHELLFISH ALLERGY — separate board' },
-        { menu: 6, qty: 2, seat: 'Bar' },
-      ],
-    },
-    {
-      n: 2, table: 7, server: 2, status: 'sent_to_kitchen', mins: 22,
-      allergy: 'Gluten intolerance — no bread service',
-      items: [
-        { menu: 12, qty: 2, seat: '1' },
-        { menu: 5, qty: 1, seat: '2' },
-        { menu: 16, qty: 2, seat: '3' },
-      ],
-    },
-    {
-      n: 3, table: 5, server: 13, status: 'sent_to_kitchen', mins: 11,
-      items: [
-        { menu: 1, qty: 1, seat: '1' },
-        { menu: 3, qty: 1, seat: '2' },
-        { menu: 19, qty: 2, seat: 'Bar' },
-      ],
-    },
-    {
-      n: 4, table: 12, server: 3, status: 'open', mins: 2,
-      items: [
-        { menu: 6, qty: 2, seat: '1' },
-        { menu: 14, qty: 1, seat: '2' },
-      ],
-    },
-    {
-      n: 5, table: 21, server: 3, status: 'sent_to_kitchen', mins: 8,
-      items: [
-        { menu: 2, qty: 2, seat: 'Bar' },
-        { menu: 6, qty: 1, seat: 'Bar' },
-      ],
-    },
-    {
-      n: 6, table: 1, server: 4, status: 'served', mins: 34,
-      items: [
-        { menu: 9, qty: 2, seat: '1' },
-        { menu: 10, qty: 2, seat: '2' },
-        { menu: 17, qty: 2, seat: '3' },
-      ],
-    },
-    {
-      n: 7, table: 15, server: 13, status: 'ready_at_pass', mins: 11,
-      items: [
-        { menu: 13, qty: 1, seat: '1' },
-        { menu: 12, qty: 1, seat: '2' },
-        { menu: 18, qty: 2, seat: 'Bar' },
-      ],
-    },
-    {
-      n: 8, table: 19, server: 3, status: 'paid', mins: 31, tip: '28.00',
-      items: [{ menu: 2, qty: 3, seat: 'Bar' }, { menu: 6, qty: 4, seat: 'Bar' }],
-    },
-    {
-      n: 9, table: 13, server: 4, status: 'paid', mins: 54, tip: '32.00',
-      items: [{ menu: 11, qty: 2, seat: '1' }, { menu: 13, qty: 1, seat: '2' }, { menu: 19, qty: 3, seat: '3' }],
-    },
-    {
-      n: 10, table: 7, server: 2, status: 'paid', mins: 88, tip: '24.00',
-      items: [{ menu: 8, qty: 2, seat: '1' }, { menu: 9, qty: 1, seat: '2' }, { menu: 18, qty: 2, seat: 'Bar' }],
-    },
-    {
-      n: 11, table: 16, server: 3, status: 'paid', mins: 76, tip: '18.00',
-      items: [{ menu: 1, qty: 2, seat: '1' }, { menu: 17, qty: 2, seat: '2' }, { menu: 20, qty: 2, seat: '2' }],
-    },
-    {
-      n: 12, table: 23, server: 12, status: 'paid', mins: 110, tip: '20.00',
-      items: [{ menu: 14, qty: 2, seat: '1' }, { menu: 15, qty: 1, seat: '2' }, { menu: 19, qty: 2, seat: 'Bar' }],
-    },
-    {
-      n: 13, table: 2, server: 2, status: 'paid', mins: 95, tip: '22.00',
-      items: [{ menu: 1, qty: 2, seat: '1' }, { menu: 6, qty: 2, seat: '2' }, { menu: 16, qty: 2, seat: '2' }],
-    },
-    {
-      n: 14, table: 4, server: 12, status: 'paid', mins: 65, tip: '20.00',
-      items: [{ menu: 2, qty: 2, seat: '1' }, { menu: 3, qty: 2, seat: '2' }, { menu: 17, qty: 2, seat: '2' }],
-    },
-    {
-      n: 15, table: 8, server: 4, status: 'paid', mins: 120, tip: '28.00',
-      items: [{ menu: 12, qty: 2, seat: '1' }, { menu: 15, qty: 2, seat: '2' }, { menu: 16, qty: 2, seat: '2' }],
-    },
-    {
-      n: 16, table: 18, server: 5, status: 'paid', mins: 140, tip: '16.00',
-      items: [{ menu: 8, qty: 2, seat: '1' }, { menu: 7, qty: 2, seat: '2' }, { menu: 20, qty: 2, seat: '2' }],
-    },
+    { n: 1, table: 3, server: 5, status: 'preparing', mins: 18, allergy: "Shellfish allergy at seat 3 — no cross-contact", items: [{ menu: 41, qty: 2, seat: '1' }, { menu: 26, qty: 1, seat: '2' }, { menu: 23, qty: 1, seat: '3', notes: "SHELLFISH ALLERGY — separate board" }, { menu: 6, qty: 2, seat: 'Bar' }] },
+    { n: 2, table: 7, server: 2, status: 'sent_to_kitchen', mins: 22, allergy: "Gluten intolerance — no bread service", items: [{ menu: 34, qty: 2, seat: '1' }, { menu: 30, qty: 1, seat: '2' }, { menu: 43, qty: 2, seat: '3' }] },
+    { n: 3, table: 5, server: 13, status: 'sent_to_kitchen', mins: 11, items: [{ menu: 36, qty: 1, seat: '1' }, { menu: 26, qty: 1, seat: '2' }, { menu: 6, qty: 2, seat: 'Bar' }] },
+    { n: 4, table: 12, server: 3, status: 'open', mins: 2, items: [{ menu: 16, qty: 2, seat: '1' }, { menu: 13, qty: 1, seat: '2' }] },
+    { n: 5, table: 21, server: 3, status: 'sent_to_kitchen', mins: 8, items: [{ menu: 37, qty: 2, seat: 'Bar' }, { menu: 6, qty: 1, seat: 'Bar' }] },
+    { n: 6, table: 1, server: 4, status: 'served', mins: 34, items: [{ menu: 41, qty: 2, seat: '1' }, { menu: 6, qty: 2, seat: '2' }, { menu: 43, qty: 2, seat: '3' }] },
+    { n: 7, table: 15, server: 13, status: 'ready_at_pass', mins: 11, items: [{ menu: 41, qty: 1, seat: '1' }, { menu: 40, qty: 1, seat: '2' }, { menu: 17, qty: 2, seat: 'Bar' }] },
+    { n: 8, table: 19, server: 3, status: 'paid', mins: 31, tip: '28.00', items: [{ menu: 37, qty: 3, seat: 'Bar' }, { menu: 6, qty: 4, seat: 'Bar' }] },
+    { n: 9, table: 13, server: 4, status: 'paid', mins: 54, tip: '32.00', items: [{ menu: 41, qty: 2, seat: '1' }, { menu: 40, qty: 1, seat: '2' }, { menu: 7, qty: 3, seat: '3' }] },
+    { n: 10, table: 7, server: 2, status: 'paid', mins: 88, tip: '24.00', items: [{ menu: 35, qty: 2, seat: '1' }, { menu: 36, qty: 1, seat: '2' }, { menu: 17, qty: 2, seat: 'Bar' }] },
+    { n: 11, table: 16, server: 3, status: 'paid', mins: 76, tip: '18.00', items: [{ menu: 6, qty: 2, seat: '1' }, { menu: 44, qty: 2, seat: '2' }, { menu: 16, qty: 2, seat: '2' }] },
+    { n: 12, table: 23, server: 12, status: 'paid', mins: 110, tip: '20.00', items: [{ menu: 28, qty: 2, seat: '1' }, { menu: 20, qty: 1, seat: '2' }, { menu: 7, qty: 2, seat: 'Bar' }] },
+    { n: 13, table: 2, server: 2, status: 'paid', mins: 95, tip: '22.00', items: [{ menu: 6, qty: 2, seat: '1' }, { menu: 13, qty: 2, seat: '2' }, { menu: 43, qty: 2, seat: '2' }] },
+    { n: 14, table: 4, server: 12, status: 'paid', mins: 65, tip: '20.00', items: [{ menu: 37, qty: 2, seat: '1' }, { menu: 14, qty: 2, seat: '2' }, { menu: 16, qty: 2, seat: '2' }] },
+    { n: 15, table: 8, server: 4, status: 'paid', mins: 120, tip: '28.00', items: [{ menu: 22, qty: 2, seat: '1' }, { menu: 20, qty: 2, seat: '2' }, { menu: 43, qty: 2, seat: '2' }] },
+    { n: 16, table: 18, server: 5, status: 'paid', mins: 140, tip: '16.00', items: [{ menu: 35, qty: 2, seat: '1' }, { menu: 14, qty: 2, seat: '2' }, { menu: 18, qty: 2, seat: '2' }] },
+    { n: 17, table: 6, server: 2, status: 'paid', mins: 105, tip: '24.00', items: [{ menu: 41, qty: 2, seat: '1' }, { menu: 7, qty: 2, seat: '1' }, { menu: 14, qty: 1, seat: '2' }] },
+    { n: 18, table: 10, server: 4, status: 'paid', mins: 97, tip: '22.00', items: [{ menu: 41, qty: 2, seat: '1' }, { menu: 6, qty: 2, seat: '2' }, { menu: 14, qty: 1, seat: '2' }] },
+    { n: 19, table: 22, server: 3, status: 'paid', mins: 70, tip: '18.00', items: [{ menu: 40, qty: 2, seat: '1' }, { menu: 7, qty: 2, seat: '1' }, { menu: 43, qty: 1, seat: '2' }] },
+    { n: 20, table: 24, server: 12, status: 'paid', mins: 80, tip: '24.00', items: [{ menu: 41, qty: 2, seat: '1' }, { menu: 26, qty: 2, seat: '2' }, { menu: 43, qty: 1, seat: '2' }] },
   ];
   const menuById = new Map(menuSeed.map((m) => [m.n, m]));
+  const categoryName = (cat: number) => categories.find((c) => c.n === cat)?.name ?? '';
+  const courseFor = (category: string, itemName: string) => {
+    const c = category.toLowerCase();
+    const n = itemName.toLowerCase();
+    if (c.includes('dessert')) return 'dessert';
+    if (c.includes('cocktail') || c.includes('margarita') || c.includes('wine') || c.includes('drink')) return 'drink';
+    if (c.includes('eats') && /(cheesecake|brûlée|brulee|crème|creme)/.test(n)) return 'dessert';
+    if (c.includes('start') || c.includes('share') || c.includes('eats') || c.includes('feature') || c.includes('sushi') || c.includes('green') || c.includes('salad')) return 'starter';
+    return 'main';
+  };
   for (const o of orderSeed) {
-    const items = o.items.map((it) => {
+    const prepared = o.items.map((it) => {
       const menu = menuById.get(it.menu)!;
+      return { it, menu, course: courseFor(categoryName(menu.cat), menu.name) };
+    });
+    const hasStarters = prepared.some((p) => p.course === 'starter');
+    const items = prepared.map(({ it, menu, course }) => {
+      const prepStatus =
+        o.status === 'paid' || o.status === 'ready_at_pass'
+          ? 'bumped'
+          : o.status === 'open'
+            ? 'firing'
+            : course === 'main' && hasStarters
+              ? 'held'
+              : 'firing';
       return {
         menuItemId: MENU(it.menu),
         quantity: it.qty,
         unitPrice: menu.price,
-        prepStatus: o.status === 'paid' ? 'bumped' : o.status === 'open' ? 'firing' : it.prep ?? 'firing',
+        prepStatus,
         station: menu.station,
+        course,
         seat: it.seat ?? null,
         notes: it.notes ?? null,
         modifiers: [],
         createdAt: minutesAgo(o.mins),
-        bumpedAt: o.status === 'paid' ? minutesAgo(Math.max(1, o.mins - 15)) : null,
+        bumpedAt: prepStatus === 'bumped' ? minutesAgo(Math.max(1, o.mins - 15)) : null,
       };
     });
     const subtotal = items.reduce((s, it) => s + Number(it.unitPrice) * it.quantity, 0);

@@ -56,6 +56,57 @@ export const ORDER_STATUSES = [
 ] as const;
 export type OrderStatus = (typeof ORDER_STATUSES)[number];
 
+export const COURSES = ['starter', 'main', 'dessert', 'drink'] as const;
+export type Course = (typeof COURSES)[number];
+
+export const COURSE_LABELS: Record<Course, string> = {
+  starter: 'Starter',
+  main: 'Main',
+  dessert: 'Dessert',
+  drink: 'Drink',
+};
+
+/**
+ * Maps a menu category to the kitchen course. Starters fire first; food mains
+ * are held until the kitchen clears the starters. Desserts and drinks fire
+ * immediately (they are either a separate station or a later course the server
+ * can add as its own round).
+ */
+export function courseForCategory(
+  category: string | null | undefined,
+  itemName = '',
+): Course {
+  const c = (category ?? '').toLowerCase();
+  const n = itemName.toLowerCase();
+  if (c.includes('dessert')) return 'dessert';
+  if (
+    c.includes('cocktail') ||
+    c.includes('margarita') ||
+    c.includes('wine') ||
+    c.includes('drink') ||
+    c.includes('beer') ||
+    c.includes('beverage')
+  ) {
+    return 'drink';
+  }
+  if (c.includes('eats') && /(cheesecake|brûlée|brulee|crème|creme)/.test(n)) {
+    return 'dessert';
+  }
+  if (
+    c.includes('start') ||
+    c.includes('share') ||
+    c.includes('eats') ||
+    c.includes('feature') ||
+    c.includes('sushi') ||
+    c.includes('green') ||
+    c.includes('salad') ||
+    c.includes('appet')
+  ) {
+    return 'starter';
+  }
+  return 'main';
+}
+
 export const KDS_STATIONS = [
   'expo',
   'grill',

@@ -19,6 +19,7 @@ export interface KdsTicketItemDto {
   modifiers: Array<{ name: string; priceDelta: number }>;
   prepStatus: string;
   station: string;
+  course: string;
   seat: string | null;
   notes: string | null;
   isAllergen: boolean;
@@ -47,6 +48,7 @@ export interface KdsTicketDto {
   maxPrepSeconds: number;
   itemCount: number;
   bumpedCount: number;
+  heldCount: number;
   items: KdsTicketItemDto[];
   stations: string[];
   priority: 'hero' | 'urgent' | 'regular' | 'new';
@@ -120,6 +122,7 @@ export function toTicket(order: any, station?: KdsStation): KdsTicketDto | null 
     maxPrepSeconds,
     itemCount: items.reduce((sum, i) => sum + i.quantity, 0),
     bumpedCount,
+    heldCount: items.filter((i) => i.prepStatus === 'held').length,
     stations: [...new Set(items.map((i) => i.station))],
     items: items.map((item) => ({
       id: item.id,
@@ -131,6 +134,7 @@ export function toTicket(order: any, station?: KdsStation): KdsTicketDto | null 
       modifiers: Array.isArray(item.modifiers) ? item.modifiers : [],
       prepStatus: item.prepStatus,
       station: item.station,
+      course: item.course ?? 'main',
       seat: item.seat,
       notes: item.notes,
       isAllergen:
@@ -212,15 +216,28 @@ export async function bumpTicket(
   if (!order) throw notFound('Ticket not found');
   if (order.restaurantId !== restaurantId) throw notFound('Ticket not found');
 
-  let targetItems = order.items.filter((item) => item.prepStatus !== 'bumped');
+  let targetItems =
+    input.action === 'fire'
+      ? order.items.filter((item) => item.prepStatus === 'held')
+      : order.items.filter(
+          (item) => item.prepStatus !== 'bumped' && item.prepStatus !== 'held',
+        );
+
   if (input.itemIds?.length) {
     targetItems = targetItems.filter((item) => input.itemIds!.includes(item.id));
-  } else if (input.station && input.station !== 'expo') {
+  } else if (input.action !== 'fire' && input.station && input.station !== 'expo') {
     targetItems = targetItems.filter((item) => item.station === input.station);
   }
 
-  if (input.action === 'bump' && targetItems.length === 0) {
-    throw badRequest('No un-bumped items match this action');
+  if (
+    (input.action === 'bump' || input.action === 'fire') &&
+    targetItems.length === 0
+  ) {
+    throw badRequest(
+      input.action === 'fire'
+        ? 'No held mains to fire'
+        : 'No un-bumped items match this action',
+    );
   }
 
   const now = new Date();
@@ -258,7 +275,7 @@ export async function bumpTicket(
   const anyStarted = allItems.some((i) => i.prepStatus !== 'firing');
   const nextStatus = allBumped
     ? 'ready_at_pass'
-    : anyStarted || input.action === 'bump'
+    : anyStarted || input.action === 'bump' || input.action === 'fire'
       ? 'preparing'
       : afterBump.status;
   if (nextStatus !== afterBump.status) {

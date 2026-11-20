@@ -72,6 +72,7 @@ export interface TicketItem {
   modifiers: Array<{ name: string; priceDelta: number }>;
   prepStatus: string;
   station: string;
+  course: string;
   seat: string | null;
   notes: string | null;
   isAllergen: boolean;
@@ -100,6 +101,7 @@ export interface KdsTicket {
   maxPrepSeconds: number;
   itemCount: number;
   bumpedCount: number;
+  heldCount: number;
   items: TicketItem[];
   stations: string[];
   priority: 'hero' | 'urgent' | 'regular' | 'new';
@@ -114,6 +116,7 @@ export interface OrderItem {
   modifiers: Array<{ name: string; priceDelta: number }>;
   prepStatus: string;
   station: string;
+  course: string;
   seat: string | null;
   notes: string | null;
   createdAt: string;

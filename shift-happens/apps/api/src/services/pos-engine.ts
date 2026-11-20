@@ -2,6 +2,7 @@ import { prisma } from '@shift-happens/db';
 import {
   AUTO_GRATUITY_RATE,
   TAX_RATE,
+  courseForCategory,
   type CreateOrderInput,
 } from '@shift-happens/shared';
 import { env } from '../env.js';
@@ -46,6 +47,7 @@ function serializeOrder(order: any) {
       modifiers: item.modifiers,
       prepStatus: item.prepStatus,
       station: item.station,
+      course: item.course ?? 'main',
       seat: item.seat,
       notes: item.notes,
       createdAt: item.createdAt.toISOString(),
@@ -62,6 +64,7 @@ export async function createOrder(
   const menuItems = await prisma.menuItem.findMany({
     where: { id: { in: menuIds }, restaurantId },
     include: {
+      category: true,
       recipe: {
         include: {
           recipeIngredients: { include: { ingredient: true } },
@@ -108,23 +111,35 @@ export async function createOrder(
   }
 
   let subtotal = 0;
-  const rows = input.items.map((item) => {
+  const preparedRows = input.items.map((item) => {
     const menu = menuMap.get(item.menuItemId)!;
     const modifiersTotal = item.modifiers.reduce((sum, m) => sum + m.priceDelta, 0);
     const unitPrice = num(menu.price) + modifiersTotal;
     subtotal += unitPrice * item.quantity;
+    const course =
+      item.course ??
+      courseForCategory(menu.category?.name ?? '', menu.name);
     return {
       menuItemId: menu.id,
       quantity: item.quantity,
       unitPrice: round(unitPrice),
       modifiers: item.modifiers,
-      prepStatus: 'firing',
+      course,
       station: menu.station,
       seat: item.seat !== undefined ? String(item.seat) : null,
       notes: item.notes ?? null,
     };
   });
   subtotal = round(subtotal);
+
+  // If the round contains starters, hold the food mains until the kitchen
+  // clears the starters. A mains-only round fires immediately.
+  const hasStarters = preparedRows.some((row) => row.course === 'starter');
+  const rows = preparedRows.map((row) => ({
+    ...row,
+    prepStatus:
+      input.sendToKitchen && row.course === 'main' && hasStarters ? 'held' : 'firing',
+  }));
   const tax = round(subtotal * TAX_RATE);
   const tip = input.autoGratuity ? round(subtotal * AUTO_GRATUITY_RATE) : 0;
   const total = round(subtotal + tax + tip);
