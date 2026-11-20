@@ -491,17 +491,18 @@ export default function ReservationsPage() {
                                 >
                                   Notify
                                 </Button>
-                                <Button
-                                  variant="success"
-                                  size="md"
-                                  icon="chair"
-                                  className="flex-1 lg:flex-none"
-                                  disabled={!canSeat}
-                                  loading={seatingId === reservation.id}
-                                  onClick={() => void seat(reservation)}
-                                >
-                                  Seat
-                                </Button>
+                                {canSeat && (
+                                  <Button
+                                    variant="success"
+                                    size="md"
+                                    icon="chair"
+                                    className="flex-1 lg:flex-none"
+                                    loading={seatingId === reservation.id}
+                                    onClick={() => void seat(reservation)}
+                                  >
+                                    Seat
+                                  </Button>
+                                )}
                               </div>
                             </article>
                           );
