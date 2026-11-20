@@ -163,6 +163,7 @@ model MenuItem {
   description          String?
   price                Decimal    @db.Decimal(10, 2)
   station              KdsStation @default(grill)
+  course               String     @default("main") @db.VarChar(20)
   targetPrepTimeSeconds Int       @default(840) @map("target_prep_time_seconds")
   imageUrlPos          String?    @map("image_url_pos")
   imageUrlMobile       String?    @map("image_url_mobile")

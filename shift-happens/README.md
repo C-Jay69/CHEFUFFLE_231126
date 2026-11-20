@@ -41,10 +41,10 @@ pnpm install
 pnpm db:up                     # starts a local PG16 cluster on :5433 (trust auth)
 pnpm db:push                   # prisma db push + generate
 pnpm db:seed                   # realistic 24-table Downtown Flagship dataset
-pnpm dev                       # API :4000 + web :3000 in parallel
+pnpm dev                       # API :4000 + web :3010 in parallel
 ```
 
-Open <http://localhost:3000/serve>. The root redirects to the Serve workflow.
+Open <http://localhost:3010/serve>. The root redirects to the Serve workflow.
 You can also run the same commands from the repository root; the root
 `package.json` delegates to `shift-happens/`.
 
@@ -102,11 +102,15 @@ table as usual. A mains-only round fires immediately.
 
 ### Menu source
 
-The seed uses the actual **Cactus Club Coal Harbour** food & drinks menu from
-`MENU/Cactus themed_my_food&drinks_men u_creation.md`: 44 menu items across 15
-categories, with real prices, descriptions, kitchen stations, 85 stock
-ingredients and recipes. Prices using the source CSV’s `¼`, `½`, `¾` notation
-are converted to decimals.
+The seed uses the actual **C-JAYS RESTAURANT MENU** from
+`MENU/C-JAYS RESTAURANT MENU.docx`: 182 menu items across 21 categories
+(cocktails, frozen, margaritas, sangria & spritz, classics, wine, beer,
+zero-proof, features, sushi, start & share, bowls, greens, pasta, handhelds,
+mains, signature steaks, à la carte steaks, desserts, plus the Happy Hour Eats
+and Happy Hour Drinks sections). It includes real prices, descriptions, kitchen
+stations, 103 stock ingredients and 68 recipes. Source fractions such as
+`¼`, `½`, `¾` are converted to decimals. Wine prices use the bottle price and
+the description retains the 9oz/6oz prices where the source lists them.
 
 `/pos` is the manager view now: **Open Checks** lists active tickets so a
 manager can add items (deep-links back into Serve), settle, or void. The full

@@ -74,6 +74,7 @@ export default function ServePage() {
   const [category, setCategory] = useState('all');
   const [busy, setBusy] = useState(false);
   const prefillHandled = useRef(false);
+  const categoryInitialized = useRef(false);
 
   const loadTables = useCallback(async () => {
     const response = await api.get<DiningTable[]>('/tables');
@@ -122,6 +123,18 @@ export default function ServePage() {
     ];
     return () => offs.forEach((off) => off());
   }, [loadMenu, loadTables]);
+
+  // The full menu is large (158 items), so start on the first food section
+  // instead of dumping every drink and bottle into the "All" grid.
+  useEffect(() => {
+    if (!menu || categoryInitialized.current) return;
+    categoryInitialized.current = true;
+    const preferred =
+      menu.categories.find((entry) => entry.name === 'Start & Share') ??
+      menu.categories.find((entry) => entry.name === 'Features') ??
+      menu.categories[0];
+    if (preferred) setCategory(preferred.id);
+  }, [menu]);
 
   const openTable = useCallback((table: DiningTable) => {
     if (table.status === 'dirty') {
@@ -212,7 +225,7 @@ export default function ServePage() {
           guest: activeGuest,
           item,
           quantity: 1,
-          course: courseForCategory(item.category, item.name),
+          course: (item.course as Course) || courseForCategory(item.category, item.name),
         },
       ];
     });
@@ -537,7 +550,7 @@ export default function ServePage() {
                 <div className="grid grid-cols-2 gap-space-sm md:grid-cols-3">
                   {filteredMenu.map((item) => {
                     const out = item.is86ed || item.stockStatus === 'out';
-                    const course = courseForCategory(item.category, item.name);
+                    const course = (item.course as Course) || courseForCategory(item.category, item.name);
                     const inGuest = lines.some(
                       (line) => line.item.id === item.id && line.guest === activeGuest,
                     );

@@ -13,6 +13,7 @@ export interface MenuItemDto {
   categoryId: string | null;
   category: string | null;
   station: string;
+  course: string;
   targetPrepTimeSeconds: number;
   imageUrlPos: string | null;
   imageUrlMobile: string | null;
@@ -52,6 +53,7 @@ export function toMenuItemDto(item: any): MenuItemDto {
     categoryId: item.categoryId,
     category: item.category?.name ?? null,
     station: item.station,
+    course: item.course ?? 'main',
     targetPrepTimeSeconds: item.targetPrepTimeSeconds,
     imageUrlPos: item.imageUrlPos,
     imageUrlMobile: item.imageUrlMobile,

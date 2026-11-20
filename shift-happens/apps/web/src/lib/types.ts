@@ -6,6 +6,7 @@ export interface MenuItem {
   categoryId: string | null;
   category: string | null;
   station: string;
+  course: string;
   targetPrepTimeSeconds: number;
   imageUrlPos: string | null;
   imageUrlMobile: string | null;

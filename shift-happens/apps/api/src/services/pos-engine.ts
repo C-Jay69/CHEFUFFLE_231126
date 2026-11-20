@@ -118,6 +118,7 @@ export async function createOrder(
     subtotal += unitPrice * item.quantity;
     const course =
       item.course ??
+      menu.course ??
       courseForCategory(menu.category?.name ?? '', menu.name);
     return {
       menuItemId: menu.id,
