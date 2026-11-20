@@ -1,5 +1,5 @@
-/* SHIFT HAPPENS! offline shell — PWA service worker */
-const CACHE = 'shift-happens-v1';
+/* SHIFT HAPPENS! offline shell — production PWA service worker */
+const CACHE = 'shift-happens-v2';
 const SHELL = ['/', '/pos', '/manifest.webmanifest', '/icon.svg'];
 
 self.addEventListener('install', (event) => {
@@ -28,7 +28,8 @@ self.addEventListener('fetch', (event) => {
   // Live operational data must never be served from a stale cache.
   if (url.pathname.startsWith('/api/') || url.port === '4000') return;
 
-  // Navigations: network-first, falling back to the cached shell when offline.
+  // Navigations: network-first. When offline, only serve the exact previously
+  // visited route — never substitute a different route's shell.
   if (request.mode === 'navigate') {
     event.respondWith(
       fetch(request)
@@ -37,7 +38,14 @@ self.addEventListener('fetch', (event) => {
           caches.open(CACHE).then((cache) => cache.put(request, copy)).catch(() => undefined);
           return response;
         })
-        .catch(() => caches.match(request).then((cached) => cached || caches.match('/pos'))),
+        .catch(async () => {
+          const cached = await caches.match(request);
+          if (cached) return cached;
+          return new Response(
+            '<!doctype html><html><body style="background:#000;color:#dce2f7;font-family:sans-serif;padding:2rem"><h1>Offline</h1><p>This route has not been cached yet. Reconnect and reload.</p></body></html>',
+            { headers: { 'Content-Type': 'text/html; charset=utf-8' } },
+          );
+        }),
     );
     return;
   }

@@ -11,11 +11,11 @@
     "db:seed": "pnpm --filter @shift-happens/db seed",
     "db:reset": "pnpm --filter @shift-happens/db db:reset",
     "gen:screens": "node scripts/gen-screens.mjs",
-    "dev": "pnpm gen:screens && turbo run dev --parallel",
+    "dev": "pnpm gen:screens && turbo run dev",
     "dev:api": "pnpm --filter @shift-happens/api dev",
     "dev:web": "pnpm --filter @shift-happens/web dev",
     "build": "pnpm gen:screens && turbo run build",
-    "start": "turbo run start --parallel",
+    "start": "turbo run start",
     "test": "pnpm --filter @shift-happens/api test",
     "typecheck": "turbo run typecheck"
   },
