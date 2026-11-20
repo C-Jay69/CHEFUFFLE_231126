@@ -1,31 +1,32 @@
 # SHIFT HAPPENS! by HYDRAFORGE AI
 
-A production-shaped, full-stack restaurant operations engine built from the
-`stitch_shift_happens_design_system` screens. The ten supplied screens are used
-verbatim (only their static onclick/script shims are replaced) and wired to a
-live Fastify + PostgreSQL + Socket.io backend.
+A production-shaped, full-stack restaurant operations engine. The screens are
+clean, purpose-built React pages (no dense cockpit mockups) backed by a live
+Fastify + PostgreSQL + Socket.io API.
 
 ```
-stitch_shift_happens_design_system/*/code.html
-        │  scripts/gen-screens.mjs  (extract body + Nocturnal Command tokens)
-        ▼
 apps/web  Next.js 14 App Router  ── REST + WebSocket ──  apps/api  Fastify
         │                                              │
-        ├── /pos            POS & Orders                ├── POS engine
-        ├── /kds            Kitchen Display System      ├── KDS + stage engine
-        ├── /floor-plan     6-stage course matrix       ├── Labor pacing engine
-        ├── /reservations   Table CRM + waitlist        ├── Inventory engine
-        ├── /inventory      Par levels + auto-PO        ├── Reservations engine
-        ├── /scheduling     Roster + live labor         ├── Voice AI (RAG)
-        ├── /briefing       Pre-shift cockpit           └── Training engine
-        ├── /onboarding     SOPs, drills, certifications
-        ├── /architect      Floor plan + menu media studio
-        ├── /mobile         Mobile floor manager companion
+        ├── /serve          table → covers → guest order ├── POS engine
+        ├── /kds            live station tickets         ├── KDS + stage engine
+        ├── /floor-plan     table status + actions       ├── Labor pacing engine
+        ├── /reservations   arrivals + waitlist          ├── Inventory engine
+        ├── /pos            open checks / settle         ├── Reservations engine
+        ├── /inventory      stock + reorders             ├── Voice AI (RAG)
+        ├── /scheduling     shifts + labor pacing        └── Training engine
+        ├── /briefing       lineup + sign-off
+        ├── /onboarding     training tracks + roster
+        ├── /architect      menu media publishing
+        ├── /mobile         one-hand floor manager
         ├── /voice-ai       Voice AI command centre (Twilio + Gemini RAG)
         └── /login          PIN terminal + staff roster
                                                         packages/db (Prisma)
                                                         packages/shared (Zod)
 ```
+
+The original design system remains in `stitch_shift_happens_design_system/` as
+reference; its Nocturnal Command token palette is extracted into the generated
+Tailwind config. The old static screen runtime has been removed.
 
 ## Quick start
 
@@ -43,7 +44,9 @@ pnpm db:seed                   # realistic 24-table Downtown Flagship dataset
 pnpm dev                       # API :4000 + web :3000 in parallel
 ```
 
-Open <http://localhost:3000/pos>. The root redirects to `/pos`.
+Open <http://localhost:3000/serve>. The root redirects to the Serve workflow.
+You can also run the same commands from the repository root; the root
+`package.json` delegates to `shift-happens/`.
 
 If you prefer Docker/Postgres:
 
@@ -68,6 +71,27 @@ pnpm dev
 
 `/login` accepts any seeded staff PIN (3-6 digits). The token is stored locally
 for the terminal session. This is a demo gate, not a hardened auth boundary.
+
+## The Serve workflow
+
+`/serve` is the primary server screen:
+
+1. Tap a table on the live table map.
+2. Choose the number of covers and optionally a party name.
+3. The menu opens on **Guest 1**. Tap dishes to add them to that guest.
+4. Press **Done with Guest 1 → Guest 2** to advance automatically; tabs let you
+   jump back to any guest.
+5. Review every guest, add allergy/kitchen notes, and **Send to Kitchen**.
+6. The order posts to `/api/orders` with each item’s `seat` set to its guest
+   number, so the KDS and floor plan update immediately.
+
+`/pos` is the manager view now: **Open Checks** lists active tickets so a
+manager can add items (deep-links back into Serve), settle, or void. The full
+ordering cockpit was removed.
+
+The minimal page conventions are documented in
+`apps/web/MINIMAL_UI_SPEC.md`; shared primitives live in
+`apps/web/src/components/ui/`.
 
 ## What is actually wired
 
@@ -225,20 +249,18 @@ code falls back to JSON cosine scoring when pgvector is absent.
 Redis is optional. If `REDIS_URL` is set, the Socket.io Redis adapter is loaded
 and the gateway is multi-instance safe; otherwise the server runs in-process.
 
-## Design fidelity
+## Design tokens & minimal UI
 
-The design system files are **never modified**. `scripts/gen-screens.mjs`:
+The original design system files are **never modified**. `scripts/gen-screens.mjs`
+reads the Nocturnal Command token config from
+`stitch_shift_happens_design_system/pos_order_terminal/code.html` and writes
+`apps/web/tailwind.config.cjs` (no CDN at runtime). All screens are hand-built
+React pages using the shared `components/ui` primitives (`PageHeader`, `Stat`,
+`Card`, `Button`, `Badge`, `Modal`, `Tabs`, `Progress`, `SearchInput`,
+`EmptyState`, `Avatar`) and the `AppShell` navigation.
 
-1. extracts the exact `<body>` markup and body class list for each screen;
-2. extracts the exact Tailwind token config into
-   `apps/web/tailwind.config.cjs` (no CDN required at runtime);
-3. strips only the static onclick/script shims so React owns behaviour;
-4. writes `apps/web/screens.generated.json`.
-
-`ScreenShell.tsx` renders that markup with `dangerouslySetInnerHTML` and then
-runs a per-screen binder (`apps/web/src/lib/binders/*`) that hydrates the
-existing DOM with live data, adds real event handlers, and wires the shared
-navigation. Run `pnpm gen:screens` after changing a design file.
+Run `pnpm gen:screens` after changing the token palette. The app no longer ships
+the original static HTML or the old DOM binders.
 
 ## Tests
 
@@ -274,8 +296,8 @@ See `.env.example`. Every integration degrades gracefully:
 | `pnpm db:push` | Prisma push + client generate |
 | `pnpm db:seed` | wipe + reseed the Downtown Flagship dataset |
 | `pnpm db:reset` | force-reset schema and reseed |
-| `pnpm gen:screens` | regenerate screen JSON + Tailwind config from design files |
-| `pnpm dev` | gen screens + API + web |
+| `pnpm gen:screens` | regenerate the Tailwind token config from the design file |
+| `pnpm dev` | generate tokens + API + web |
 | `pnpm build` | production build (stop dev first) |
 | `pnpm test` | API integration tests |
 | `pnpm typecheck` | workspace typechecks |
@@ -285,8 +307,10 @@ See `.env.example`. Every integration degrades gracefully:
 * The seeded labor window is a **rolling four-hour trading window** so the
   cockpit stays useful before the first sale; the prompt's pseudocode used the
   current hour. Both `currentHourSales` and `windowSales` are returned.
-* Media studio images are intentionally unmapped in the seed (real designs
-  shipped with external stock URLs). Use **Replace Photo** to stage a URL and
-  **Publish Media to POS**; coverage updates live.
+* Menu Studio images are intentionally unmapped in the seed. Paste an image URL
+  in the dish preview and press **Publish dish**; coverage updates live.
 * `/login` is a PIN terminal demo; all seeded staff share the roster PINs shown
   in the UI. Do not use these values in production.
+* Serving an occupied table creates a new ticket/round for that table rather
+  than merging into the original check. This keeps the ordering flow simple and
+  leaves the original check intact for the manager view.

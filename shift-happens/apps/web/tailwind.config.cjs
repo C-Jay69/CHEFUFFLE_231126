@@ -235,8 +235,7 @@ module.exports = {
     }
   },
   "content": [
-    "./src/**/*.{js,ts,jsx,tsx,mdx}",
-    "./screens.generated.json"
+    "./src/**/*.{js,ts,jsx,tsx,mdx}"
   ],
   "plugins": []
 };

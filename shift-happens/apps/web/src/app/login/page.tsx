@@ -49,13 +49,17 @@ export default function LoginPage() {
         localStorage.setItem('sh-token', response.token);
         localStorage.setItem(
           'sh-staff',
-          JSON.stringify({ name: response.staff.name, roleLabel: response.staff.roleLabel }),
+          JSON.stringify({
+            id: response.staff.id,
+            name: response.staff.name,
+            roleLabel: response.staff.roleLabel,
+          }),
         );
       } catch {
         /* private mode */
       }
       setSignedIn({ name: response.staff.name, roleLabel: response.staff.roleLabel });
-      router.push('/pos');
+      router.push('/serve');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Invalid PIN.');
       setPin('');
@@ -108,8 +112,8 @@ export default function LoginPage() {
                 href="/pos"
                 className="mt-space-sm flex h-12 items-center gap-space-xs rounded-lg bg-gradient-to-r from-accent-purple-glow to-secondary px-space-lg font-bold text-bg-canvas"
               >
-                <span className="material-symbols-outlined">point_of_sale</span>
-                Continue to POS
+                <span className="material-symbols-outlined">room_service</span>
+                Continue to Serve
               </Link>
             </div>
           ) : (

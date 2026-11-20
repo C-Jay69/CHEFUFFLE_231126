@@ -2,19 +2,23 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { cn } from '@/lib/cn';
+import { initials } from '@/lib/format';
 
 const NAV = [
-  { href: '/pos', label: 'POS & Orders', icon: 'point_of_sale', color: 'text-secondary' },
-  { href: '/floor-plan', label: 'Floor Plan & Seating', icon: 'table_restaurant', color: 'text-secondary' },
-  { href: '/kds', label: 'Kitchen KDS', icon: 'skillet', color: 'text-status-caution' },
-  { href: '/reservations', label: 'Reservations & CRM', icon: 'book_online', color: 'text-secondary' },
-  { href: '/inventory', label: 'Inventory Management', icon: 'inventory_2', color: 'text-secondary' },
-  { href: '/scheduling', label: 'Staff Scheduling & Shifts', icon: 'calendar_month', color: 'text-secondary' },
-  { href: '/briefing', label: 'Pre-Shift Briefing', icon: 'campaign', color: 'text-accent-purple-glow' },
-  { href: '/onboarding', label: 'Team Onboarding & Training', icon: 'school', color: 'text-secondary' },
-  { href: '/architect', label: 'Architect & Media Studio', icon: 'architecture', color: 'text-secondary' },
-  { href: '/mobile', label: 'Mobile Floor Manager', icon: 'smartphone', color: 'text-secondary' },
-  { href: '/voice-ai', label: 'Voice AI Agent', icon: 'neurology', color: 'text-accent-purple-glow' },
+  { href: '/serve', label: 'Serve', icon: 'room_service', color: 'text-accent-cyan-bright' },
+  { href: '/kds', label: 'Kitchen', icon: 'skillet', color: 'text-status-caution' },
+  { href: '/floor-plan', label: 'Floor Plan', icon: 'table_restaurant', color: 'text-secondary' },
+  { href: '/reservations', label: 'Reservations', icon: 'book_online', color: 'text-secondary' },
+  { href: '/pos', label: 'Open Checks', icon: 'receipt_long', color: 'text-secondary' },
+  { href: '/inventory', label: 'Inventory', icon: 'inventory_2', color: 'text-secondary' },
+  { href: '/scheduling', label: 'Scheduling', icon: 'calendar_month', color: 'text-secondary' },
+  { href: '/briefing', label: 'Briefing', icon: 'campaign', color: 'text-accent-purple-glow' },
+  { href: '/onboarding', label: 'Training', icon: 'school', color: 'text-secondary' },
+  { href: '/architect', label: 'Menu Studio', icon: 'architecture', color: 'text-secondary' },
+  { href: '/mobile', label: 'Mobile Manager', icon: 'smartphone', color: 'text-secondary' },
+  { href: '/voice-ai', label: 'Voice AI', icon: 'neurology', color: 'text-accent-purple-glow' },
 ];
 
 export default function AppShell({
@@ -27,104 +31,146 @@ export default function AppShell({
   subtitle?: string;
 }) {
   const pathname = usePathname();
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [staffName, setStaffName] = useState('Shift Terminal');
+
+  useEffect(() => {
+    try {
+      const stored = JSON.parse(localStorage.getItem('sh-staff') || 'null');
+      if (stored?.name) setStaffName(stored.name);
+    } catch {
+      /* ignore */
+    }
+  }, []);
+
+  useEffect(() => {
+    setMobileOpen(false);
+  }, [pathname]);
+
+  const nav = (
+    <nav className="flex flex-col gap-1">
+      {NAV.map((item) => {
+        const active = pathname === item.href;
+        return (
+          <Link
+            key={item.href}
+            href={item.href}
+            className={cn(
+              'flex items-center gap-3 rounded-xl px-3 py-2.5 transition-colors',
+              active
+                ? 'bg-gradient-to-r from-accent-purple-glow/20 to-secondary/20 font-bold text-text-primary shadow-[inset_2px_0_0_0_#4cd7f6]'
+                : 'text-text-secondary hover:bg-surface-container hover:text-text-primary',
+            )}
+          >
+            <span className={cn('material-symbols-outlined text-[20px]', item.color)}>{item.icon}</span>
+            <span className="font-body-sm text-body-sm font-semibold">{item.label}</span>
+          </Link>
+        );
+      })}
+    </nav>
+  );
 
   return (
     <div className="min-h-screen bg-bg-canvas text-on-surface">
-      <aside className="fixed left-0 top-0 z-50 hidden h-full w-64 flex-col justify-between bg-bg-chrome shadow-[0_1px_8px_rgba(0,0,0,0.04)] lg:flex">
+      <aside className="fixed left-0 top-0 z-50 hidden h-full w-64 flex-col justify-between border-r border-border-subtle bg-bg-chrome lg:flex">
         <div className="flex min-h-0 flex-col">
-          <div className="flex h-16 items-center gap-space-sm bg-surface-container-lowest px-space-md">
-            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-accent-purple-glow to-secondary font-headline-md text-headline-md font-black text-bg-canvas">
+          <Link href="/serve" className="flex h-16 items-center gap-3 border-b border-border-subtle px-4">
+            <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-accent-purple-glow to-secondary font-headline-md text-headline-md font-black text-bg-canvas">
               S
-            </div>
-            <div className="flex min-w-0 flex-col">
+            </span>
+            <span className="flex min-w-0 flex-col">
               <span className="truncate font-headline-md text-headline-md uppercase tracking-tight text-text-primary">
                 SHIFT HAPPENS!
               </span>
               <span className="truncate font-label-badge text-label-badge font-bold uppercase tracking-widest text-secondary">
                 HYDRAFORGE AI
               </span>
-            </div>
-          </div>
-          <div className="px-space-md py-space-sm">
-            <div className="flex items-center justify-between rounded-lg bg-surface-container-low p-space-sm">
-              <div className="flex items-center gap-space-xs">
-                <span className="sh-live-dot" />
-                <span className="font-label-badge text-label-badge uppercase text-text-secondary">Live Engine</span>
-              </div>
-              <span className="font-label-badge text-label-badge text-secondary">SYNCED</span>
-            </div>
-          </div>
-          <nav className="mt-space-xs flex flex-col gap-space-xs overflow-y-auto px-space-sm pb-2" style={{ maxHeight: 'calc(100vh - 190px)' }}>
-            {NAV.map((item) => {
-              const active = pathname === item.href;
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className={
-                    active
-                      ? 'flex items-center gap-space-sm rounded-lg bg-gradient-to-r from-accent-purple-glow/20 to-secondary/20 px-space-md py-space-sm font-bold text-text-primary shadow-[inset_2px_0_0_0_#4cd7f6]'
-                      : 'flex items-center gap-space-sm rounded-lg px-space-md py-space-sm text-on-surface-variant transition-colors hover:bg-surface-container hover:text-on-surface'
-                  }
-                >
-                  <span className={`material-symbols-outlined ${item.color}`}>{item.icon}</span>
-                  <span className="font-body-base text-body-base font-semibold">{item.label}</span>
-                </Link>
-              );
-            })}
-          </nav>
-        </div>
-        <div className="flex flex-col gap-space-sm bg-surface-container-lowest p-space-md">
-          <div className="flex items-center justify-between font-mono-metric-sm text-mono-metric-sm text-text-subtle">
-            <span>HOTKEYS</span>
-            <span className="rounded bg-surface-variant px-space-xs py-0.5 text-text-secondary">⌘ + K</span>
-          </div>
-          <Link href="/login" className="flex items-center gap-space-sm rounded-lg bg-surface-container-low p-space-sm hover:bg-surface-container">
-            <span className="material-symbols-outlined text-secondary">badge</span>
-            <div className="flex flex-col">
-              <span className="font-label-eyebrow text-label-eyebrow uppercase text-secondary">Active Staff</span>
-              <span className="truncate font-body-sm text-body-sm text-text-secondary">Shift terminal · PIN</span>
-            </div>
+            </span>
           </Link>
+          <div className="flex-1 overflow-y-auto p-3">{nav}</div>
         </div>
+        <Link
+          href="/login"
+          className="m-3 flex items-center gap-3 rounded-xl border border-border-subtle bg-surface-container-low p-3 transition-colors hover:bg-surface-container"
+        >
+          <span className="flex h-9 w-9 items-center justify-center rounded-full bg-accent-purple-glow/15 font-label-badge text-label-badge font-bold text-accent-purple-glow">
+            {initials(staffName)}
+          </span>
+          <span className="flex min-w-0 flex-col">
+            <span className="font-label-badge text-label-badge uppercase text-text-tertiary">Active staff</span>
+            <span className="truncate font-body-sm text-body-sm font-bold text-text-primary">{staffName}</span>
+          </span>
+          <span className="material-symbols-outlined ml-auto text-body-base text-text-tertiary">chevron_right</span>
+        </Link>
       </aside>
 
+      {mobileOpen && (
+        <div className="fixed inset-0 z-[60] lg:hidden">
+          <div
+            className="absolute inset-0 bg-bg-canvas/80 backdrop-blur-sm"
+            onClick={() => setMobileOpen(false)}
+          />
+          <div className="absolute left-0 top-0 flex h-full w-72 flex-col border-r border-border-subtle bg-bg-chrome p-3">
+            <div className="mb-3 flex items-center justify-between border-b border-border-subtle pb-3">
+              <span className="font-headline-md text-headline-md uppercase text-text-primary">SHIFT HAPPENS!</span>
+              <button
+                onClick={() => setMobileOpen(false)}
+                className="flex h-9 w-9 items-center justify-center rounded-lg text-text-tertiary hover:text-text-primary"
+              >
+                <span className="material-symbols-outlined">close</span>
+              </button>
+            </div>
+            <div className="flex-1 overflow-y-auto">{nav}</div>
+          </div>
+        </div>
+      )}
+
       <div className="lg:pl-64">
-        <header className="fixed left-0 right-0 top-0 z-40 flex h-16 items-center justify-between bg-bg-chrome/90 px-space-lg shadow-[0_1px_8px_rgba(0,0,0,0.04)] backdrop-blur-xl lg:left-64">
-          <div className="flex items-center gap-space-md">
-            <div className="flex items-center gap-space-xs rounded-full bg-surface-container-high px-space-md py-space-xs">
+        <header className="fixed left-0 right-0 top-0 z-40 flex h-16 items-center justify-between border-b border-border-subtle bg-bg-chrome/95 px-4 backdrop-blur-xl lg:left-64 lg:px-6">
+          <div className="flex min-w-0 items-center gap-3">
+            <button
+              onClick={() => setMobileOpen(true)}
+              className="flex h-10 w-10 items-center justify-center rounded-lg text-text-secondary hover:bg-surface-container lg:hidden"
+              aria-label="Open navigation"
+            >
+              <span className="material-symbols-outlined">menu</span>
+            </button>
+            <div className="flex items-center gap-2 rounded-full bg-surface-container-high px-3 py-1.5">
               <span className="sh-live-dot" />
               <span className="font-label-badge text-label-badge uppercase tracking-wider text-text-primary">
-                Dinner Rush • Live • Online
+                Live
               </span>
             </div>
-            <div className="hidden items-center gap-space-xs rounded bg-surface-container-low px-space-sm py-space-xs font-body-sm text-body-sm text-text-secondary xl:flex">
-              <span className="material-symbols-outlined text-body-base text-text-subtle">store</span>
-              <span>Main Dining &amp; Bar — Downtown Flagship</span>
+            <div className="hidden min-w-0 items-center gap-1.5 text-body-sm text-text-secondary sm:flex">
+              <span className="material-symbols-outlined text-body-base text-text-tertiary">store</span>
+              <span className="truncate">Downtown Flagship</span>
             </div>
           </div>
-          <div className="flex items-center gap-space-md">
-            <div className="flex items-center gap-space-xs rounded-full bg-surface-container-high px-space-sm py-space-xs">
-              <span className="material-symbols-outlined animate-pulse text-body-base text-accent-purple-glow">graphic_eq</span>
-              <span className="font-label-badge text-label-badge font-bold text-accent-purple-glow">VOICE AI ACTIVE</span>
-            </div>
-            <Link href="/login" className="flex items-center gap-space-sm pl-space-sm">
+          <div className="flex items-center gap-2">
+            <Link
+              href="/voice-ai"
+              className="hidden h-9 items-center gap-1.5 rounded-full bg-surface-container-high px-3 transition-colors hover:bg-surface-container-highest sm:flex"
+            >
+              <span className="material-symbols-outlined text-body-base text-accent-purple-glow">graphic_eq</span>
+              <span className="font-label-badge text-label-badge font-bold text-accent-purple-glow">VOICE AI</span>
+            </Link>
+            <Link href="/login" className="flex items-center gap-2 rounded-full py-1 pl-2 transition-colors hover:bg-surface-container">
               <div className="hidden flex-col text-right sm:flex">
-                <span className="font-body-base text-body-base font-bold leading-tight text-text-primary">Chef Marco Vance</span>
-                <span className="font-label-eyebrow text-label-eyebrow uppercase text-secondary">GM &amp; Head of Ops</span>
+                <span className="font-body-sm text-body-sm font-bold leading-tight text-text-primary">{staffName}</span>
+                <span className="font-label-badge text-label-badge uppercase text-secondary">On shift</span>
               </div>
-              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-accent-purple-glow/40 to-secondary/40 font-label-badge text-label-badge font-bold text-text-primary ring-2 ring-primary/40">
-                MV
-              </div>
+              <span className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-accent-purple-glow/30 to-secondary/30 font-label-badge text-label-badge font-bold text-text-primary ring-2 ring-primary/30">
+                {initials(staffName)}
+              </span>
             </Link>
           </div>
         </header>
 
         <main className="min-h-screen bg-bg-canvas pt-16">
           {(title || subtitle) && (
-            <div className="border-b border-border-subtle px-space-lg py-space-lg">
-              <h1 className="font-headline-xl text-headline-xl tracking-tight text-text-primary">{title}</h1>
-              {subtitle && <p className="mt-1 font-body-base text-body-base text-text-secondary">{subtitle}</p>}
+            <div className="border-b border-border-subtle px-4 py-6 lg:px-8">
+              {title && <h1 className="font-headline-xl text-headline-xl tracking-tight text-text-primary">{title}</h1>}
+              {subtitle && <p className="mt-1 max-w-4xl font-body-base text-body-base text-text-secondary">{subtitle}</p>}
             </div>
           )}
           {children}

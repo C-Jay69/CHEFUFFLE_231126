@@ -1,12 +1,13 @@
 #!/usr/bin/env node
 /**
- * Extracts the production design-system screens into bundle-safe assets:
- *   - apps/web/screens.generated.json  (exact body HTML per route)
- *   - apps/web/tailwind.config.cjs     (the exact Nocturnal Command tokens)
+ * Extracts the Nocturnal Command Tailwind token palette from the original
+ * design system into apps/web/tailwind.config.cjs.
  *
- * Original design files are never modified.
+ * The app screens are now hand-built React pages (apps/web/src/app/*); the
+ * original static HTML no longer ships at runtime. The design files remain the
+ * source of truth for the token palette.
  */
-import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
+import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -14,93 +15,32 @@ const here = dirname(fileURLToPath(import.meta.url));
 const root = resolve(here, '..');
 const designRoot = resolve(root, '..', 'stitch_shift_happens_design_system');
 const webRoot = resolve(root, 'apps', 'web');
+const source = resolve(designRoot, 'pos_order_terminal', 'code.html');
 
-const screens = {
-  pos: { dir: 'pos_order_terminal', title: 'POS & Orders' },
-  kds: { dir: 'kitchen_display_system_kds_grill_station', title: 'Kitchen KDS' },
-  'floor-plan': { dir: 'floor_plan_course_stage_matrix', title: 'Floor Plan & Seating' },
-  mobile: { dir: 'mobile_floor_manager_companion', title: 'Mobile Floor Manager' },
-  reservations: { dir: 'reservations_guest_crm', title: 'Reservations & CRM' },
-  inventory: { dir: 'inventory_management', title: 'Inventory Management' },
-  scheduling: { dir: 'staff_scheduling_real_time_labor_pacing', title: 'Staff Scheduling & Labor' },
-  briefing: { dir: 'pre_shift_lineup_briefing_cockpit', title: 'Pre-Shift Briefing' },
-  onboarding: { dir: 'team_onboarding_training', title: 'Onboarding & Training' },
-  architect: { dir: 'floor_plan_architect_menu_media_studio_2', title: 'Architect & Media Studio' },
-};
-
-function extractTailwindConfig(html) {
-  const match = html.match(/<script id="tailwind-config">([\s\S]*?)<\/script>/i);
-  if (!match) throw new Error('tailwind-config script not found');
-  const assignment = match[1].trim();
-  const objectText = assignment.replace(/^tailwind\.config\s*=\s*/, '').replace(/;\s*$/, '');
-  // eslint-disable-next-line no-new-func
-  const config = new Function(`return (${objectText});`)();
-  return config;
+if (!existsSync(source)) {
+  throw new Error(
+    `Design system not found at ${source}. The token palette is extracted from stitch_shift_happens_design_system/pos_order_terminal/code.html.`,
+  );
 }
 
-function extractBody(html) {
-  const bodyMatch = html.match(/<body([^>]*)>([\s\S]*?)<\/body>/i);
-  if (!bodyMatch) throw new Error('body not found');
-  const attrs = bodyMatch[1];
-  const classMatch = attrs.match(/class="([^"]*)"/i);
-  const bodyClass = classMatch ? classMatch[1] : '';
-  let bodyHtml = bodyMatch[2];
-  // Scripts injected via innerHTML never execute; remove them so the binder owns
-  // every runtime behaviour. Inline handlers are replaced by data-route wiring.
-  bodyHtml = bodyHtml.replace(/<script[\s\S]*?<\/script>/gi, '');
-  bodyHtml = bodyHtml.replace(/\sonclick="[^"]*"/gi, '');
-  // Strip tracking attributes added by the design export tool.
-  bodyHtml = bodyHtml.replace(/\sdata-new-gr-c-s-check-loaded="[^"]*"/gi, '');
-  bodyHtml = bodyHtml.replace(/\sdata-gr-ext-installed="[^"]*"/gi, '');
-  return { bodyClass, bodyHtml };
-}
+const html = readFileSync(source, 'utf8');
+const match = html.match(/<script id="tailwind-config">([\s\S]*?)<\/script>/i);
+if (!match) throw new Error('tailwind-config script not found in the POS design file');
 
-function extractStyle(html) {
-  const styles = [...html.matchAll(/<style>([\s\S]*?)<\/style>/gi)].map((m) => m[1]);
-  return styles.join('\n');
-}
+const assignment = match[1].trim();
+const objectText = assignment.replace(/^tailwind\.config\s*=\s*/, '').replace(/;\s*$/, '');
+// eslint-disable-next-line no-new-func
+const tokens = new Function(`return (${objectText});`)();
 
-let tailwindConfig = null;
-const output = { screens: {}, generatedAt: new Date().toISOString() };
-
-for (const [key, meta] of Object.entries(screens)) {
-  const file = resolve(designRoot, meta.dir, 'code.html');
-  const html = readFileSync(file, 'utf8');
-  if (!tailwindConfig) tailwindConfig = extractTailwindConfig(html);
-  const { bodyClass, bodyHtml } = extractBody(html);
-  output.screens[key] = {
-    key,
-    title: meta.title,
-    source: `stitch_shift_happens_design_system/${meta.dir}/code.html`,
-    bodyClass,
-    bodyHtml,
-  };
-  console.log(`✓ ${key.padEnd(13)} ${(bodyHtml.length / 1024).toFixed(1)} kb  ${meta.dir}`);
-}
-
-mkdirSync(webRoot, { recursive: true });
-writeFileSync(
-  resolve(webRoot, 'screens.generated.json'),
-  JSON.stringify(output, null, 0),
-);
-console.log(`✓ screens.generated.json (${(JSON.stringify(output).length / 1024).toFixed(0)} kb)`);
-
-// Persist the exact token palette as a real Tailwind config (no CDN required).
 const config = {
-  ...tailwindConfig,
-  content: [
-    './src/**/*.{js,ts,jsx,tsx,mdx}',
-    './screens.generated.json',
-  ],
+  ...tokens,
+  content: ['./src/**/*.{js,ts,jsx,tsx,mdx}'],
   plugins: [],
 };
+
+mkdirSync(webRoot, { recursive: true });
 writeFileSync(
   resolve(webRoot, 'tailwind.config.cjs'),
   `/* Generated by scripts/gen-screens.mjs from the Nocturnal Command design system. */\nmodule.exports = ${JSON.stringify(config, null, 2)};\n`,
 );
-console.log('✓ apps/web/tailwind.config.cjs');
-
-// Base style rules are maintained in apps/web/src/app/globals.css so they can be
-// extended without regenerating. The design body markup already carries the
-// original <style> block's intent (scrollbar hiding, body reset, main spacing).
-void extractStyle;
+console.log('✓ apps/web/tailwind.config.cjs (Nocturnal Command tokens)');
