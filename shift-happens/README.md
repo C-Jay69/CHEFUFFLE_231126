@@ -10,7 +10,7 @@ apps/web  Next.js 14 App Router  ── REST + WebSocket ──  apps/api  Fasti
         ├── /serve          table → covers → guest order ├── POS engine
         ├── /kds            live station tickets         ├── KDS + stage engine
         ├── /floor-plan     table status + actions       ├── Labor pacing engine
-        ├── /reservations   arrivals + waitlist          ├── Inventory engine
+        ├── /reservations   calendar + arrivals          ├── Inventory engine
         ├── /pos            open checks / settle         ├── Reservations engine
         ├── /inventory      stock + reorders             ├── Voice AI (RAG)
         ├── /scheduling     shifts + labor pacing        └── Training engine
@@ -212,6 +212,25 @@ CRUD + auto-assignment, live availability (`GET
 /api/reservations/availability`), waitlist, seating, SMS confirmation, VIP/press
 flags, and real-time notifications to the host CRM and pre-shift view.
 
+`/reservations` opens on today’s book and has a **calendar** with Day, Week,
+Month and Year views:
+
+* `‹` / `›` step back and forward through the selected view; **Today** jumps to
+  the current day while keeping the view.
+* The week board shows each day’s arrivals; the month grid shows up to three
+  bookings per day plus a `+N more` count; the year grid shows booking and
+  cover totals per month.
+* Click any day (or month in year view) to drill down; the status tabs, search,
+  and waitlist banner apply to every view, and the KPI row totals whatever range
+  is in view.
+* **New reservation** pre-fills the selected day at 19:00 instead of the next
+  half-hour slot, so you can book from any date.
+
+The API accepts either `?date=YYYY-MM-DD` (single day, legacy) or an ISO
+`?from=…&to=…` window where `to` is exclusive — the calendar computes the window
+from local midnight to local midnight. The seed also writes a sample forward
+book across the next twelve months so all four views have a diary to show.
+
 ### Training and briefing
 
 * Enrollment creates the trainee plus assignments for the selected tracks.
@@ -265,7 +284,7 @@ GET    /api/inventory                     POST  /api/inventory/adjust
 GET    /api/inventory/transactions        GET   /api/inventory/purchase-orders
 POST   /api/inventory/purchase-orders/approve
 GET    /api/inventory/86
-GET    /api/reservations                  POST  /api/reservations
+GET    /api/reservations?from=&to=        POST  /api/reservations
 PATCH  /api/reservations/:id              POST  /api/reservations/:id/seat
 GET    /api/reservations/availability
 GET    /api/shifts                        POST  /api/shifts

@@ -16,7 +16,7 @@ import {
   type BadgeTone,
 } from '@/components/ui';
 import { api } from '@/lib/api';
-import { dateLabel, localInputValue, timeLabel, titleCase } from '@/lib/format';
+import { localInputValue, timeLabel, titleCase } from '@/lib/format';
 import { listen } from '@/lib/socket';
 import { showToast } from '@/lib/toast';
 import type { Reservation, ReservationResponse } from '@/lib/types';
@@ -42,12 +42,22 @@ function nextTimeSlot() {
   return localInputValue(next);
 }
 
-function emptyForm(): ReservationForm {
+function formTimeFor(base?: Date) {
+  const day = startOfDay(base ?? new Date());
+  if (day.getTime() !== startOfDay(new Date()).getTime()) {
+    const slot = new Date(day);
+    slot.setHours(19, 0, 0, 0);
+    return localInputValue(slot);
+  }
+  return nextTimeSlot();
+}
+
+function emptyForm(base?: Date): ReservationForm {
   return {
     guestName: '',
     phone: '',
     partySize: '2',
-    time: nextTimeSlot(),
+    time: formTimeFor(base),
     notes: '',
     vip: false,
   };
@@ -78,31 +88,125 @@ function sourceLabel(source: string) {
   return titleCase(source);
 }
 
+type ViewMode = 'day' | 'week' | 'month' | 'year';
+
+const VIEW_ITEMS: Array<{ id: ViewMode; label: string }> = [
+  { id: 'day', label: 'Day' },
+  { id: 'week', label: 'Week' },
+  { id: 'month', label: 'Month' },
+  { id: 'year', label: 'Year' },
+];
+
+const startOfDay = (value: Date) => {
+  const next = new Date(value);
+  next.setHours(0, 0, 0, 0);
+  return next;
+};
+
+const addDays = (value: Date, days: number) => {
+  const next = new Date(value);
+  next.setDate(next.getDate() + days);
+  return next;
+};
+
+const dayKey = (value: string | Date) => {
+  const date = new Date(value);
+  return `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`;
+};
+
+const shortDay = (value: Date) =>
+  value.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+
+const monthName = (value: Date) =>
+  value.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+
+/** `6:30p` / `9a` — compact arrival time for calendar cells. */
+const compactTime = (value: string | Date) => {
+  const date = new Date(value);
+  const hour = date.getHours() % 12 || 12;
+  const minutes = date.getMinutes();
+  return `${hour}${minutes ? `:${String(minutes).padStart(2, '0')}` : ''}${
+    date.getHours() >= 12 ? 'p' : 'a'
+  }`;
+};
+
+function rangeFor(view: ViewMode, cursor: Date) {
+  const day = startOfDay(cursor);
+  if (view === 'day') {
+    return {
+      from: day,
+      to: addDays(day, 1),
+      label: day.toLocaleDateString('en-US', {
+        weekday: 'long',
+        month: 'long',
+        day: 'numeric',
+        year: 'numeric',
+      }),
+    };
+  }
+  if (view === 'week') {
+    const from = addDays(day, -day.getDay());
+    const to = addDays(from, 7);
+    return {
+      from,
+      to,
+      label: `${shortDay(from)} – ${shortDay(addDays(from, 6))}`,
+    };
+  }
+  if (view === 'month') {
+    const from = new Date(day.getFullYear(), day.getMonth(), 1);
+    const to = new Date(day.getFullYear(), day.getMonth() + 1, 1);
+    return { from, to, label: monthName(from) };
+  }
+  const from = new Date(day.getFullYear(), 0, 1);
+  const to = new Date(day.getFullYear() + 1, 0, 1);
+  return { from, to, label: String(day.getFullYear()) };
+}
+
 export default function ReservationsPage() {
   const [data, setData] = useState<ReservationResponse | null>(null);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [tab, setTab] = useState<TabId>('all');
   const [search, setSearch] = useState('');
+  const [view, setView] = useState<ViewMode>('day');
+  const [cursor, setCursor] = useState(() => startOfDay(new Date()));
   const [createOpen, setCreateOpen] = useState(false);
-  const [form, setForm] = useState<ReservationForm>(emptyForm);
+  const [form, setForm] = useState<ReservationForm>(() => emptyForm());
   const [saving, setSaving] = useState(false);
   const [seatingId, setSeatingId] = useState<string | null>(null);
 
+  const range = useMemo(() => rangeFor(view, cursor), [view, cursor]);
+
   const load = useCallback(async () => {
-    const response = await api.get<ReservationResponse>('/reservations');
+    const response = await api.get<ReservationResponse>(
+      `/reservations?from=${encodeURIComponent(range.from.toISOString())}&to=${encodeURIComponent(
+        range.to.toISOString(),
+      )}`,
+    );
     setData(response);
     setError(null);
     return response;
-  }, []);
+  }, [range]);
 
   useEffect(() => {
+    let cancelled = false;
+    setRefreshing(true);
     load()
       .catch((cause) => {
+        if (cancelled) return;
         setError(cause instanceof Error ? cause.message : 'Could not reach the reservations API.');
         showToast('Could not load reservations.', 'error');
       })
-      .finally(() => setLoading(false));
+      .finally(() => {
+        if (cancelled) return;
+        setLoading(false);
+        setRefreshing(false);
+      });
+    return () => {
+      cancelled = true;
+    };
   }, [load]);
 
   useEffect(() => {
@@ -175,8 +279,47 @@ export default function ReservationsPage() {
     return [...map.values()];
   }, [filtered]);
 
+  const byDay = useMemo(() => {
+    const map = new Map<string, Reservation[]>();
+    for (const reservation of filtered) {
+      const key = dayKey(reservation.reservationTime);
+      const rows = map.get(key);
+      if (rows) rows.push(reservation);
+      else map.set(key, [reservation]);
+    }
+    return map;
+  }, [filtered]);
+
+  const rowsFor = useCallback(
+    (date: Date) => byDay.get(dayKey(date)) ?? [],
+    [byDay],
+  );
+
+  const shiftRange = (direction: 1 | -1) => {
+    setCursor((current) => {
+      if (view === 'day') return addDays(current, direction);
+      if (view === 'week') return addDays(current, 7 * direction);
+      if (view === 'month') {
+        return new Date(current.getFullYear(), current.getMonth() + direction, 1);
+      }
+      return new Date(current.getFullYear() + direction, 0, 1);
+    });
+  };
+
+  const goToday = () => setCursor(startOfDay(new Date()));
+
+  const openDay = (date: Date) => {
+    setCursor(startOfDay(date));
+    setView('day');
+  };
+
+  const openMonth = (month: Date) => {
+    setCursor(new Date(month.getFullYear(), month.getMonth(), 1));
+    setView('month');
+  };
+
   const openCreate = () => {
-    setForm(emptyForm());
+    setForm(emptyForm(cursor));
     setCreateOpen(true);
   };
 
@@ -252,8 +395,27 @@ export default function ReservationsPage() {
   };
 
   const description = data
-    ? `${dateLabel(data.date)} · ${data.stats.total} bookings · ${data.stats.covers} covers`
-    : 'Loading today’s book…';
+    ? `${range.label} · ${data.stats.total} bookings · ${data.stats.covers} covers`
+    : 'Loading the book…';
+
+  const today = startOfDay(new Date());
+  const weekDays = Array.from({ length: 7 }, (_, index) => addDays(range.from, index));
+
+  const monthFirst = new Date(range.from.getFullYear(), range.from.getMonth(), 1);
+  const monthLead = monthFirst.getDay();
+  const monthLength = new Date(
+    range.from.getFullYear(),
+    range.from.getMonth() + 1,
+    0,
+  ).getDate();
+  const monthCellCount = Math.ceil((monthLead + monthLength) / 7) * 7;
+  const monthGridDays = Array.from({ length: monthCellCount }, (_, index) =>
+    addDays(addDays(monthFirst, -monthLead), index),
+  );
+  const yearMonths = Array.from(
+    { length: 12 },
+    (_, month) => new Date(range.from.getFullYear(), month, 1),
+  );
 
   return (
     <AppShell>
@@ -325,7 +487,7 @@ export default function ReservationsPage() {
                 value={data.stats.covers}
                 icon="groups"
                 tone="secondary"
-                hint={`${data.stats.total} bookings today`}
+                hint={`${data.stats.total} bookings in view`}
               />
               <Stat
                 label="Confirmed"
@@ -376,6 +538,56 @@ export default function ReservationsPage() {
               </button>
             )}
 
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div className="flex items-center gap-1">
+                <button
+                  type="button"
+                  onClick={() => shiftRange(-1)}
+                  aria-label={`Previous ${view}`}
+                  className="flex h-10 w-10 items-center justify-center rounded-xl border border-border-subtle bg-surface-container text-text-secondary transition-colors hover:bg-surface-container-high hover:text-text-primary"
+                >
+                  <span className="material-symbols-outlined text-body-base">chevron_left</span>
+                </button>
+                <Button variant="ghost" size="sm" onClick={goToday}>
+                  Today
+                </Button>
+                <button
+                  type="button"
+                  onClick={() => shiftRange(1)}
+                  aria-label={`Next ${view}`}
+                  className="flex h-10 w-10 items-center justify-center rounded-xl border border-border-subtle bg-surface-container text-text-secondary transition-colors hover:bg-surface-container-high hover:text-text-primary"
+                >
+                  <span className="material-symbols-outlined text-body-base">chevron_right</span>
+                </button>
+                <span className="ml-2 font-body-base text-body-base font-bold text-text-primary">
+                  {range.label}
+                </span>
+                {refreshing && (
+                  <span className="material-symbols-outlined animate-spin text-[18px] text-text-tertiary">
+                    progress_activity
+                  </span>
+                )}
+              </div>
+
+              <div className="flex rounded-full bg-surface-container p-1">
+                {VIEW_ITEMS.map((item) => (
+                  <button
+                    key={item.id}
+                    type="button"
+                    onClick={() => setView(item.id)}
+                    className={`h-8 rounded-full px-3 font-body-sm text-body-sm font-bold transition-colors ${
+                      view === item.id
+                        ? 'bg-gradient-to-r from-accent-purple-glow to-secondary text-bg-canvas'
+                        : 'text-text-secondary hover:text-text-primary'
+                    }`}
+                  >
+                    {item.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {view === 'day' ? (
             <Card
               title="Arrivals"
               subtitle="Grouped by arrival time"
@@ -513,6 +725,183 @@ export default function ReservationsPage() {
                 })
               )}
             </Card>
+            ) : view === 'week' ? (
+              <Card
+                title="Calendar"
+                subtitle="Tap a day to open its full book"
+                icon="calendar_view_week"
+                actions={<Badge tone="neutral">{filtered.length} bookings</Badge>}
+                bodyClassName="overflow-x-auto"
+              >
+                <div className="grid min-w-[860px] grid-cols-7 gap-2">
+                  {weekDays.map((day) => {
+                    const rows = rowsFor(day);
+                    const covers = rows.reduce((sum, row) => sum + row.partySize, 0);
+                    const isToday = day.getTime() === today.getTime();
+                    return (
+                      <div
+                        key={dayKey(day)}
+                        className={`flex min-h-[240px] flex-col gap-2 rounded-xl border p-2 ${
+                          isToday
+                            ? 'border-accent-cyan-bright/50 bg-accent-cyan-bright/[0.06]'
+                            : 'border-border-subtle bg-surface-container-low'
+                        }`}
+                      >
+                        <button
+                          type="button"
+                          aria-label={`${shortDay(day)} — open day`}
+                          onClick={() => openDay(day)}
+                          className="flex items-baseline justify-between gap-1 text-left"
+                        >
+                          <span
+                            className={`font-body-sm text-body-sm font-bold ${
+                              isToday ? 'text-accent-cyan-bright' : 'text-text-primary'
+                            }`}
+                          >
+                            {shortDay(day)}
+                          </span>
+                          <span className="font-mono-metric-sm text-[10px] text-text-tertiary">
+                            {rows.length}
+                          </span>
+                        </button>
+
+                        <div className="flex flex-1 flex-col gap-1">
+                          {rows.length === 0 ? (
+                            <span className="pt-6 text-center font-body-sm text-body-sm text-text-subtle">
+                              —
+                            </span>
+                          ) : (
+                            rows.map((reservation) => (
+                              <BookingPill key={reservation.id} reservation={reservation} />
+                            ))
+                          )}
+                        </div>
+
+                        {rows.length > 0 && (
+                          <span className="font-label-badge text-label-badge uppercase text-text-tertiary">
+                            {covers} covers
+                          </span>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </Card>
+            ) : view === 'month' ? (
+              <Card
+                title="Calendar"
+                subtitle="Tap a day to open its full book"
+                icon="calendar_month"
+                actions={<Badge tone="neutral">{filtered.length} bookings</Badge>}
+                bodyClassName="overflow-x-auto"
+              >
+                <div className="min-w-[780px]">
+                  <div className="grid grid-cols-7 gap-1 pb-2">
+                    {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((label) => (
+                      <span
+                        key={label}
+                        className="px-1 font-label-badge text-label-badge uppercase text-text-tertiary"
+                      >
+                        {label}
+                      </span>
+                    ))}
+                  </div>
+
+                  <div className="grid grid-cols-7 gap-1">
+                    {monthGridDays.map((day) => {
+                      const rows = rowsFor(day);
+                      const inMonth = day.getMonth() === range.from.getMonth();
+                      const isToday = day.getTime() === today.getTime();
+                      return (
+                        <button
+                          key={dayKey(day)}
+                          type="button"
+                          aria-label={`${shortDay(day)} — open day`}
+                          onClick={() => openDay(day)}
+                          className={`flex min-h-[104px] flex-col items-stretch gap-1 rounded-lg border p-1.5 text-left transition-colors ${
+                            inMonth
+                              ? 'border-border-subtle bg-surface-container-low hover:border-secondary/50 hover:bg-surface-container'
+                              : 'border-transparent bg-surface-container-lowest/30 hover:border-border-subtle'
+                          } ${isToday ? 'ring-1 ring-accent-cyan-bright' : ''}`}
+                        >
+                          <span
+                            className={`px-0.5 font-mono-metric-sm text-mono-metric-sm font-bold ${
+                              isToday
+                                ? 'text-accent-cyan-bright'
+                                : inMonth
+                                  ? 'text-text-secondary'
+                                  : 'text-text-subtle'
+                            }`}
+                          >
+                            {day.getDate()}
+                          </span>
+                          {rows.slice(0, 3).map((reservation) => (
+                            <BookingPill
+                              key={reservation.id}
+                              reservation={reservation}
+                              compact
+                            />
+                          ))}
+                          {rows.length > 3 && (
+                            <span className="px-0.5 font-body-sm text-[10px] font-semibold text-text-tertiary">
+                              +{rows.length - 3} more
+                            </span>
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              </Card>
+            ) : (
+              <Card
+                title="Calendar"
+                subtitle="Tap a month to drill into the calendar"
+                icon="calendar_today"
+                actions={<Badge tone="neutral">{filtered.length} bookings</Badge>}
+              >
+                <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+                  {yearMonths.map((month) => {
+                    const monthStart = new Date(month.getFullYear(), month.getMonth(), 1).getTime();
+                    const monthEnd = new Date(
+                      month.getFullYear(),
+                      month.getMonth() + 1,
+                      1,
+                    ).getTime();
+                    const rows = filtered.filter((reservation) => {
+                      const at = new Date(reservation.reservationTime).getTime();
+                      return at >= monthStart && at < monthEnd;
+                    });
+                    const covers = rows.reduce((sum, row) => sum + row.partySize, 0);
+                    const isCurrent =
+                      month.getFullYear() === today.getFullYear() &&
+                      month.getMonth() === today.getMonth();
+                    return (
+                      <button
+                        key={month.toISOString()}
+                        type="button"
+                        onClick={() => openMonth(month)}
+                        className={`flex flex-col gap-1 rounded-xl border p-3 text-left transition-colors ${
+                          isCurrent
+                            ? 'border-accent-cyan-bright/50 bg-accent-cyan-bright/[0.06] hover:bg-accent-cyan-bright/[0.1]'
+                            : 'border-border-subtle bg-surface-container-low hover:border-secondary/50 hover:bg-surface-container'
+                        }`}
+                      >
+                        <span className="font-body-base text-body-base font-bold text-text-primary">
+                          {month.toLocaleDateString('en-US', { month: 'long' })}
+                        </span>
+                        <span className="font-mono-metric-md text-mono-metric-md font-bold text-accent-cyan-bright">
+                          {rows.length}
+                        </span>
+                        <span className="font-body-sm text-body-sm text-text-tertiary">
+                          bookings · {covers} covers
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </Card>
+            )}
           </>
         )}
       </div>
@@ -611,5 +1000,40 @@ function Field({ label, children }: { label: string; children: ReactNode }) {
       </span>
       {children}
     </label>
+  );
+}
+
+function BookingPill({
+  reservation,
+  compact = false,
+}: {
+  reservation: Reservation;
+  compact?: boolean;
+}) {
+  const tone =
+    reservation.status === 'waitlist'
+      ? 'bg-status-caution/15 text-status-caution'
+      : reservation.status === 'seated'
+        ? 'bg-status-ready/15 text-status-ready'
+        : reservation.vip
+          ? 'bg-accent-purple-glow/15 text-accent-purple-glow'
+          : 'bg-surface-container-high text-text-secondary';
+  return (
+    <span
+      className={`flex items-center gap-1 rounded-md px-1.5 py-0.5 font-body-sm text-[11px] ${tone}`}
+      title={`${timeLabel(reservation.reservationTime)} · ${reservation.guestName} · ${
+        reservation.partySize
+      } guests`}
+    >
+      <span className="shrink-0 font-mono-metric-sm text-[10px] font-bold">
+        {compact ? compactTime(reservation.reservationTime) : timeLabel(reservation.reservationTime)}
+      </span>
+      <span className="truncate">
+        {compact ? reservation.guestName.replace(/^The\s+/i, '') : reservation.guestName}
+      </span>
+      <span className="ml-auto shrink-0 opacity-70">
+        {compact ? `${reservation.partySize}p` : reservation.partySize}
+      </span>
+    </span>
   );
 }

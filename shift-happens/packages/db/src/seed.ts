@@ -788,6 +788,85 @@ async function main() {
     })),
   });
 
+  // Forward book: confirmed bookings spread across the next 12 months so the
+  // week / month / year calendar on /reservations has a realistic diary.
+  console.log('→ forward reservation book');
+  const forwardGuests: Array<{
+    name: string; party: number; vip?: boolean; occasion?: string; notes?: string; source?: string;
+  }> = [
+    { name: 'Avery Cole', party: 2 },
+    { name: 'Nina Mercer', party: 4, occasion: 'Birthday' },
+    { name: 'Owen Fitzgerald', party: 3 },
+    { name: 'Priya Shah', party: 6, notes: 'Two high chairs' },
+    { name: 'The Brennan Party', party: 8, source: 'host', notes: 'Deposit taken' },
+    { name: 'Hugo Lindqvist', party: 2, vip: true, notes: 'Regular • bar seat preferred' },
+    { name: 'Camille Duval', party: 4 },
+    { name: 'Marcus Webb', party: 2, notes: 'Gluten-free — celiac' },
+    { name: 'Sofia Marchetti', party: 5, occasion: 'Anniversary' },
+    { name: 'Elijah Brooks', party: 3 },
+    { name: 'Hana Kobayashi', party: 4, source: 'voice_ai' },
+    { name: 'The Delacroix Party', party: 10, source: 'host', notes: 'PDR requested' },
+    { name: 'Grace Abara', party: 2 },
+    { name: 'Tomás Reyes', party: 6 },
+    { name: 'Ines Moreau', party: 3, occasion: 'Graduation' },
+    { name: 'Callum Reid', party: 4 },
+    { name: 'Yara Haddad', party: 2, vip: true, notes: 'Press — local guide' },
+    { name: 'The Whitfield Party', party: 7, notes: 'Patio if possible' },
+    { name: 'Leo Nakamura', party: 4 },
+    { name: 'Diane Okafor', party: 3 },
+    { name: 'Ruth Ellison', party: 2 },
+    { name: 'Mateo Silva', party: 5, occasion: 'Birthday' },
+    { name: 'Freya Lindgren', party: 4, source: 'voice_ai' },
+    { name: 'The Ashford Party', party: 9, notes: 'Deposit taken' },
+  ];
+
+  const forwardBook: Array<{
+    name: string; party: number; vip: boolean; occasion: string | null;
+    notes: string | null; source: string; when: Date;
+  }> = [];
+  for (let monthOffset = 0; monthOffset < 12; monthOffset++) {
+    const month = new Date(now.getFullYear(), now.getMonth() + monthOffset, 1);
+    const daysInMonth = new Date(month.getFullYear(), month.getMonth() + 1, 0).getDate();
+    for (let slot = 0; slot < 4; slot++) {
+      const day = Math.min(daysInMonth, 2 + slot * 7 + (monthOffset % 3));
+      const when = new Date(
+        month.getFullYear(),
+        month.getMonth(),
+        day,
+        18 + (slot % 4),
+        slot % 2 === 0 ? 0 : 30,
+      );
+      if (when.getTime() <= now.getTime()) continue;
+      const guest = forwardGuests[(monthOffset * 4 + slot) % forwardGuests.length];
+      forwardBook.push({
+        name: guest.name,
+        party: guest.party,
+        vip: guest.vip ?? false,
+        occasion: guest.occasion ?? null,
+        notes: guest.notes ?? null,
+        source: guest.source ?? 'host',
+        when,
+      });
+    }
+  }
+
+  await prisma.reservation.createMany({
+    data: forwardBook.map((r, index) => ({
+      id: RES(101 + index),
+      restaurantId: RESTAURANT_ID,
+      guestName: r.name,
+      phone: `+1 555-${String(2000 + index).padStart(4, '0')}`,
+      email: `${r.name.toLowerCase().replace(/[^a-z]+/g, '.')}@guest.local`,
+      partySize: r.party,
+      reservationTime: r.when,
+      status: 'confirmed',
+      source: r.source,
+      notes: r.notes,
+      vip: r.vip,
+      occasion: r.occasion,
+    })),
+  });
+
   console.log('→ knowledge base + calls');
   const kbSeed: Array<{ n: number; category: string; title: string; content: string }> = [
     { n: 1, category: 'Allergens', title: 'Gluten-free dining', content: 'Our 28-day dry-aged ribeye is naturally gluten-free; it is finished with compound rosemary garlic butter. Gluten-free crust is available on all woodfired pizzas for $4. The kitchen uses a dedicated gluten-free prep board and fryer.' },
