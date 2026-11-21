@@ -207,7 +207,7 @@ export async function answerUtterance(
   const live86 = eightySix.map((item) => item.name);
 
   const systemInstruction = [
-    'You are the SHIFT HAPPENS! voice concierge for a high-end restaurant.',
+    'You are the Whiteout voice concierge for a high-end restaurant.',
     'Be concise, warm, and operationally precise. Answer in 2-3 sentences.',
     'Never promise an item that is on the live 86 list.',
     `Live 86 list: ${live86.length ? live86.join(', ') : 'none'}.`,
@@ -427,7 +427,7 @@ export async function listKnowledgeBase(restaurantId = env.RESTAURANT_ID) {
 export function inboundTwiml(webOrigin = env.WEB_ORIGIN) {
   return `<?xml version="1.0" encoding="UTF-8"?>
 <Response>
-  <Say voice="Polly.Joanna">Thank you for calling SHIFT HAPPENS. I can help with reservations, allergens, hours, parking, or tonight's menu.</Say>
+  <Say voice="Polly.Joanna">Thank you for calling Whiteout. I can help with reservations, allergens, hours, parking, or tonight's menu.</Say>
   <Gather input="speech" action="${webOrigin.replace(/\/$/, '')}/api/voice/gather" speechTimeout="auto" language="en-US">
     <Say voice="Polly.Joanna">How can I help you tonight?</Say>
   </Gather>

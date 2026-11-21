@@ -1,4 +1,4 @@
-// SHIFT HAPPENS! relational schema
+// Whiteout relational schema
 // Mirrors the DDL in the build prompt (section 4) with the additional
 // reservations / staff / training tables required by the wired screens.
 

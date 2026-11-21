@@ -4,21 +4,24 @@ import PwaRegister from '@/components/PwaRegister';
 
 export const metadata: Metadata = {
   title: {
-    default: 'SHIFT HAPPENS! by HYDRAFORGE AI',
-    template: '%s · SHIFT HAPPENS!',
+    default: 'Whiteout — Restaurant Operations',
+    template: '%s · Whiteout',
   },
   description:
     'Real-time restaurant operations engine — POS, KDS, floor plan, labor pacing, inventory, reservations and a voice AI concierge.',
-  applicationName: 'SHIFT HAPPENS!',
+  applicationName: 'Whiteout',
   manifest: '/manifest.webmanifest',
   appleWebApp: {
     capable: true,
     statusBarStyle: 'black-translucent',
-    title: 'SHIFT HAPPENS!',
+    title: 'Whiteout',
   },
   icons: {
-    icon: '/icon.svg',
-    apple: '/icon.svg',
+    icon: [
+      { url: '/icon-192.png', sizes: '192x192', type: 'image/png' },
+      { url: '/icon-512.png', sizes: '512x512', type: 'image/png' },
+    ],
+    apple: '/icon-192.png',
   },
 };
 

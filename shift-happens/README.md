@@ -1,4 +1,4 @@
-# SHIFT HAPPENS! by HYDRAFORGE AI
+# Whiteout by HYDRAFORGE AI
 
 A production-shaped, full-stack restaurant operations engine. The screens are
 clean, purpose-built React pages (no dense cockpit mockups) backed by a live

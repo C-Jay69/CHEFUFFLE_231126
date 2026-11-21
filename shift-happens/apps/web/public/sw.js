@@ -1,6 +1,6 @@
-/* SHIFT HAPPENS! offline shell — production PWA service worker */
-const CACHE = 'shift-happens-v2';
-const SHELL = ['/', '/pos', '/manifest.webmanifest', '/icon.svg'];
+/* Whiteout offline shell — production PWA service worker */
+const CACHE = 'whiteout-v1';
+const SHELL = ['/', '/serve', '/manifest.webmanifest', '/icon-192.png'];
 
 self.addEventListener('install', (event) => {
   event.waitUntil(

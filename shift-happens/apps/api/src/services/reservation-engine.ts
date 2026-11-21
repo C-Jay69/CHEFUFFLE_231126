@@ -242,7 +242,7 @@ export async function createReservation(
     restaurantId,
     channel: 'sms',
     recipients: [input.phone],
-    message: `SHIFT HAPPENS! reservation confirmed for ${input.partySize} on ${time.toLocaleString('en-US', { weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}${reservation.table ? ` at ${reservation.table.tableNumber}` : ''}. Reply HELP for assistance.`,
+    message: `Whiteout reservation confirmed for ${input.partySize} on ${time.toLocaleString('en-US', { weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}${reservation.table ? ` at ${reservation.table.tableNumber}` : ''}. Reply HELP for assistance.`,
   }).catch((error) => console.warn('reservation SMS failed', error));
 
   return serialized;

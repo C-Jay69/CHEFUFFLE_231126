@@ -1,4 +1,4 @@
-# Minimal UI spec — SHIFT HAPPENS! server screens
+# Minimal UI spec — Whiteout server screens
 
 The goal is a clean, fast, touch-friendly operations app. Remove decorative or
 duplicated telemetry. Every page should answer one question and expose the

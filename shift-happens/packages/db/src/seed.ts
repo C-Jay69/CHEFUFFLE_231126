@@ -80,7 +80,7 @@ async function main() {
   await prisma.restaurant.create({
     data: {
       id: RESTAURANT_ID,
-      name: 'SHIFT HAPPENS! Downtown Flagship',
+      name: 'Whiteout Downtown Flagship',
       address: '1811 Nocturne Ave, Downtown Arts District',
       phone: '+1 (555) 018-1811',
       targetLaborPercentage: 18.5,
@@ -926,7 +926,7 @@ async function main() {
       callerName: c.name,
       durationSeconds: c.dur,
       summary: c.summary,
-      transcript: `Agent: Thank you for calling SHIFT HAPPENS! How can I help?\nCaller: ${c.summary}\nAgent: I've taken care of that for you.`,
+      transcript: `Agent: Thank you for calling Whiteout! How can I help?\nCaller: ${c.summary}\nAgent: I've taken care of that for you.`,
       outcome: c.outcome,
       sentimentScore: c.sentiment,
       createdAt: minutesAgo(c.mins),

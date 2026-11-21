@@ -203,7 +203,7 @@ export async function broadcastEarlyCut(
     restaurantId,
     channel: 'sms',
     recipients: recipientNames,
-    message: `SHIFT HAPPENS!: ${message}`,
+    message: `Whiteout: ${message}`,
   });
   emitRestaurant('LABOR_PACING_UPDATE', {
     event: 'LABOR_PACING_UPDATE',

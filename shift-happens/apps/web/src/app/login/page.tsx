@@ -105,18 +105,15 @@ export default function LoginPage() {
       <div className="pointer-events-none absolute -top-32 left-1/4 h-96 w-96 rounded-full bg-primary-container/10 blur-[130px]" />
       <div className="pointer-events-none absolute right-10 top-10 h-80 w-80 rounded-full bg-secondary/10 blur-[120px]" />
       <div className="relative z-10 flex w-full max-w-md flex-col gap-space-md">
-        <div className="flex items-center gap-space-sm">
-          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-accent-purple-glow to-secondary font-headline-xl text-headline-xl font-black text-bg-canvas">
-            S
-          </div>
-          <div className="flex flex-col">
-            <span className="font-headline-lg text-headline-lg uppercase tracking-tight text-text-primary">
-              SHIFT HAPPENS!
-            </span>
-            <span className="font-label-badge text-label-badge font-bold uppercase tracking-widest text-secondary">
-              HYDRAFORGE AI · Terminal Access
-            </span>
-          </div>
+        <div className="flex flex-col gap-2">
+          <img
+            src="/whiteout-logo.png"
+            alt="Whiteout"
+            className="h-16 w-auto self-start object-contain"
+          />
+          <span className="font-label-badge text-label-badge font-bold uppercase tracking-widest text-secondary">
+            HYDRAFORGE AI · Terminal Access
+          </span>
         </div>
 
         <div className="rounded-2xl border border-border-subtle bg-surface-container-low p-space-lg shadow-2xl">

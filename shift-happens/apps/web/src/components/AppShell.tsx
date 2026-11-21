@@ -171,18 +171,12 @@ export default function AppShell({
     <div className="min-h-screen bg-bg-canvas text-on-surface">
       <aside className="fixed left-0 top-0 z-50 hidden h-full w-64 flex-col justify-between border-r border-border-subtle bg-bg-chrome lg:flex">
         <div className="flex min-h-0 flex-col">
-          <Link href="/serve" className="flex h-16 items-center gap-3 border-b border-border-subtle px-4">
-            <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-accent-purple-glow to-secondary font-headline-md text-headline-md font-black text-bg-canvas">
-              S
-            </span>
-            <span className="flex min-w-0 flex-col">
-              <span className="truncate font-headline-md text-headline-md uppercase tracking-tight text-text-primary">
-                SHIFT HAPPENS!
-              </span>
-              <span className="truncate font-label-badge text-label-badge font-bold uppercase tracking-widest text-secondary">
-                HYDRAFORGE AI
-              </span>
-            </span>
+          <Link href="/serve" className="flex h-16 items-center border-b border-border-subtle px-4">
+            <img
+              src="/whiteout-logo.png"
+              alt="Whiteout"
+              className="h-9 w-auto max-w-[200px] object-contain"
+            />
           </Link>
           <div className="flex-1 overflow-y-auto p-3">{nav}</div>
         </div>
@@ -211,7 +205,7 @@ export default function AppShell({
           />
           <div className="absolute left-0 top-0 flex h-full w-72 flex-col border-r border-border-subtle bg-bg-chrome p-3">
             <div className="mb-3 flex items-center justify-between border-b border-border-subtle pb-3">
-              <span className="font-headline-md text-headline-md uppercase text-text-primary">SHIFT HAPPENS!</span>
+              <img src="/whiteout-logo.png" alt="Whiteout" className="h-7 w-auto" />
               <button
                 onClick={() => setMobileOpen(false)}
                 className="flex h-9 w-9 items-center justify-center rounded-lg text-text-tertiary hover:text-text-primary"
