@@ -53,6 +53,19 @@ app.setErrorHandler((error, request, reply) => {
     });
   }
   const err = error as Error & { statusCode?: number; code?: string };
+  if (err.name === 'PrismaClientInitializationError' || err.code === 'P1001') {
+    request.log.error({ err }, 'Database unreachable');
+    let target = 'the configured database';
+    try {
+      const url = new URL(env.DATABASE_URL);
+      target = `${url.hostname}:${url.port || '5432'}`;
+    } catch {
+      /* keep the generic label */
+    }
+    return reply.status(503).send({
+      error: `Database unreachable at ${target}. Start it with \`pnpm db:up\`.`,
+    });
+  }
   if (err.code === 'P2025') {
     return reply.status(404).send({ error: 'Resource not found' });
   }
