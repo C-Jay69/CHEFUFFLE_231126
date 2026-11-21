@@ -161,6 +161,10 @@ Open Checks and **Pay check** on a table):
   (Visa / Mastercard / Amex / Debit / Other), with an **editable amount**. A
   guest can pay part Visa, part cash, part gift card; each payment is a row on
   the check and one card payment is one slip at close-out.
+* **Print** — a receipt menu with **Total bill**, **Print by seat** and
+  **Individual bills**. Each prints an 80mm/72mm monospace receipt through the
+  browser’s print dialog (pick the thermal receipt printer installed on the
+  terminal); individual bills print one guest per page.
 * The check closes itself when the payments cover the total (tip included);
   the screen then shows the paid receipt with every tender. The API rejects
   overpayments and a tip lower than what has already been taken.
@@ -226,6 +230,10 @@ every payment records its tender at the till.
   cards / house accounts, each with a slip count and a total, or an
   **Unallocated** bucket when a check was settled without a tender (with a
   prompt to pick the brand next time).
+* **Recall** — type a check number and press Recall to pull the check up with
+  its items, payments and balance. A manager can **Re-open** a paid check
+  (payments stay on the check) to amend items or the tip, or jump to the
+  payment screen to settle any difference.
 * **Server & bar tallies** — one drawer per server plus the **bar till** as its
   own drawer (bar-zone orders are attributed to the till, so server tallies +
   bar reconcile to the computer total). Each row shows sales, card total, cash
@@ -388,7 +396,8 @@ GET    /api/dashboard/summary             GET   /api/end-of-night?date=
 GET    /api/menu                          PATCH /api/menu/:id/availability
 POST   /api/orders                        GET   /api/orders
 GET    /api/orders/:id                    POST  /api/orders/:id/items
-POST   /api/orders/:id/payments            POST  /api/orders/:id/pay
+GET    /api/orders/by-number/:number       POST  /api/orders/:id/payments
+POST   /api/orders/:id/pay                 POST  /api/orders/:id/reopen
 POST   /api/orders/:id/void
 GET    /api/kds/tickets?station=          GET   /api/kds/counts
 POST   /api/kds/bump                      GET   /api/kds/bumps

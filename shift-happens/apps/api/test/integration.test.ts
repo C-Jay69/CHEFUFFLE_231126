@@ -10,7 +10,9 @@ import {
   addOrderPayment,
   appendOrderItems,
   createOrder,
+  getOrderByNumber,
   payOrder,
+  reopenOrder,
 } from '../src/services/pos-engine';
 import { getEndOfNight } from '../src/services/end-of-night-engine';
 import { getTables } from '../src/services/stage-engine';
@@ -409,6 +411,37 @@ describe('POS → KDS → Floor Plan → Inventory integration', () => {
     ).toEqual(['card', 'cash']);
     expect(afterCash.paidAmount).toBeCloseTo(created.order.total, 2);
     expect(afterCash.balance).toBe(0);
+  });
+
+  it('recalls a check by number and re-opens a paid check for amendment', async () => {
+    const created = await createOrder(
+      {
+        tableId,
+        serverId: staffId,
+        items: [{ menuItemId, quantity: 1, modifiers: [] }],
+        sendToKitchen: true,
+        autoGratuity: false,
+      },
+      restaurantId,
+    );
+    await payOrder(
+      created.order.id,
+      { tip: 0, method: 'card', cardBrand: 'amex' },
+      restaurantId,
+    );
+
+    const recalled = await getOrderByNumber(
+      created.order.orderNumber,
+      restaurantId,
+    );
+    expect(recalled.id).toBe(created.order.id);
+    expect(recalled.status).toBe('paid');
+    expect(recalled.balance).toBe(0);
+
+    const reopened = await reopenOrder(created.order.id, restaurantId);
+    expect(reopened.status).not.toBe('paid');
+    expect(reopened.closedAt).toBeNull();
+    expect(reopened.payments).toHaveLength(1);
   });
 
 });

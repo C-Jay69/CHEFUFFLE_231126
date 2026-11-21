@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import AppShell from '@/components/AppShell';
 import {
   Avatar,
@@ -8,12 +9,15 @@ import {
   Button,
   Card,
   EmptyState,
+  Modal,
   PageHeader,
   Stat,
 } from '@/components/ui';
 import { api } from '@/lib/api';
-import { money } from '@/lib/format';
+import { money, timeLabel } from '@/lib/format';
+import { useSession } from '@/lib/session';
 import { showToast } from '@/lib/toast';
+import type { Order } from '@/lib/types';
 
 type TenderKey =
   | 'visa'
@@ -56,7 +60,7 @@ interface EndOfNightResponse {
   unallocatedChecks: number;
 }
 
-type CountField = 'visa' | 'mastercard' | 'amex' | 'otherCard' | 'cash';
+type CountField = 'visa' | 'mastercard' | 'amex' | 'otherCard' | 'giftCard' | 'cash';
 type CountValues = Record<CountField, string>;
 
 const COUNT_FIELDS: Array<{ key: CountField; label: string }> = [
@@ -64,6 +68,7 @@ const COUNT_FIELDS: Array<{ key: CountField; label: string }> = [
   { key: 'mastercard', label: 'Mastercard' },
   { key: 'amex', label: 'Amex' },
   { key: 'otherCard', label: 'Other card' },
+  { key: 'giftCard', label: 'Gift card' },
   { key: 'cash', label: 'Cash' },
 ];
 
@@ -84,6 +89,7 @@ const EMPTY_COUNTS: CountValues = {
   mastercard: '',
   amex: '',
   otherCard: '',
+  giftCard: '',
   cash: '',
 };
 
@@ -130,6 +136,12 @@ function expectedFor(drawer: Drawer, field: CountField) {
   return drawer.tenders[field].amount;
 }
 
+function expectedCountTotal(drawer: Drawer) {
+  return (
+    drawer.cardTotal + drawer.tenders.giftCard.amount + drawer.cashDue
+  );
+}
+
 function countedFor(drawer: Drawer, counts: CountValues | undefined) {
   if (!counts) return 0;
   return COUNT_FIELDS.reduce((sum, field) => sum + numeric(counts[field.key]), 0);
@@ -137,16 +149,23 @@ function countedFor(drawer: Drawer, counts: CountValues | undefined) {
 
 function hasAnyCount(counts: CountValues | undefined) {
   if (!counts) return false;
-  return COUNT_FIELDS.some((field) => counts[field.key].trim() !== '');
+  return COUNT_FIELDS.some((field) => (counts[field.key] ?? '').trim() !== '');
 }
 
 export default function EndOfNightPage() {
+  const router = useRouter();
+  const { can } = useSession();
+  const canReopen = can('orders.void');
   const [cursor, setCursor] = useState(() => startOfDay(new Date()));
   const [data, setData] = useState<EndOfNightResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [counts, setCounts] = useState<Record<string, CountValues>>({});
   const [expanded, setExpanded] = useState<string | null>(null);
+  const [recallInput, setRecallInput] = useState('');
+  const [recalling, setRecalling] = useState(false);
+  const [reopening, setReopening] = useState(false);
+  const [recallOrder, setRecallOrder] = useState<Order | null>(null);
 
   const storageKey = `sh-eon-${dateKey(cursor)}`;
 
@@ -199,6 +218,44 @@ export default function EndOfNightPage() {
     });
   };
 
+  const recallCheck = async () => {
+    const number = Number(recallInput);
+    if (!Number.isInteger(number) || number <= 0) {
+      showToast('Enter a check number to recall.', 'warn');
+      return;
+    }
+    setRecalling(true);
+    try {
+      const order = await api.get<Order>(`/orders/by-number/${number}`);
+      setRecallOrder(order);
+    } catch (error) {
+      showToast(
+        error instanceof Error ? error.message : `Could not find check #${number}.`,
+        'error',
+      );
+    } finally {
+      setRecalling(false);
+    }
+  };
+
+  const reopenCheck = async () => {
+    if (!recallOrder) return;
+    setReopening(true);
+    try {
+      const updated = await api.post<Order>(`/orders/${recallOrder.id}/reopen`);
+      setRecallOrder(updated);
+      showToast(`Check #${updated.orderNumber} re-opened for amendment.`, 'success');
+      await load(true);
+    } catch (error) {
+      showToast(
+        error instanceof Error ? error.message : 'Could not re-open the check.',
+        'error',
+      );
+    } finally {
+      setReopening(false);
+    }
+  };
+
   const clearCounts = () => {
     setCounts({});
     try {
@@ -222,7 +279,7 @@ export default function EndOfNightPage() {
     0,
   );
   const expectedTotal = drawers.reduce(
-    (sum, drawer) => sum + drawer.cardTotal + drawer.cashDue,
+    (sum, drawer) => sum + expectedCountTotal(drawer),
     0,
   );
 
@@ -295,9 +352,35 @@ export default function EndOfNightPage() {
               {dayLabel(cursor)}
             </span>
           </div>
-          <Button variant="ghost" size="sm" icon="restart_alt" onClick={clearCounts}>
-            Clear count sheet
-          </Button>
+          <div className="flex flex-wrap items-center gap-2">
+            <label className="flex h-10 items-center gap-2 rounded-xl border border-border-subtle bg-surface-container-lowest px-3">
+              <span className="material-symbols-outlined text-[18px] text-text-tertiary">search</span>
+              <input
+                value={recallInput}
+                onChange={(event) =>
+                  setRecallInput(event.target.value.replace(/\D/g, '').slice(0, 6))
+                }
+                onKeyDown={(event) => {
+                  if (event.key === 'Enter') void recallCheck();
+                }}
+                inputMode="numeric"
+                placeholder="Check #"
+                className="w-20 bg-transparent font-body-sm text-body-sm text-text-primary outline-none placeholder:text-text-subtle"
+              />
+            </label>
+            <Button
+              variant="secondary"
+              size="sm"
+              icon="manage_search"
+              loading={recalling}
+              onClick={() => void recallCheck()}
+            >
+              Recall
+            </Button>
+            <Button variant="ghost" size="sm" icon="restart_alt" onClick={clearCounts}>
+              Clear count sheet
+            </Button>
+          </div>
         </div>
 
         {loading && !data ? (
@@ -430,7 +513,7 @@ export default function EndOfNightPage() {
                 const isBar = key === 'bar';
                 const values = counts[key] ?? EMPTY_COUNTS;
                 const counted = countedFor(drawer, values);
-                const expected = drawer.cardTotal + drawer.cashDue;
+                const expected = expectedCountTotal(drawer);
                 const variance = counted - expected;
                 const open = expanded === key;
                 const countedFlag = hasAnyCount(values);
@@ -488,6 +571,9 @@ export default function EndOfNightPage() {
                               <span className="font-bold text-text-secondary">
                                 {drawer.tenders.visa.count}V · {drawer.tenders.mastercard.count}M ·{' '}
                                 {drawer.tenders.amex.count}A
+                                {drawer.tenders.giftCard.count > 0
+                                  ? ` · ${drawer.tenders.giftCard.count}GC`
+                                  : ''}
                                 {drawer.tenders.debit.count + drawer.tenders.otherCard.count > 0
                                   ? ` · ${drawer.tenders.debit.count + drawer.tenders.otherCard.count} other`
                                   : ''}
@@ -525,10 +611,10 @@ export default function EndOfNightPage() {
 
                     {open && (
                       <div className="flex flex-col gap-3 rounded-lg border border-border-subtle bg-surface-container-low p-3">
-                        <div className="grid grid-cols-2 gap-2 sm:grid-cols-5">
+                        <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 xl:grid-cols-6">
                           {COUNT_FIELDS.map((field) => {
                             const expectedAmount = expectedFor(drawer, field.key);
-                            const value = values[field.key];
+                            const value = values[field.key] ?? '';
                             const entered = value.trim() === '' ? null : numeric(value);
                             const diff =
                               entered === null ? null : entered - expectedAmount;
@@ -571,10 +657,8 @@ export default function EndOfNightPage() {
                         <div className="flex flex-wrap items-center justify-between gap-2 border-t border-border-subtle pt-2">
                           <span className="font-body-sm text-body-sm text-text-tertiary">
                             Counted {money(counted)} of {money(expected)}
-                            {drawer.tenders.giftCard.amount + drawer.tenders.house.amount > 0
-                              ? ` · ${money(
-                                  drawer.tenders.giftCard.amount + drawer.tenders.house.amount,
-                                )} gift/house not counted here`
+                            {drawer.tenders.house.amount > 0
+                              ? ` · ${money(drawer.tenders.house.amount)} house account not counted here`
                               : ''}
                           </span>
                           <span
@@ -642,7 +726,7 @@ export default function EndOfNightPage() {
                     className={`rounded-xl px-3 py-2 ${
                       !allCounted
                         ? 'bg-surface-container'
-                        : Math.abs(countedTotal - data.totals.gross) < 0.005
+                        : Math.abs(countedTotal - expectedTotal) < 0.005
                           ? 'bg-status-ready/10'
                           : 'bg-status-urgent/10'
                     }`}
@@ -654,23 +738,30 @@ export default function EndOfNightPage() {
                       className={`font-mono-metric-md text-mono-metric-md font-bold ${
                         !allCounted
                           ? 'text-text-subtle'
-                          : Math.abs(countedTotal - data.totals.gross) < 0.005
+                          : Math.abs(countedTotal - expectedTotal) < 0.005
                             ? 'text-status-ready'
                             : 'text-status-urgent'
                       }`}
                     >
                       {!allCounted
                         ? '—'
-                        : `${countedTotal - data.totals.gross > 0 ? '+' : ''}${money(
-                            countedTotal - data.totals.gross,
+                        : `${countedTotal - expectedTotal > 0 ? '+' : ''}${money(
+                            countedTotal - expectedTotal,
                           )}`}
                     </span>
                   </div>
                 </div>
 
+                {data.totals.tenders.house.amount > 0 && (
+                  <p className="font-body-sm text-body-sm text-text-tertiary">
+                    House accounts ({money(data.totals.tenders.house.amount)}) are recorded on the
+                    book but not counted in the envelope.
+                  </p>
+                )}
+
                 <p className="font-body-sm text-body-sm text-text-tertiary">
                   {allCounted
-                    ? 'Every drawer is counted. File the slips in the night envelope and close the till.'
+                    ? 'Every drawer is counted, gift cards included. File the slips in the night envelope and close the till.'
                     : `Count ${drawers.length - countedDrawers} more drawer${
                         drawers.length - countedDrawers === 1 ? '' : 's'
                       } to see the over / short against the ${data.totals.checks} paid check${
@@ -682,6 +773,151 @@ export default function EndOfNightPage() {
           </>
         )}
       </div>
+
+      <Modal
+        open={Boolean(recallOrder)}
+        onClose={() => setRecallOrder(null)}
+        title={recallOrder ? `Check #${recallOrder.orderNumber}` : 'Recall check'}
+        description={
+          recallOrder
+            ? `${recallOrder.tableNumber ?? 'Takeout'} · ${
+                recallOrder.serverName ?? 'Unassigned'
+              } · ${recallOrder.status.replace(/_/g, ' ')}`
+            : undefined
+        }
+        icon="receipt_long"
+        footer={
+          <>
+            <Button variant="ghost" size="md" onClick={() => setRecallOrder(null)}>
+              Close
+            </Button>
+            {recallOrder && recallOrder.tableNumber && recallOrder.status !== 'paid' && (
+              <Button
+                variant="secondary"
+                size="md"
+                icon="add"
+                onClick={() =>
+                  router.push(
+                    `/serve?table=${encodeURIComponent(recallOrder.tableNumber as string)}`,
+                  )
+                }
+              >
+                Add items
+              </Button>
+            )}
+            {recallOrder && (
+              <Button
+                variant="primary"
+                size="md"
+                icon="payments"
+                onClick={() => router.push(`/pay/${recallOrder.id}`)}
+              >
+                Open payment
+              </Button>
+            )}
+          </>
+        }
+      >
+        {recallOrder && (
+          <div className="flex flex-col gap-3">
+            <div className="flex items-center justify-between rounded-xl bg-surface-container px-3 py-2">
+              <span className="font-label-badge text-label-badge uppercase text-text-tertiary">
+                Total
+              </span>
+              <span className="font-mono-metric-md text-mono-metric-md font-bold text-text-primary">
+                {money(recallOrder.total)}
+              </span>
+            </div>
+
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-1 font-body-sm text-body-sm text-text-tertiary">
+              <span>
+                Subtotal <span className="text-text-secondary">{money(recallOrder.subtotal)}</span>
+              </span>
+              <span>
+                Tax <span className="text-text-secondary">{money(recallOrder.tax)}</span>
+              </span>
+              <span>
+                Tip <span className="text-text-secondary">{money(recallOrder.tip)}</span>
+              </span>
+              <span>
+                Paid{' '}
+                <span className="text-text-secondary">{money(recallOrder.paidAmount ?? 0)}</span>
+              </span>
+              <span>
+                Balance{' '}
+                <span className="text-accent-cyan-bright">
+                  {money(recallOrder.balance ?? 0)}
+                </span>
+              </span>
+            </div>
+
+            <ul className="flex max-h-40 flex-col gap-1 overflow-y-auto rounded-xl bg-surface-container-low p-2">
+              {recallOrder.items.map((item) => (
+                <li
+                  key={item.id}
+                  className="flex items-center justify-between gap-2 px-1 font-body-sm text-body-sm"
+                >
+                  <span className="min-w-0 truncate text-text-secondary">
+                    {item.quantity}× {item.name}
+                    {item.seat ? <span className="text-text-subtle"> · G{item.seat}</span> : null}
+                  </span>
+                  <span className="shrink-0 font-mono-metric-sm text-mono-metric-sm text-text-primary">
+                    {money(item.unitPrice * item.quantity)}
+                  </span>
+                </li>
+              ))}
+            </ul>
+
+            {(recallOrder.payments ?? []).length > 0 && (
+              <div className="flex flex-col gap-1">
+                <span className="font-label-badge text-label-badge uppercase text-text-tertiary">
+                  Payments
+                </span>
+                {(recallOrder.payments ?? []).map((payment) => (
+                  <div
+                    key={payment.id}
+                    className="flex items-center justify-between font-body-sm text-body-sm"
+                  >
+                    <span className="text-text-secondary">
+                      {payment.method === 'card'
+                        ? `${payment.cardBrand ?? 'Card'} card`
+                        : payment.method}
+                      {payment.label ? ` · ${payment.label}` : ''}
+                    </span>
+                    <span className="font-mono-metric-sm text-mono-metric-sm text-text-primary">
+                      {money(payment.amount)}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {recallOrder.status === 'paid' && (
+              <div className="flex flex-col gap-2 rounded-xl border border-status-caution/40 bg-status-caution/10 p-3">
+                <p className="font-body-sm text-body-sm text-text-secondary">
+                  This check is closed. Re-open it to amend items or the tip — the payments stay on
+                  the check and any difference is settled on the payment screen.
+                </p>
+                {canReopen ? (
+                  <Button
+                    variant="danger"
+                    size="md"
+                    icon="lock_open"
+                    loading={reopening}
+                    onClick={() => void reopenCheck()}
+                  >
+                    Re-open check
+                  </Button>
+                ) : (
+                  <p className="font-body-sm text-body-sm text-text-subtle">
+                    A manager is required to re-open a paid check.
+                  </p>
+                )}
+              </div>
+            )}
+          </div>
+        )}
+      </Modal>
     </AppShell>
   );
 }

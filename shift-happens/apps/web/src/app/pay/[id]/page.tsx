@@ -5,7 +5,7 @@ import { useParams, useRouter } from 'next/navigation';
 import AppShell from '@/components/AppShell';
 import { Badge, Button, Card, EmptyState } from '@/components/ui';
 import { api } from '@/lib/api';
-import { money, timeLabel } from '@/lib/format';
+import { escapeHtml, money, timeLabel } from '@/lib/format';
 import { useSession } from '@/lib/session';
 import { showToast } from '@/lib/toast';
 import type { Order } from '@/lib/types';
@@ -38,6 +38,46 @@ const BRAND_LABELS: Record<Brand, string> = {
 
 const INPUT =
   'h-11 w-full rounded-lg border border-border-subtle bg-surface-container-lowest px-3 font-body-base text-body-base text-text-primary outline-none transition-colors focus:border-secondary';
+
+const RECEIPT_CSS = `
+  @page { margin: 4mm; }
+  * { box-sizing: border-box; }
+  body { width: 72mm; margin: 0 auto; font-family: "Courier New", Courier, monospace; font-size: 11px; color: #000; }
+  h1 { font-size: 16px; text-align: center; margin: 0; letter-spacing: 2px; }
+  .meta { font-size: 10px; text-align: center; margin: 2px 0 6px; }
+  .section { font-size: 10px; text-align: center; margin: 2px 0; text-transform: uppercase; }
+  hr { border: 0; border-top: 1px dashed #000; margin: 5px 0; }
+  table { width: 100%; border-collapse: collapse; font-size: 11px; }
+  td { padding: 1px 0; vertical-align: top; }
+  .right { text-align: right; white-space: nowrap; }
+  .total { font-weight: bold; font-size: 13px; }
+  .muted { font-size: 9px; color: #333; }
+  .seat { font-weight: bold; margin-top: 6px; }
+  .blank { letter-spacing: 1px; }
+  .page { page-break-after: always; }
+  .page:last-child { page-break-after: auto; }
+`;
+
+function printReceipt(html: string) {
+  if (typeof window === 'undefined') return;
+  const frame = document.createElement('iframe');
+  frame.style.cssText = 'position:fixed;right:0;bottom:0;width:0;height:0;border:0';
+  document.body.appendChild(frame);
+  const win = frame.contentWindow;
+  const doc = win?.document;
+  if (!win || !doc) {
+    frame.remove();
+    return;
+  }
+  doc.open();
+  doc.write(html);
+  doc.close();
+  window.setTimeout(() => {
+    win.focus();
+    win.print();
+    window.setTimeout(() => frame.remove(), 1500);
+  }, 300);
+}
 
 function equalShares(total: number, count: number): Share[] {
   const cents = Math.max(0, Math.round(total * 100));
@@ -91,6 +131,7 @@ export default function PayPage() {
   const [brand, setBrand] = useState<Brand>('visa');
   const [amountInput, setAmountInput] = useState('');
   const [busy, setBusy] = useState(false);
+  const [printOpen, setPrintOpen] = useState(false);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -145,6 +186,162 @@ export default function PayPage() {
     const target = selected ? selected.remaining : Math.max(0, balance);
     setAmountInput(target > 0.005 ? target.toFixed(2) : '');
   }, [allocated, selectedShare, balance]);
+
+  const taxRate = subtotal > 0 ? tax / subtotal : 0;
+
+  const seatGroups = useMemo(() => {
+    if (!order) return [] as Array<{ key: string; items: Order['items']; subtotal: number }>;
+    const map = new Map<string, Order['items']>();
+    for (const item of order.items) {
+      const key = item.seat?.trim() || 'Shared';
+      const list = map.get(key);
+      if (list) list.push(item);
+      else map.set(key, [item]);
+    }
+    return [...map.entries()]
+      .sort(([a], [b]) => {
+        if (a === 'Shared') return 1;
+        if (b === 'Shared') return -1;
+        return a.localeCompare(b, undefined, { numeric: true });
+      })
+      .map(([key, items]) => ({
+        key,
+        items,
+        subtotal: items.reduce((sum, item) => sum + item.unitPrice * item.quantity, 0),
+      }));
+  }, [order]);
+
+  const receiptShell = (body: string) =>
+    `<!doctype html><html><head><meta charset="utf-8"><title>Check #${
+      order?.orderNumber ?? ''
+    }</title><style>${RECEIPT_CSS}</style></head><body>${body}</body></html>`;
+
+  const receiptHeader = () =>
+    `<h1>WHITEOUT</h1>
+     <div class="meta">Downtown Flagship</div>
+     <div class="section">${escapeHtml(order?.tableNumber ?? 'Takeout')} · Check #${
+       order?.orderNumber ?? ''
+     }</div>
+     <div class="meta">${escapeHtml(order?.serverName ?? '')} · ${timeLabel(
+       order?.createdAt,
+     )}</div>
+     <hr/>`;
+
+  const itemRows = (items: Order['items']) =>
+    items
+      .map(
+        (item) =>
+          `<tr><td>${item.quantity}× ${escapeHtml(item.name)}${
+            item.seat ? ` <span class="muted">G${escapeHtml(item.seat)}</span>` : ''
+          }</td><td class="right">${money(item.unitPrice * item.quantity)}</td></tr>`,
+      )
+      .join('');
+
+  const tipRow = (amount: number) =>
+    amount > 0
+      ? `<tr><td>Gratuity</td><td class="right">${money(amount)}</td></tr>`
+      : `<tr><td>Gratuity</td><td class="right">__________</td></tr>`;
+
+  const printTotalBill = () => {
+    if (!order) return;
+    const body = `${receiptHeader()}
+      <table>${itemRows(order.items)}</table>
+      <hr/>
+      <table>
+        <tr><td>Subtotal</td><td class="right">${money(subtotal)}</td></tr>
+        <tr><td>Tax (8%)</td><td class="right">${money(tax)}</td></tr>
+        ${tipRow(tip)}
+        <tr class="total"><td>Total</td><td class="right">${money(total)}</td></tr>
+        ${
+          paid > 0
+            ? `<tr><td>Paid</td><td class="right">${money(paid)}</td></tr>
+               <tr class="total"><td>Balance</td><td class="right">${money(
+                 Math.max(0, balance),
+               )}</td></tr>`
+            : ''
+        }
+      </table>
+      <hr/>
+      <div class="meta">Thank you</div>`;
+    printReceipt(receiptShell(body));
+    setPrintOpen(false);
+  };
+
+  const printBySeat = () => {
+    if (!order) return;
+    const sections = seatGroups
+      .map((group) => {
+        const groupTax = round2(group.subtotal * taxRate);
+        const groupTip = subtotal > 0 ? round2(tip * (group.subtotal / subtotal)) : 0;
+        return `<div class="seat">${
+          group.key === 'Shared' ? 'Shared items' : `Guest ${escapeHtml(group.key)}`
+        }</div>
+          <table>${itemRows(group.items)}</table>
+          <table>
+            <tr><td>Guest subtotal</td><td class="right">${money(group.subtotal)}</td></tr>
+            <tr><td>Tax share</td><td class="right">${money(groupTax)}</td></tr>
+            ${
+              groupTip > 0
+                ? `<tr><td>Tip share</td><td class="right">${money(groupTip)}</td></tr>`
+                : ''
+            }
+            <tr class="total"><td>Due</td><td class="right">${money(
+              round2(group.subtotal + groupTax + groupTip),
+            )}</td></tr>
+          </table>`;
+      })
+      .join('<hr/>');
+
+    const body = `${receiptHeader()}
+      ${sections}
+      <hr/>
+      <table>
+        <tr><td>Subtotal</td><td class="right">${money(subtotal)}</td></tr>
+        <tr><td>Tax (8%)</td><td class="right">${money(tax)}</td></tr>
+        ${tipRow(tip)}
+        <tr class="total"><td>Total</td><td class="right">${money(total)}</td></tr>
+      </table>
+      <hr/>
+      <div class="meta">Thank you</div>`;
+    printReceipt(receiptShell(body));
+    setPrintOpen(false);
+  };
+
+  const printIndividualBills = () => {
+    if (!order) return;
+    const pages = seatGroups
+      .map((group, index) => {
+        const groupTax = round2(group.subtotal * taxRate);
+        const groupTip = subtotal > 0 ? round2(tip * (group.subtotal / subtotal)) : 0;
+        return `<div class="page">
+          <h1>WHITEOUT</h1>
+          <div class="meta">Downtown Flagship</div>
+          <div class="section">${
+            group.key === 'Shared' ? 'Shared items' : `Guest ${escapeHtml(group.key)}`
+          } · Check #${order.orderNumber}</div>
+          <div class="meta">${escapeHtml(order.tableNumber ?? 'Takeout')} · ${escapeHtml(
+            order.serverName ?? '',
+          )} · ${timeLabel(order.createdAt)}</div>
+          <div class="meta">Bill ${index + 1} of ${seatGroups.length}</div>
+          <hr/>
+          <table>${itemRows(group.items)}</table>
+          <hr/>
+          <table>
+            <tr><td>Subtotal</td><td class="right">${money(group.subtotal)}</td></tr>
+            <tr><td>Tax (8%)</td><td class="right">${money(groupTax)}</td></tr>
+            ${tipRow(groupTip)}
+            <tr class="total"><td>Total</td><td class="right">${money(
+              round2(group.subtotal + groupTax + groupTip),
+            )}</td></tr>
+          </table>
+          <hr/>
+          <div class="meta">Thank you</div>
+        </div>`;
+      })
+      .join('');
+    printReceipt(receiptShell(pages));
+    setPrintOpen(false);
+  };
 
   const setTipPreset = (percent: number) => {
     setTipInput((subtotal * (percent / 100)).toFixed(2));
@@ -234,9 +431,49 @@ export default function PayPage() {
             </div>
           </div>
           {order && (
-            <Badge tone={isPaid ? 'ready' : 'caution'}>
-              {isPaid ? 'PAID' : `BALANCE ${money(balance)}`}
-            </Badge>
+            <div className="flex items-center gap-2">
+              <Badge tone={isPaid ? 'ready' : 'caution'}>
+                {isPaid ? 'PAID' : `BALANCE ${money(balance)}`}
+              </Badge>
+              <div className="relative">
+                <Button
+                  variant="secondary"
+                  size="md"
+                  icon="print"
+                  onClick={() => setPrintOpen((open) => !open)}
+                >
+                  Print
+                </Button>
+                {printOpen && (
+                  <div className="absolute right-0 top-12 z-30 flex w-56 flex-col overflow-hidden rounded-xl border border-border-subtle bg-surface-container-high shadow-2xl">
+                    <button
+                      type="button"
+                      onClick={printTotalBill}
+                      className="flex items-center gap-2 px-3 py-2.5 text-left font-body-sm text-body-sm font-bold text-text-primary hover:bg-surface-container-highest"
+                    >
+                      <span className="material-symbols-outlined text-[18px] text-secondary">receipt_long</span>
+                      Total bill
+                    </button>
+                    <button
+                      type="button"
+                      onClick={printBySeat}
+                      className="flex items-center gap-2 px-3 py-2.5 text-left font-body-sm text-body-sm font-bold text-text-primary hover:bg-surface-container-highest"
+                    >
+                      <span className="material-symbols-outlined text-[18px] text-secondary">table_rows</span>
+                      Print by seat
+                    </button>
+                    <button
+                      type="button"
+                      onClick={printIndividualBills}
+                      className="flex items-center gap-2 px-3 py-2.5 text-left font-body-sm text-body-sm font-bold text-text-primary hover:bg-surface-container-highest"
+                    >
+                      <span className="material-symbols-outlined text-[18px] text-secondary">content_copy</span>
+                      Individual bills
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
           )}
         </header>
 

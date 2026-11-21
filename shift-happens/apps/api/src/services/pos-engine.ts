@@ -47,19 +47,25 @@ function serializeOrder(order: any) {
       label: payment.label,
       createdAt: payment.createdAt.toISOString(),
     })),
-    paidAmount: round(
-      (order.payments ?? []).reduce(
-        (sum: number, payment: any) => sum + num(payment.amount),
-        0,
-      ),
-    ),
-    balance: round(
-      num(order.total) -
-        (order.payments ?? []).reduce(
-          (sum: number, payment: any) => sum + num(payment.amount),
-          0,
-        ),
-    ),
+    paidAmount:
+      order.status === 'paid' && (order.payments ?? []).length === 0
+        ? num(order.total)
+        : round(
+            (order.payments ?? []).reduce(
+              (sum: number, payment: any) => sum + num(payment.amount),
+              0,
+            ),
+          ),
+    balance:
+      order.status === 'paid'
+        ? 0
+        : round(
+            num(order.total) -
+              (order.payments ?? []).reduce(
+                (sum: number, payment: any) => sum + num(payment.amount),
+                0,
+              ),
+          ),
     createdAt: order.createdAt.toISOString(),
     closedAt: order.closedAt?.toISOString() ?? null,
     items: order.items.map((item: any) => ({
@@ -534,6 +540,45 @@ export async function getOrder(orderId: string, restaurantId = env.RESTAURANT_ID
   });
   if (!order) throw notFound('Order not found');
   return serializeOrder(order);
+}
+
+export async function getOrderByNumber(
+  orderNumber: number,
+  restaurantId = env.RESTAURANT_ID,
+) {
+  const order = await prisma.order.findFirst({
+    where: { restaurantId, orderNumber },
+    include: orderInclude,
+  });
+  if (!order) throw notFound(`Check #${orderNumber} not found`);
+  return serializeOrder(order);
+}
+
+/** Manager amendment: re-opens a paid check so items/tip can be corrected. */
+export async function reopenOrder(
+  orderId: string,
+  restaurantId = env.RESTAURANT_ID,
+) {
+  const order = await prisma.order.findFirst({
+    where: { id: orderId, restaurantId },
+  });
+  if (!order) throw notFound('Order not found');
+  if (order.status !== 'paid') {
+    throw conflict('Only a paid check can be re-opened.');
+  }
+  const updated = await prisma.order.update({
+    where: { id: orderId },
+    data: { status: 'sent_to_kitchen', closedAt: null },
+    include: orderInclude,
+  });
+  const serialized = serializeOrder(updated);
+  emitRestaurant('ORDER_CREATED', {
+    event: 'ORDER_CREATED',
+    order: serialized,
+    reopened: true,
+    timestamp: new Date().toISOString(),
+  }, restaurantId);
+  return serialized;
 }
 
 export async function payOrder(

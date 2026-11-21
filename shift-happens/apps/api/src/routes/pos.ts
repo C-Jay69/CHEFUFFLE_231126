@@ -14,8 +14,10 @@ import {
   appendOrderItems,
   createOrder,
   getOrder,
+  getOrderByNumber,
   listOrders,
   payOrder,
+  reopenOrder,
   voidOrder,
 } from '../services/pos-engine.js';
 
@@ -75,6 +77,25 @@ const posRoutes: FastifyPluginAsync = async (app) => {
       request.body,
     );
     return addOrderPayment(id, body);
+  });
+
+  app.get('/orders/by-number/:number', async (request) => {
+    const { number } = parse(
+      z.object({ number: z.coerce.number().int().positive() }),
+      request.params,
+    );
+    const staff = await currentStaff(request);
+    const order = await getOrderByNumber(number);
+    if (staff && !canViewAllTables(staff) && order.serverId !== staff.id) {
+      throw forbidden('This check belongs to another server. Ask a manager.');
+    }
+    return order;
+  });
+
+  app.post('/orders/:id/reopen', async (request) => {
+    const { id } = parse(idParams, request.params);
+    await requirePermission(request, 'orders.void');
+    return reopenOrder(id);
   });
 
   app.get('/orders/:id', async (request) => {
