@@ -7,3 +7,6 @@ dist
 *.log
 coverage
 .turbo
+
+apps/api/uploads/floorplans/*
+!apps/api/uploads/floorplans/.gitkeep

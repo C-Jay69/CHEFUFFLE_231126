@@ -116,6 +116,28 @@ the description retains the 9oz/6oz prices where the source lists them.
 manager can add items (deep-links back into Serve), settle, or void. The full
 ordering cockpit was removed.
 
+## Floor plan designer
+
+`/floor-plan` has a **Design layout** mode:
+
+* Upload a **PNG / JPG / WebP / PDF** floor plan as the room background. The
+  file is stored under `apps/api/uploads/floorplans/` and served at
+  `/uploads/floorplans/...`; replacing or removing it deletes the old file.
+* Drag tables anywhere on the plan. Positions are saved as `posX/posY` on a
+  0–1000 canvas, with rotation.
+* Add a table, edit its number, zone, covers, shape (square / rectangle /
+  round / booth) and rotation, or remove it from the floor.
+* **Save layout** persists all table positions and metadata; **Exit design**
+  returns to the live service view.
+* The service view colours tables by status (ready / in service / reserved /
+  needs bus) and keeps the existing seat, advance, reset and Start Order
+  actions.
+
+The editor uses `POST /api/tables`, `PATCH /api/tables/:id`,
+`DELETE /api/tables/:id`, `POST /api/floor-layout`,
+`POST /api/floor-plan/background` and `DELETE /api/floor-plan/background`.
+`GET /api/floor-plan/config` returns the current background URL/type.
+
 The minimal page conventions are documented in
 `apps/web/MINIMAL_UI_SPEC.md`; shared primitives live in
 `apps/web/src/components/ui/`.
@@ -227,9 +249,12 @@ POST   /api/orders/:id/void
 GET    /api/kds/tickets?station=          GET   /api/kds/counts
 POST   /api/kds/bump                      GET   /api/kds/bumps
 POST   /api/kds/simulate/:tableId
-GET    /api/tables                        POST  /api/tables/:id/seat
-PATCH  /api/tables/:id/stage              POST  /api/tables/:id/advance
-POST   /api/tables/:id/reset              GET/POST /api/floor-layout
+GET    /api/tables                        POST  /api/tables
+PATCH  /api/tables/:id                    DELETE /api/tables/:id
+POST   /api/tables/:id/seat               PATCH  /api/tables/:id/stage
+POST   /api/tables/:id/advance            POST   /api/tables/:id/reset
+GET    /api/floor-plan/config             POST   /api/floor-plan/background
+DELETE /api/floor-plan/background         GET/POST /api/floor-layout
 GET    /api/inventory                     POST  /api/inventory/adjust
 GET    /api/inventory/transactions        GET   /api/inventory/purchase-orders
 POST   /api/inventory/purchase-orders/approve
@@ -341,6 +366,9 @@ See `.env.example`. Every integration degrades gracefully:
   in the dish preview and press **Publish dish**; coverage updates live.
 * `/login` is a PIN terminal demo; all seeded staff share the roster PINs shown
   in the UI. Do not use these values in production.
+* Floor-plan uploads are stored on the API host’s local disk. A production
+  deployment (Render, Vercel, etc.) needs a persistent disk or object storage
+  for `apps/api/uploads/floorplans/`; the rest of the app is stateless.
 * Serving an occupied table creates a new ticket/round for that table rather
   than merging into the original check. This keeps the ordering flow simple and
   leaves the original check intact for the manager view.

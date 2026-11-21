@@ -1,6 +1,10 @@
 import cors from '@fastify/cors';
 import formbody from '@fastify/formbody';
+import multipart from '@fastify/multipart';
+import fastifyStatic from '@fastify/static';
 import Fastify from 'fastify';
+import { mkdirSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { ZodError } from 'zod';
 import { corsOrigins, env } from './env.js';
 import { AppError } from './errors.js';
@@ -16,7 +20,7 @@ const app = Fastify({
         ? { target: 'pino-pretty', options: { colorize: true, translateTime: 'HH:MM:ss' } }
         : undefined,
   },
-  bodyLimit: 2 * 1024 * 1024,
+  bodyLimit: 25 * 1024 * 1024,
 });
 
 await app.register(cors, {
@@ -25,6 +29,15 @@ await app.register(cors, {
   methods: ['GET', 'POST', 'PATCH', 'PUT', 'DELETE', 'OPTIONS'],
 });
 await app.register(formbody);
+await app.register(multipart, {
+  limits: { fileSize: 20 * 1024 * 1024, files: 1 },
+});
+const uploadsRoot = resolve(process.cwd(), 'uploads');
+mkdirSync(resolve(uploadsRoot, 'floorplans'), { recursive: true });
+await app.register(fastifyStatic, {
+  root: uploadsRoot,
+  prefix: '/uploads/',
+});
 
 app.setErrorHandler((error, request, reply) => {
   if (error instanceof ZodError) {

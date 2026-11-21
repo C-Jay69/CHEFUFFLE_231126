@@ -8,20 +8,63 @@ import {
 import { parse } from '../lib/validate.js';
 import {
   advanceTableStage,
+  createTable,
   getTable,
   getTables,
+  removeTable,
   resetTable,
   saveFloorLayout,
   seatTable,
   setTableStage,
+  updateTable,
 } from '../services/stage-engine.js';
 
 const tableRoutes: FastifyPluginAsync = async (app) => {
   app.get('/tables', async () => getTables());
 
+  app.post('/tables', async (request, reply) => {
+    const body = parse(
+      z.object({
+        tableNumber: z.string().min(1).max(20),
+        zone: z.string().max(50).optional(),
+        capacity: z.number().int().min(1).max(40).optional(),
+        shape: z.enum(['square', 'rectangle', 'circle', 'booth']).optional(),
+        posX: z.number().min(0).max(1000).optional(),
+        posY: z.number().min(0).max(1000).optional(),
+        rotation: z.number().int().optional(),
+      }),
+      request.body,
+    );
+    const table = await createTable(body);
+    return reply.code(201).send({ table });
+  });
+
   app.get('/tables/:id', async (request) => {
     const { id } = parse(z.object({ id: z.string().uuid() }), request.params);
     return getTable(id);
+  });
+
+  app.patch('/tables/:id', async (request) => {
+    const { id } = parse(z.object({ id: z.string().uuid() }), request.params);
+    const body = parse(
+      z.object({
+        tableNumber: z.string().min(1).max(20).optional(),
+        zone: z.string().max(50).optional(),
+        capacity: z.number().int().min(1).max(40).optional(),
+        shape: z.enum(['square', 'rectangle', 'circle', 'booth']).optional(),
+        posX: z.number().min(0).max(1000).optional(),
+        posY: z.number().min(0).max(1000).optional(),
+        rotation: z.number().int().optional(),
+        isActive: z.boolean().optional(),
+      }),
+      request.body,
+    );
+    return updateTable(id, body);
+  });
+
+  app.delete('/tables/:id', async (request) => {
+    const { id } = parse(z.object({ id: z.string().uuid() }), request.params);
+    return removeTable(id);
   });
 
   app.post('/tables/:id/seat', async (request) => {

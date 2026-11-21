@@ -249,6 +249,144 @@ export async function resetTable(tableId: string) {
   return setTableStage(tableId, 'ready', { triggeredBy: 'TABLE_RESET' });
 }
 
+export async function getFloorPlanConfig(restaurantId = env.RESTAURANT_ID) {
+  const restaurant = await prisma.restaurant.findUnique({
+    where: { id: restaurantId },
+    select: {
+      name: true,
+      floorPlanImageUrl: true,
+      floorPlanImageType: true,
+    },
+  });
+  return {
+    name: restaurant?.name ?? 'Restaurant',
+    backgroundUrl: restaurant?.floorPlanImageUrl ?? null,
+    backgroundType: restaurant?.floorPlanImageType ?? null,
+  };
+}
+
+export async function createTable(
+  input: {
+    tableNumber: string;
+    zone?: string;
+    capacity?: number;
+    shape?: string;
+    posX?: number;
+    posY?: number;
+    rotation?: number;
+  },
+  restaurantId = env.RESTAURANT_ID,
+) {
+  const table = await prisma.diningTable.create({
+    data: {
+      restaurantId,
+      tableNumber: input.tableNumber,
+      zone: input.zone ?? 'Main Dining Room',
+      capacity: input.capacity ?? 4,
+      shape: input.shape ?? 'square',
+      posX: input.posX ?? 500,
+      posY: input.posY ?? 500,
+      rotation: input.rotation ?? 0,
+      currentStage: 'ready',
+    },
+    include: {
+      server: true,
+      orders: {
+        where: { status: { notIn: ['paid', 'void'] } },
+        orderBy: { createdAt: 'desc' },
+        take: 1,
+        include: { items: { select: { quantity: true } } },
+      },
+    },
+  });
+  emitRestaurant('TABLE_UPDATED', {
+    event: 'TABLE_UPDATED',
+    tables: await getTables(restaurantId),
+    timestamp: new Date().toISOString(),
+  }, restaurantId);
+  return toTableDto(table);
+}
+
+export async function updateTable(
+  id: string,
+  input: {
+    tableNumber?: string;
+    zone?: string;
+    capacity?: number;
+    shape?: string;
+    posX?: number;
+    posY?: number;
+    rotation?: number;
+    isActive?: boolean;
+  },
+  restaurantId = env.RESTAURANT_ID,
+) {
+  const existing = await prisma.diningTable.findFirst({
+    where: { id, restaurantId },
+  });
+  if (!existing) throw notFound('Table not found');
+  const updated = await prisma.diningTable.update({
+    where: { id },
+    data: {
+      ...(input.tableNumber !== undefined ? { tableNumber: input.tableNumber } : {}),
+      ...(input.zone !== undefined ? { zone: input.zone } : {}),
+      ...(input.capacity !== undefined ? { capacity: input.capacity } : {}),
+      ...(input.shape !== undefined ? { shape: input.shape } : {}),
+      ...(input.posX !== undefined ? { posX: input.posX } : {}),
+      ...(input.posY !== undefined ? { posY: input.posY } : {}),
+      ...(input.rotation !== undefined ? { rotation: input.rotation } : {}),
+      ...(input.isActive !== undefined ? { isActive: input.isActive } : {}),
+    },
+    include: {
+      server: true,
+      orders: {
+        where: { status: { notIn: ['paid', 'void'] } },
+        orderBy: { createdAt: 'desc' },
+        take: 1,
+        include: { items: { select: { quantity: true } } },
+      },
+    },
+  });
+  emitRestaurant('TABLE_UPDATED', {
+    event: 'TABLE_UPDATED',
+    tables: await getTables(restaurantId),
+    timestamp: new Date().toISOString(),
+  }, restaurantId);
+  return toTableDto(updated);
+}
+
+export async function removeTable(id: string, restaurantId = env.RESTAURANT_ID) {
+  const existing = await prisma.diningTable.findFirst({
+    where: { id, restaurantId },
+  });
+  if (!existing) throw notFound('Table not found');
+  await prisma.diningTable.update({
+    where: { id },
+    data: { isActive: false, currentStage: 'ready', currentPartyName: null, currentPartySize: null },
+  });
+  emitRestaurant('TABLE_UPDATED', {
+    event: 'TABLE_UPDATED',
+    tables: await getTables(restaurantId),
+    timestamp: new Date().toISOString(),
+  }, restaurantId);
+  return { id, active: false };
+}
+
+export async function setFloorPlanBackground(
+  url: string | null,
+  type: string | null,
+  restaurantId = env.RESTAURANT_ID,
+) {
+  const restaurant = await prisma.restaurant.update({
+    where: { id: restaurantId },
+    data: { floorPlanImageUrl: url, floorPlanImageType: type },
+  });
+  return {
+    backgroundUrl: restaurant.floorPlanImageUrl,
+    backgroundType: restaurant.floorPlanImageType,
+  };
+}
+
 export async function saveFloorLayout(
   tables: Array<{
     id: string;

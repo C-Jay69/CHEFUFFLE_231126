@@ -3,6 +3,7 @@ import architectRoutes from './architect.js';
 import authRoutes from './auth.js';
 import briefingRoutes from './briefing.js';
 import dashboardRoutes from './dashboard.js';
+import floorPlanRoutes from './floor-plan.js';
 import inventoryRoutes from './inventory.js';
 import kdsRoutes from './kds.js';
 import menuRoutes from './menu.js';
@@ -18,6 +19,7 @@ export async function registerRoutes(app: FastifyInstance) {
   await app.register(menuRoutes, { prefix: '/api' });
   await app.register(kdsRoutes, { prefix: '/api' });
   await app.register(tablesRoutes, { prefix: '/api' });
+  await app.register(floorPlanRoutes, { prefix: '/api' });
   await app.register(inventoryRoutes, { prefix: '/api' });
   await app.register(reservationsRoutes, { prefix: '/api' });
   await app.register(schedulingRoutes, { prefix: '/api' });

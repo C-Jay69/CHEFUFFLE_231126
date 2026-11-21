@@ -74,6 +74,8 @@ model Restaurant {
   address                String
   phone                  String   @db.VarChar(50)
   targetLaborPercentage  Decimal  @default(18.50) @map("target_labor_percentage") @db.Decimal(5, 2)
+  floorPlanImageUrl      String?  @map("floor_plan_image_url")
+  floorPlanImageType     String?  @map("floor_plan_image_type") @db.VarChar(80)
   createdAt              DateTime @default(now()) @map("created_at") @db.Timestamptz
 
   tables           DiningTable[]
