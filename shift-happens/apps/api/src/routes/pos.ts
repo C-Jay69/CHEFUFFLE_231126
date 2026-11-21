@@ -2,7 +2,13 @@ import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
 import { createOrderSchema, orderItemInputSchema } from '@shift-happens/shared';
 import { parse } from '../lib/validate.js';
-import { requirePermission } from '../lib/staff-auth.js';
+import {
+  canViewAllTables,
+  currentStaff,
+  requireOrderAccess,
+  requirePermission,
+} from '../lib/staff-auth.js';
+import { forbidden } from '../errors.js';
 import {
   appendOrderItems,
   createOrder,
@@ -23,8 +29,8 @@ const posRoutes: FastifyPluginAsync = async (app) => {
   });
 
   app.post('/orders/:id/items', async (request) => {
-    await requirePermission(request, 'serve.order');
     const { id } = parse(idParams, request.params);
+    await requireOrderAccess(request, id, 'serve.order');
     const body = parse(
       z.object({
         items: z.array(orderItemInputSchema).min(1),
@@ -38,6 +44,7 @@ const posRoutes: FastifyPluginAsync = async (app) => {
   });
 
   app.get('/orders', async (request) => {
+    const staff = await currentStaff(request);
     const query = parse(
       z.object({
         status: z.string().optional(),
@@ -45,17 +52,25 @@ const posRoutes: FastifyPluginAsync = async (app) => {
       }),
       request.query,
     );
-    return listOrders(undefined, query);
+    return listOrders(undefined, {
+      ...query,
+      ...(staff && !canViewAllTables(staff) ? { serverId: staff.id } : {}),
+    });
   });
 
   app.get('/orders/:id', async (request) => {
     const { id } = parse(idParams, request.params);
-    return getOrder(id);
+    const staff = await currentStaff(request);
+    const order = await getOrder(id);
+    if (staff && !canViewAllTables(staff) && order.serverId !== staff.id) {
+      throw forbidden('This check belongs to another server. Ask a manager.');
+    }
+    return order;
   });
 
   app.post('/orders/:id/pay', async (request) => {
-    await requirePermission(request, 'serve.pay');
     const { id } = parse(idParams, request.params);
+    await requireOrderAccess(request, id, 'serve.pay');
     const body = parse(
       z.object({
         tip: z.number().min(0).max(5000).optional(),

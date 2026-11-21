@@ -15,6 +15,7 @@ export type Permission =
   | 'floor.seat'
   | 'floor.manage'
   | 'floor.close'
+  | 'tables.viewAll'
   | 'night.close'
   | 'reservations.manage'
   | 'kds.operate'
@@ -34,6 +35,7 @@ export const ALL_PERMISSIONS: Permission[] = [
   'floor.seat',
   'floor.manage',
   'floor.close',
+  'tables.viewAll',
   'night.close',
   'reservations.manage',
   'kds.operate',
@@ -68,6 +70,7 @@ export const ROLE_PERMISSIONS: Record<UserRoleName, Permission[]> = {
     'floor.seat',
     'floor.manage',
     'floor.close',
+    'tables.viewAll',
     'night.close',
     'reservations.manage',
     'kds.operate',

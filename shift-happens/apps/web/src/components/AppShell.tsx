@@ -48,12 +48,6 @@ export default function AppShell({
   const [mobileOpen, setMobileOpen] = useState(false);
   const [clocking, setClocking] = useState<'in' | 'out' | null>(null);
 
-  // A clocked-in server or bartender only gets the table plan.
-  useEffect(() => {
-    if (!ready || !lockedToServe) return;
-    if (pathname !== '/serve') router.replace('/serve');
-  }, [ready, lockedToServe, pathname, router]);
-
   useEffect(() => {
     setMobileOpen(false);
   }, [pathname]);
@@ -63,6 +57,25 @@ export default function AppShell({
   const shownNav = lockedToServe
     ? visibleNav.filter((item) => item.href === '/serve')
     : visibleNav;
+  const homeHref = shownNav[0]?.href ?? '/login';
+
+  // Direct URL access to a screen the role cannot open is bounced home; a
+  // clocked-in server is bounced to the table plan.
+  const deniedScreen =
+    ready &&
+    Boolean(staff) &&
+    NAV.some((item) => item.href === pathname) &&
+    !visibleNav.some((item) => item.href === pathname);
+  const blocked = ready && (lockedToServe ? pathname !== '/serve' : deniedScreen);
+
+  useEffect(() => {
+    if (!ready) return;
+    if (lockedToServe && pathname !== '/serve') {
+      router.replace('/serve');
+      return;
+    }
+    if (deniedScreen) router.replace(homeHref);
+  }, [ready, lockedToServe, pathname, deniedScreen, homeHref, router]);
 
   const clockIn = async () => {
     if (!staff) return;
@@ -270,7 +283,24 @@ export default function AppShell({
               {subtitle && <p className="mt-1 max-w-4xl font-body-base text-body-base text-text-secondary">{subtitle}</p>}
             </div>
           )}
-          {children}
+          {blocked ? (
+            <div className="flex min-h-[60vh] items-center justify-center px-6">
+              <div className="flex max-w-sm flex-col items-center gap-2 text-center">
+                <span className="material-symbols-outlined text-headline-xl text-status-caution">
+                  lock
+                </span>
+                <p className="font-body-base text-body-base font-bold text-text-primary">
+                  No access to this screen
+                </p>
+                <p className="font-body-sm text-body-sm text-text-tertiary">
+                  {staff?.roleLabel ?? 'This role'} does not have permission. Taking you back to{' '}
+                  {lockedToServe ? 'the table plan' : 'your workspace'}.
+                </p>
+              </div>
+            </div>
+          ) : (
+            children
+          )}
         </main>
       </div>
     </div>

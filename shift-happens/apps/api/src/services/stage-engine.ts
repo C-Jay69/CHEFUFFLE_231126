@@ -38,6 +38,7 @@ export interface TableDto {
     total: number;
     itemCount: number;
     allergyNotes: string | null;
+    serverId: string;
   } | null;
   status: 'available' | 'occupied' | 'reserved' | 'dirty';
 }
@@ -91,6 +92,7 @@ export function toTableDto(table: any): TableDto {
             0,
           ) ?? 0,
           allergyNotes: activeOrder.allergyNotes,
+          serverId: activeOrder.serverId,
         }
       : null,
     status,
@@ -99,9 +101,32 @@ export function toTableDto(table: any): TableDto {
 
 export async function getTables(
   restaurantId = env.RESTAURANT_ID,
+  options: { staffId?: string | null; viewAll?: boolean } = {},
 ): Promise<TableDto[]> {
+  const viewAll = options.viewAll ?? true;
   const tables = await prisma.diningTable.findMany({
-    where: { restaurantId, isActive: true },
+    where: {
+      restaurantId,
+      isActive: true,
+      // Servers see the tables they own (or already hold a check on) plus
+      // ready tables they can claim. Managers see the whole floor.
+      ...(!viewAll && options.staffId
+        ? {
+            OR: [
+              { serverId: options.staffId },
+              { currentStage: 'ready' as const },
+              {
+                orders: {
+                  some: {
+                    serverId: options.staffId,
+                    status: { notIn: ['paid', 'void'] as never[] },
+                  },
+                },
+              },
+            ],
+          }
+        : {}),
+    },
     orderBy: { tableNumber: 'asc' },
     include: {
       server: true,

@@ -95,7 +95,7 @@ The selected **position** sets the role permission list (shared by
 
 | Position | Can open | Cannot |
 | --- | --- | --- |
-| Server / Bartender | Serve (order food & drink), Open Checks (bill + payment), Floor Plan (seat) | Voids, inventory, menu/86s, scheduling, employee records |
+| Server / Bartender | Serve (order food & drink), Open Checks (their own checks only), Floor Plan (their own + ready tables) | Other servers’ tables and checks, voids, inventory, menu/86s, scheduling, employee records |
 | Host | Floor Plan, Reservations | Orders, payments, voids, inventory, menus |
 | Line Cook | Kitchen, Inventory | Service floor, payments, voids |
 | Chef / Expo | Kitchen, Inventory, Menu & 86s, Briefing, Training | Service floor, payments, scheduling |
@@ -105,6 +105,15 @@ The selected **position** sets the role permission list (shared by
 The nav only shows screens the role can open, and the API enforces the same
 matrix on order create/pay/void, inventory adjustments, menu availability, KDS
 bumps, floor-plan edits and employee records (`x-staff-id` header → 403).
+Typing a URL for a screen the role cannot open bounces back to their home
+screen — a server cannot reach `/kds`, `/end-of-night` or Onboarding directly.
+
+Only **owner, general manager and floor manager** can see the whole floor
+(`tables.viewAll`). A server or bartender sees the **ready tables they can claim
+plus the tables they own** (assigned by seating or by their open check);
+`GET /api/tables` and `GET /api/orders` are scoped the same way, and a server
+can only advance, reset, add to or settle their own tables and checks. Seating a
+table claims it for a service role.
 
 **Clocking in:** the header has a Clock in / Clock out control for the signed-in
 staff member. A clocked-in **server or bartender** is restricted to `/serve` —

@@ -8,6 +8,7 @@ import {
 } from '@shift-happens/shared';
 import { appendOrderItems, createOrder, payOrder } from '../src/services/pos-engine';
 import { getEndOfNight } from '../src/services/end-of-night-engine';
+import { getTables } from '../src/services/stage-engine';
 import { bumpTicket, getTickets } from '../src/services/kds-engine';
 
 /**
@@ -302,6 +303,69 @@ describe('POS → KDS → Floor Plan → Inventory integration', () => {
     expect(server?.cardTotal).toBeGreaterThan(0);
   });
 
+  it('shows servers only their own tables and ready tables', async () => {
+    const otherServerId = randomUUID();
+    const ownTableId = randomUUID();
+    const otherTableId = randomUUID();
+    const readyTableId = randomUUID();
+
+    await prisma.staff.create({
+      data: {
+        id: otherServerId,
+        restaurantId,
+        name: 'Other Server',
+        role: 'server',
+        hourlyRate: 18,
+      },
+    });
+    await prisma.diningTable.createMany({
+      data: [
+        {
+          id: ownTableId,
+          restaurantId,
+          tableNumber: 'S-OWN',
+          zone: 'Main Dining Room',
+          capacity: 4,
+          currentStage: 'starters',
+          currentPartyName: 'Own Party',
+          currentPartySize: 2,
+          serverId: staffId,
+        },
+        {
+          id: otherTableId,
+          restaurantId,
+          tableNumber: 'S-OTH',
+          zone: 'Main Dining Room',
+          capacity: 4,
+          currentStage: 'starters',
+          currentPartyName: 'Other Party',
+          currentPartySize: 2,
+          serverId: otherServerId,
+        },
+        {
+          id: readyTableId,
+          restaurantId,
+          tableNumber: 'S-RDY',
+          zone: 'Main Dining Room',
+          capacity: 4,
+          currentStage: 'ready',
+        },
+      ],
+    });
+
+    const visible = await getTables(restaurantId, {
+      staffId,
+      viewAll: false,
+    });
+    const numbers = visible.map((table) => table.tableNumber);
+    expect(numbers).toContain('S-OWN');
+    expect(numbers).toContain('S-RDY');
+    expect(numbers).not.toContain('S-OTH');
+
+    const all = await getTables(restaurantId, { viewAll: true });
+    expect(all.map((table) => table.tableNumber)).toContain('S-OTH');
+  });
+
 });
 
 describe('role permissions', () => {
@@ -319,6 +383,10 @@ describe('role permissions', () => {
     expect(roleHasPermission('floor_manager', 'floor.manage')).toBe(true);
     expect(roleHasPermission('floor_manager', 'floor.close')).toBe(true);
     expect(roleHasPermission('server', 'floor.close')).toBe(false);
+    expect(roleHasPermission('floor_manager', 'tables.viewAll')).toBe(true);
+    expect(roleHasPermission('general_manager', 'tables.viewAll')).toBe(true);
+    expect(roleHasPermission('server', 'tables.viewAll')).toBe(false);
+    expect(roleHasPermission('bartender', 'tables.viewAll')).toBe(false);
     expect(roleHasPermission('general_manager', 'staff.manage')).toBe(true);
     expect(roleHasPermission('host', 'orders.void')).toBe(false);
   });

@@ -220,6 +220,7 @@ async function advanceTableForRound(
     sendToKitchen?: boolean;
     partyName?: string;
     partySize?: number;
+    serverId?: string;
   },
 ) {
   if (!params.tableId || !params.sendToKitchen) return;
@@ -233,6 +234,7 @@ async function advanceTableForRound(
         stageUpdatedAt: new Date(),
         currentPartyName: params.partyName ?? table.currentPartyName,
         currentPartySize: params.partySize ?? table.currentPartySize,
+        serverId: table.serverId ?? params.serverId ?? null,
       },
     });
   }
@@ -372,6 +374,7 @@ export async function createOrder(
       sendToKitchen: input.sendToKitchen,
       partyName: input.partyName,
       partySize: input.partySize,
+      serverId: serverId!,
     });
 
     return { order, lowStockAlerts, eightySixed };
@@ -459,6 +462,7 @@ export async function appendOrderItems(
     await advanceTableForRound(tx, {
       tableId: existing.tableId,
       sendToKitchen,
+      serverId: existing.serverId,
     });
 
     return { lowStockAlerts, eightySixed };
@@ -486,12 +490,13 @@ export async function appendOrderItems(
 
 export async function listOrders(
   restaurantId = env.RESTAURANT_ID,
-  options: { status?: string; limit?: number } = {},
+  options: { status?: string; limit?: number; serverId?: string } = {},
 ) {
   const orders = await prisma.order.findMany({
     where: {
       restaurantId,
       ...(options.status ? { status: options.status as never } : {}),
+      ...(options.serverId ? { serverId: options.serverId } : {}),
     },
     include: orderInclude,
     orderBy: { createdAt: 'desc' },
