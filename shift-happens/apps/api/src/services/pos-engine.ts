@@ -56,11 +56,11 @@ function serializeOrder(order: any) {
   };
 }
 
-export async function createOrder(
-  input: CreateOrderInput,
-  restaurantId = env.RESTAURANT_ID,
+async function prepareRound(
+  items: CreateOrderInput['items'],
+  restaurantId: string,
 ) {
-  const menuIds = [...new Set(input.items.map((item) => item.menuItemId))];
+  const menuIds = [...new Set(items.map((item) => item.menuItemId))];
   const menuItems = await prisma.menuItem.findMany({
     where: { id: { in: menuIds }, restaurantId },
     include: {
@@ -83,6 +83,231 @@ export async function createOrder(
       { blocked: blocked.map((item) => ({ id: item.id, name: item.name })) },
     );
   }
+
+  let subtotal = 0;
+  const preparedRows = items.map((item) => {
+    const menu = menuMap.get(item.menuItemId)!;
+    const modifiersTotal = item.modifiers.reduce((sum, m) => sum + m.priceDelta, 0);
+    const unitPrice = num(menu.price) + modifiersTotal;
+    subtotal += unitPrice * item.quantity;
+    const course =
+      item.course ??
+      menu.course ??
+      courseForCategory(menu.category?.name ?? '', menu.name);
+    return {
+      menuItemId: menu.id,
+      quantity: item.quantity,
+      unitPrice: round(unitPrice),
+      modifiers: item.modifiers,
+      course,
+      station: menu.station,
+      seat: item.seat !== undefined ? String(item.seat) : null,
+      notes: item.notes ?? null,
+    };
+  });
+
+  return { menuMap, preparedRows, subtotal: round(subtotal) };
+}
+
+/**
+ * If the round contains starters, hold the food mains until the kitchen clears
+ * the starters. A mains-only round fires immediately.
+ */
+function withPrepStatus(
+  preparedRows: Array<Record<string, unknown> & { course: string }>,
+  sendToKitchen: boolean,
+) {
+  const hasStarters = preparedRows.some((row) => row.course === 'starter');
+  return preparedRows.map((row) => ({
+    ...row,
+    prepStatus:
+      sendToKitchen && row.course === 'main' && hasStarters ? 'held' : 'firing',
+  }));
+}
+
+async function depleteStock(
+  tx: Parameters<Parameters<typeof prisma.$transaction>[0]>[0],
+  params: {
+    restaurantId: string;
+    orderId: string;
+    items: CreateOrderInput['items'];
+    menuMap: Map<string, any>;
+  },
+) {
+  const { restaurantId, orderId, items, menuMap } = params;
+  const initialStock = new Map<string, number>();
+  const lowStockAlerts: Array<Record<string, unknown>> = [];
+  const eightySixed: Array<{ id: string; name: string }> = [];
+  const seenEightySix = new Set<string>();
+
+  for (let index = 0; index < items.length; index++) {
+    const inputItem = items[index];
+    const menu = menuMap.get(inputItem.menuItemId)!;
+    const recipeIngredients = menu.recipe?.recipeIngredients ?? [];
+    for (const ri of recipeIngredients) {
+      const ingredient = ri.ingredient;
+      const ingredientId = ingredient.id;
+      const previous =
+        initialStock.get(ingredientId) ?? num(ingredient.currentStock);
+      const decrement = inputItem.quantity * num(ri.quantityRequired);
+      const next = Math.max(0, round(previous - decrement, 3));
+      initialStock.set(ingredientId, next);
+
+      await tx.ingredient.update({
+        where: { id: ingredientId },
+        data: { currentStock: next, lastUpdated: new Date() },
+      });
+      await tx.stockTransaction.create({
+        data: {
+          restaurantId,
+          ingredientId,
+          quantityChange: round(next - previous, 3),
+          reason: 'sale_deduction',
+          referenceOrderId: orderId,
+          note: `${menu.name} × ${inputItem.quantity}`,
+        },
+      });
+
+      if (next <= num(ingredient.reorderTrigger)) {
+        lowStockAlerts.push({
+          event: 'LOW_STOCK_ALERT',
+          ingredientId,
+          name: ingredient.name,
+          currentStock: next,
+          parLevel: num(ingredient.parLevel),
+          reorderTrigger: num(ingredient.reorderTrigger),
+          unit: ingredient.unit,
+          severity: next <= 0 ? 'depleted' : 'low',
+          timestamp: new Date().toISOString(),
+        });
+      }
+
+      if (next <= 0) {
+        const linked = await tx.recipeIngredient.findMany({
+          where: { ingredientId },
+          include: { recipe: { include: { menuItem: true } } },
+        });
+        for (const link of linked) {
+          const itemDate = link.recipe.menuItem;
+          if (!itemDate.is86ed) {
+            await tx.menuItem.update({
+              where: { id: itemDate.id },
+              data: {
+                is86ed: true,
+                eightySixReason: `${ingredient.name} out of stock`,
+              },
+            });
+            if (!seenEightySix.has(itemDate.id)) {
+              seenEightySix.add(itemDate.id);
+              eightySixed.push({ id: itemDate.id, name: itemDate.name });
+            }
+          }
+        }
+      }
+    }
+  }
+
+  return { lowStockAlerts, eightySixed };
+}
+
+/** The first fired round moves an open table into Starters. */
+async function advanceTableForRound(
+  tx: Parameters<Parameters<typeof prisma.$transaction>[0]>[0],
+  params: {
+    tableId?: string | null;
+    sendToKitchen?: boolean;
+    partyName?: string;
+    partySize?: number;
+  },
+) {
+  if (!params.tableId || !params.sendToKitchen) return;
+  const table = await tx.diningTable.findUnique({ where: { id: params.tableId } });
+  if (table && ['ready', 'seated'].includes(table.currentStage)) {
+    await tx.diningTable.update({
+      where: { id: table.id },
+      data: {
+        currentStage: 'starters',
+        seatedAt: table.seatedAt ?? new Date(),
+        stageUpdatedAt: new Date(),
+        currentPartyName: params.partyName ?? table.currentPartyName,
+        currentPartySize: params.partySize ?? table.currentPartySize,
+      },
+    });
+  }
+}
+
+async function fanOutOrder(
+  restaurantId: string,
+  order: any,
+  serialized: any,
+  options: {
+    sendToKitchen: boolean;
+    lowStockAlerts: Array<Record<string, unknown>>;
+    eightySixed: Array<{ id: string; name: string }>;
+  },
+) {
+  emitRestaurant('ORDER_CREATED', {
+    event: 'ORDER_CREATED',
+    order: serialized,
+    timestamp: new Date().toISOString(),
+  }, restaurantId);
+
+  if (options.sendToKitchen) {
+    const tickets = await getTickets(undefined, restaurantId);
+    const ticket = tickets.find((t) => t.id === order.id);
+    if (ticket) {
+      for (const station of ticket.stations) {
+        emitStation(station, 'KDS_NEW_TICKET', {
+          event: 'KDS_NEW_TICKET',
+          station,
+          ticket: { ...ticket, items: ticket.items.filter((i) => i.station === station) },
+          timestamp: new Date().toISOString(),
+        });
+      }
+      emitRestaurant('KDS_NEW_TICKET', {
+        event: 'KDS_NEW_TICKET',
+        station: 'expo',
+        ticket,
+        timestamp: new Date().toISOString(),
+      }, restaurantId);
+    }
+  }
+
+  for (const alert of options.lowStockAlerts) {
+    emitRestaurant('LOW_STOCK_ALERT', alert, restaurantId);
+  }
+  for (const item of options.eightySixed) {
+    emitRestaurant('GLOBAL_86_ITEM_UPDATE', {
+      event: 'GLOBAL_86_ITEM_UPDATE',
+      menuItemId: item.id,
+      name: item.name,
+      is86ed: true,
+      reason: 'Ingredient depleted by sale',
+      source: 'stock',
+      timestamp: new Date().toISOString(),
+    }, restaurantId);
+  }
+  emitRestaurant('INVENTORY_UPDATED', {
+    event: 'INVENTORY_UPDATED',
+    orderId: order.id,
+    lowStockCount: options.lowStockAlerts.length,
+    newly86ed: options.eightySixed.length,
+    timestamp: new Date().toISOString(),
+  }, restaurantId);
+
+  void calculateLaborPacing(restaurantId).catch((error) =>
+    console.warn('labor pacing after sale failed', error),
+  );
+}
+
+export async function createOrder(
+  input: CreateOrderInput,
+  restaurantId = env.RESTAURANT_ID,
+) {
+  const { menuMap, preparedRows, subtotal } = await prepareRound(
+    input.items,
+    restaurantId,
+  );
 
   let serverId = input.serverId;
   if (serverId) {
@@ -110,37 +335,7 @@ export async function createOrder(
     if (!table) throw notFound('Table not found');
   }
 
-  let subtotal = 0;
-  const preparedRows = input.items.map((item) => {
-    const menu = menuMap.get(item.menuItemId)!;
-    const modifiersTotal = item.modifiers.reduce((sum, m) => sum + m.priceDelta, 0);
-    const unitPrice = num(menu.price) + modifiersTotal;
-    subtotal += unitPrice * item.quantity;
-    const course =
-      item.course ??
-      menu.course ??
-      courseForCategory(menu.category?.name ?? '', menu.name);
-    return {
-      menuItemId: menu.id,
-      quantity: item.quantity,
-      unitPrice: round(unitPrice),
-      modifiers: item.modifiers,
-      course,
-      station: menu.station,
-      seat: item.seat !== undefined ? String(item.seat) : null,
-      notes: item.notes ?? null,
-    };
-  });
-  subtotal = round(subtotal);
-
-  // If the round contains starters, hold the food mains until the kitchen
-  // clears the starters. A mains-only round fires immediately.
-  const hasStarters = preparedRows.some((row) => row.course === 'starter');
-  const rows = preparedRows.map((row) => ({
-    ...row,
-    prepStatus:
-      input.sendToKitchen && row.course === 'main' && hasStarters ? 'held' : 'firing',
-  }));
+  const rows = withPrepStatus(preparedRows, input.sendToKitchen);
   const tax = round(subtotal * TAX_RATE);
   const tip = input.autoGratuity ? round(subtotal * AUTO_GRATUITY_RATE) : 0;
   const total = round(subtotal + tax + tip);
@@ -158,100 +353,24 @@ export async function createOrder(
         tip,
         total,
         allergyNotes: input.allergyNotes ?? null,
-        items: { create: rows },
+        items: { create: rows as never },
       },
       include: orderInclude,
     });
 
-    // --- Atomic ingredient depletion (orders ➔ recipes ➔ stock_transactions) ---
-    const initialStock = new Map<string, number>();
-    const lowStockAlerts: Array<Record<string, unknown>> = [];
-    const eightySixed: Array<{ id: string; name: string }> = [];
-    const seenEightySix = new Set<string>();
+    const { lowStockAlerts, eightySixed } = await depleteStock(tx, {
+      restaurantId,
+      orderId: order.id,
+      items: input.items,
+      menuMap,
+    });
 
-    for (let index = 0; index < input.items.length; index++) {
-      const inputItem = input.items[index];
-      const menu = menuMap.get(inputItem.menuItemId)!;
-      const recipeIngredients = menu.recipe?.recipeIngredients ?? [];
-      for (const ri of recipeIngredients) {
-        const ingredient = ri.ingredient;
-        const ingredientId = ingredient.id;
-        const previous =
-          initialStock.get(ingredientId) ?? num(ingredient.currentStock);
-        const decrement = inputItem.quantity * num(ri.quantityRequired);
-        const next = Math.max(0, round(previous - decrement, 3));
-        initialStock.set(ingredientId, next);
-
-        await tx.ingredient.update({
-          where: { id: ingredientId },
-          data: { currentStock: next, lastUpdated: new Date() },
-        });
-        await tx.stockTransaction.create({
-          data: {
-            restaurantId,
-            ingredientId,
-            quantityChange: round(next - previous, 3),
-            reason: 'sale_deduction',
-            referenceOrderId: order.id,
-            note: `${menu.name} × ${inputItem.quantity}`,
-          },
-        });
-
-        if (next <= num(ingredient.reorderTrigger)) {
-          lowStockAlerts.push({
-            event: 'LOW_STOCK_ALERT',
-            ingredientId,
-            name: ingredient.name,
-            currentStock: next,
-            parLevel: num(ingredient.parLevel),
-            reorderTrigger: num(ingredient.reorderTrigger),
-            unit: ingredient.unit,
-            severity: next <= 0 ? 'depleted' : 'low',
-            timestamp: new Date().toISOString(),
-          });
-        }
-
-        if (next <= 0) {
-          const linked = await tx.recipeIngredient.findMany({
-            where: { ingredientId },
-            include: { recipe: { include: { menuItem: true } } },
-          });
-          for (const link of linked) {
-            const item = link.recipe.menuItem;
-            if (!item.is86ed) {
-              await tx.menuItem.update({
-                where: { id: item.id },
-                data: {
-                  is86ed: true,
-                  eightySixReason: `${ingredient.name} out of stock`,
-                },
-              });
-              if (!seenEightySix.has(item.id)) {
-                seenEightySix.add(item.id);
-                eightySixed.push({ id: item.id, name: item.name });
-              }
-            }
-          }
-        }
-      }
-    }
-
-    // Seating + stage: the first fired order moves an open table into Starters.
-    if (input.tableId && input.sendToKitchen) {
-      const table = await tx.diningTable.findUnique({ where: { id: input.tableId } });
-      if (table && ['ready', 'seated'].includes(table.currentStage)) {
-        await tx.diningTable.update({
-          where: { id: table.id },
-          data: {
-            currentStage: 'starters',
-            seatedAt: table.seatedAt ?? new Date(),
-            stageUpdatedAt: new Date(),
-            currentPartyName: input.partyName ?? table.currentPartyName,
-            currentPartySize: input.partySize ?? table.currentPartySize,
-          },
-        });
-      }
-    }
+    await advanceTableForRound(tx, {
+      tableId: input.tableId,
+      sendToKitchen: input.sendToKitchen,
+      partyName: input.partyName,
+      partySize: input.partySize,
+    });
 
     return { order, lowStockAlerts, eightySixed };
   });
@@ -259,62 +378,104 @@ export async function createOrder(
   const order = result.order;
   const serialized = serializeOrder(order);
 
-  // Realtime fan-out after commit.
-  emitRestaurant('ORDER_CREATED', {
-    event: 'ORDER_CREATED',
-    order: serialized,
-    timestamp: new Date().toISOString(),
-  }, restaurantId);
-
-  if (input.sendToKitchen) {
-    const tickets = await getTickets(undefined, restaurantId);
-    const ticket = tickets.find((t) => t.id === order.id);
-    if (ticket) {
-      for (const station of ticket.stations) {
-        emitStation(station, 'KDS_NEW_TICKET', {
-          event: 'KDS_NEW_TICKET',
-          station,
-          ticket: { ...ticket, items: ticket.items.filter((i) => i.station === station) },
-          timestamp: new Date().toISOString(),
-        });
-      }
-      emitRestaurant('KDS_NEW_TICKET', {
-        event: 'KDS_NEW_TICKET',
-        station: 'expo',
-        ticket,
-        timestamp: new Date().toISOString(),
-      }, restaurantId);
-    }
-  }
-
-  for (const alert of result.lowStockAlerts) {
-    emitRestaurant('LOW_STOCK_ALERT', alert, restaurantId);
-  }
-  for (const item of result.eightySixed) {
-    emitRestaurant('GLOBAL_86_ITEM_UPDATE', {
-      event: 'GLOBAL_86_ITEM_UPDATE',
-      menuItemId: item.id,
-      name: item.name,
-      is86ed: true,
-      reason: 'Ingredient depleted by sale',
-      source: 'stock',
-      timestamp: new Date().toISOString(),
-    }, restaurantId);
-  }
-  emitRestaurant('INVENTORY_UPDATED', {
-    event: 'INVENTORY_UPDATED',
-    orderId: order.id,
-    lowStockCount: result.lowStockAlerts.length,
-    newly86ed: result.eightySixed.length,
-    timestamp: new Date().toISOString(),
-  }, restaurantId);
-
-  void calculateLaborPacing(restaurantId).catch((error) =>
-    console.warn('labor pacing after sale failed', error),
-  );
+  await fanOutOrder(restaurantId, order, serialized, {
+    sendToKitchen: input.sendToKitchen,
+    lowStockAlerts: result.lowStockAlerts,
+    eightySixed: result.eightySixed,
+  });
 
   return {
     order: serialized,
+    lowStockAlerts: result.lowStockAlerts,
+    newly86ed: result.eightySixed,
+    totals: { subtotal, tax, tip, total },
+  };
+}
+
+/**
+ * Adds another round to an existing open check instead of opening a second
+ * check on the same table.
+ */
+export async function appendOrderItems(
+  orderId: string,
+  input: {
+    items: CreateOrderInput['items'];
+    allergyNotes?: string | null;
+    sendToKitchen?: boolean;
+    autoGratuity?: boolean;
+  },
+  restaurantId = env.RESTAURANT_ID,
+) {
+  const existing = await prisma.order.findFirst({
+    where: { id: orderId, restaurantId },
+  });
+  if (!existing) throw notFound('Check not found');
+  if (existing.status === 'paid' || existing.status === 'void') {
+    throw conflict('This check is closed — start a new order for this table.');
+  }
+
+  const sendToKitchen = input.sendToKitchen ?? true;
+  const { menuMap, preparedRows, subtotal: roundSubtotal } = await prepareRound(
+    input.items,
+    restaurantId,
+  );
+  const rows = withPrepStatus(preparedRows, sendToKitchen);
+
+  const subtotal = round(num(existing.subtotal) + roundSubtotal);
+  const tax = round(subtotal * TAX_RATE);
+  const tip = input.autoGratuity
+    ? round(subtotal * AUTO_GRATUITY_RATE)
+    : num(existing.tip);
+  const total = round(subtotal + tax + tip);
+  const status = sendToKitchen ? 'sent_to_kitchen' : existing.status;
+
+  const result = await prisma.$transaction(async (tx) => {
+    await tx.orderItem.createMany({
+      data: rows.map((row) => ({ ...row, orderId })) as never,
+    });
+    await tx.order.update({
+      where: { id: orderId },
+      data: {
+        subtotal,
+        tax,
+        tip,
+        total,
+        status,
+        ...(input.allergyNotes !== undefined
+          ? { allergyNotes: input.allergyNotes }
+          : {}),
+      },
+    });
+
+    const { lowStockAlerts, eightySixed } = await depleteStock(tx, {
+      restaurantId,
+      orderId,
+      items: input.items,
+      menuMap,
+    });
+
+    await advanceTableForRound(tx, {
+      tableId: existing.tableId,
+      sendToKitchen,
+    });
+
+    return { lowStockAlerts, eightySixed };
+  });
+
+  const order = await getOrder(orderId, restaurantId);
+  await fanOutOrder(
+    restaurantId,
+    { id: orderId },
+    order,
+    {
+      sendToKitchen,
+      lowStockAlerts: result.lowStockAlerts,
+      eightySixed: result.eightySixed,
+    },
+  );
+
+  return {
+    order,
     lowStockAlerts: result.lowStockAlerts,
     newly86ed: result.eightySixed,
     totals: { subtotal, tax, tip, total },

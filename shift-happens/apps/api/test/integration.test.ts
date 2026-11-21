@@ -6,7 +6,7 @@ import {
   permissionsForRole,
   roleHasPermission,
 } from '@shift-happens/shared';
-import { createOrder } from '../src/services/pos-engine';
+import { appendOrderItems, createOrder } from '../src/services/pos-engine';
 import { bumpTicket, getTickets } from '../src/services/kds-engine';
 
 /**
@@ -236,6 +236,40 @@ describe('POS → KDS → Floor Plan → Inventory integration', () => {
     });
     expect(menuItem.is86ed).toBe(true);
     expect(menuItem.eightySixReason).toContain('Depleting Truffle');
+  });
+  it('appends a round to the same check instead of opening a second one', async () => {
+    const created = await createOrder(
+      {
+        tableId,
+        serverId: staffId,
+        partyName: 'Round Test',
+        partySize: 2,
+        items: [{ menuItemId, quantity: 1, modifiers: [] }],
+        sendToKitchen: true,
+        autoGratuity: false,
+      },
+      restaurantId,
+    );
+
+    const before = await prisma.order.count({ where: { restaurantId, tableId } });
+
+    const appended = await appendOrderItems(
+      created.order.id,
+      {
+        items: [{ menuItemId, quantity: 1, modifiers: [], seat: '2' }],
+        sendToKitchen: true,
+        autoGratuity: false,
+      },
+      restaurantId,
+    );
+
+    const after = await prisma.order.count({ where: { restaurantId, tableId } });
+
+    expect(after).toBe(before);
+    expect(appended.order.id).toBe(created.order.id);
+    expect(appended.order.items).toHaveLength(2);
+    expect(appended.order.subtotal).toBe(110);
+    expect(appended.order.status).toBe('sent_to_kitchen');
   });
 });
 

@@ -125,6 +125,14 @@ an eight-hour shift, and closes yesterday’s forgotten punch automatically.
 6. The order posts to `/api/orders` with each item’s `seat` set to its guest
    number, so the KDS and floor plan update immediately.
 
+**Tables that already have a check never open a second one.** Tapping an
+occupied table opens that check — number, server, items, seats, total and
+allergies — with **Add items to check** and **Open checks** actions. Adding
+items posts the new round to `POST /api/orders/:id/items`, which appends to the
+same check, recalculates the totals, depletes stock for only the new items and
+sends only the new items to the kitchen. Managers and servers can pick up any
+table this way, whoever opened it.
+
 ### Courses: starters versus mains
 
 Every item carries a course derived from its menu category:
@@ -318,8 +326,8 @@ GET    /api/health
 GET    /api/dashboard/summary
 GET    /api/menu                          PATCH /api/menu/:id/availability
 POST   /api/orders                        GET   /api/orders
-GET    /api/orders/:id                    POST  /api/orders/:id/pay
-POST   /api/orders/:id/void
+GET    /api/orders/:id                    POST  /api/orders/:id/items
+POST   /api/orders/:id/pay                 POST  /api/orders/:id/void
 GET    /api/kds/tickets?station=          GET   /api/kds/counts
 POST   /api/kds/bump                      GET   /api/kds/bumps
 POST   /api/kds/simulate/:tableId

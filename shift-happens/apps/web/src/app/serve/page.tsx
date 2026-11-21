@@ -6,7 +6,8 @@ import { COURSE_LABELS, courseForCategory, type Course } from '@/lib/course';
 import AppShell from '@/components/AppShell';
 import { api } from '@/lib/api';
 import { playChime } from '@/lib/audio';
-import { initials, money } from '@/lib/format';
+import { initials, money, timeLabel } from '@/lib/format';
+import { useSession } from '@/lib/session';
 import { listen } from '@/lib/socket';
 import { showToast } from '@/lib/toast';
 import type { DiningTable, MenuItem, MenuResponse, Order } from '@/lib/types';
@@ -56,6 +57,8 @@ const statusLabel: Record<DiningTable['status'], string> = {
 
 export default function ServePage() {
   const router = useRouter();
+  const { can } = useSession();
+  const canOrder = can('serve.order');
   const [tables, setTables] = useState<DiningTable[]>([]);
   const [menu, setMenu] = useState<MenuResponse | null>(null);
   const [staff, setStaff] = useState<StaffMember[]>([]);
@@ -73,6 +76,10 @@ export default function ServePage() {
   const [search, setSearch] = useState('');
   const [category, setCategory] = useState('all');
   const [busy, setBusy] = useState(false);
+  const [existingOpen, setExistingOpen] = useState(false);
+  const [existingOrder, setExistingOrder] = useState<Order | null>(null);
+  const [loadingCheck, setLoadingCheck] = useState(false);
+  const [appendOrderId, setAppendOrderId] = useState<string | null>(null);
   const prefillHandled = useRef(false);
   const categoryInitialized = useRef(false);
 
@@ -141,16 +148,64 @@ export default function ServePage() {
     setCategory(defaultCategoryId());
   }, [menu, defaultCategoryId]);
 
-  const openTable = useCallback((table: DiningTable) => {
-    if (table.status === 'dirty') {
-      showToast(`${table.tableNumber} needs to be bussed before a new order.`, 'warn');
-      return;
-    }
-    setSelectedTable(table);
-    setCovers(Math.max(1, table.currentPartySize ?? Math.min(2, table.capacity)));
-    setPartyName(table.currentPartyName ?? '');
-    setCoverOpen(true);
-  }, []);
+  const loadExistingCheck = useCallback(
+    async (table: DiningTable, orderId: string) => {
+      setLoadingCheck(true);
+      try {
+        const order = await api.get<Order>(`/orders/${orderId}`);
+        setExistingOrder(order);
+        const seatMax = order.items.reduce((max, item) => {
+          const seat = Number(item.seat);
+          return Number.isFinite(seat) ? Math.max(max, seat) : max;
+        }, 0);
+        const party = table.currentPartySize ?? (seatMax || 2);
+        setCovers(Math.max(1, Math.min(40, party)));
+        setPartyName(table.currentPartyName ?? order.partyName ?? '');
+        setNotes(order.allergyNotes ?? '');
+      } catch (error) {
+        showToast(
+          error instanceof Error ? error.message : 'Could not open this check.',
+          'error',
+        );
+      } finally {
+        setLoadingCheck(false);
+      }
+    },
+    [],
+  );
+
+  const openTable = useCallback(
+    (table: DiningTable) => {
+      if (table.status === 'dirty') {
+        showToast(`${table.tableNumber} needs to be bussed before a new order.`, 'warn');
+        return;
+      }
+      setSelectedTable(table);
+      setAppendOrderId(null);
+      if (table.activeOrder) {
+        // Never open a second check on a table that already has one.
+        setExistingOrder(null);
+        setExistingOpen(true);
+        void loadExistingCheck(table, table.activeOrder.id);
+        return;
+      }
+      setCovers(Math.max(1, table.currentPartySize ?? Math.min(2, table.capacity)));
+      setPartyName(table.currentPartyName ?? '');
+      setCoverOpen(true);
+    },
+    [loadExistingCheck],
+  );
+
+  const startAppend = () => {
+    if (!existingOrder) return;
+    setAppendOrderId(existingOrder.id);
+    setExistingOpen(false);
+    setStep('order');
+    setActiveGuest(1);
+    setLines([]);
+    setSearch('');
+    setCategory(defaultCategoryId());
+  };
 
   // Deep link from the Floor Plan: /serve?table=T-03
   useEffect(() => {
@@ -273,31 +328,45 @@ export default function ServePage() {
     }
     setBusy(true);
     try {
-      const result = await api.post<{ order: Order; newly86ed: Array<{ name: string }> }>(
-        '/orders',
-        {
-          tableId: selectedTable.id,
-          serverId: server?.id,
-          serverName: server?.name,
-          partyName: partyName.trim() || selectedTable.currentPartyName || 'Walk-in',
-          partySize: covers,
-          items: lines.map((line) => ({
-            menuItemId: line.item.id,
-            quantity: line.quantity,
-            modifiers: [],
-            course: line.course,
-            seat: String(line.guest),
-          })),
-          allergyNotes: notes.trim() || null,
-          sendToKitchen: true,
-          autoGratuity: gratuityApplies,
-        },
-      );
+      const roundItems = lines.map((line) => ({
+        menuItemId: line.item.id,
+        quantity: line.quantity,
+        modifiers: [],
+        course: line.course,
+        seat: String(line.guest),
+      }));
+      const result = appendOrderId
+        ? await api.post<{ order: Order; newly86ed: Array<{ name: string }> }>(
+            `/orders/${appendOrderId}/items`,
+            {
+              items: roundItems,
+              allergyNotes: notes.trim() || null,
+              sendToKitchen: true,
+              autoGratuity: gratuityApplies,
+            },
+          )
+        : await api.post<{ order: Order; newly86ed: Array<{ name: string }> }>(
+            '/orders',
+            {
+              tableId: selectedTable.id,
+              serverId: server?.id,
+              serverName: server?.name,
+              partyName: partyName.trim() || selectedTable.currentPartyName || 'Walk-in',
+              partySize: covers,
+              items: roundItems,
+              allergyNotes: notes.trim() || null,
+              sendToKitchen: true,
+              autoGratuity: gratuityApplies,
+            },
+          );
       setSentOrder(result.order);
       setStep('sent');
       playChime('success');
+      const addedCount = lines.reduce((sum, line) => sum + line.quantity, 0);
       showToast(
-        `Order #${result.order.orderNumber} fired for ${selectedTable.tableNumber}.`,
+        appendOrderId
+          ? `${addedCount} item${addedCount === 1 ? '' : 's'} added to check #${result.order.orderNumber}.`
+          : `Order #${result.order.orderNumber} fired for ${selectedTable.tableNumber}.`,
         'success',
       );
       if (result.newly86ed.length > 0) {
@@ -320,6 +389,9 @@ export default function ServePage() {
     setCoverOpen(false);
     setNotes('');
     setActiveGuest(1);
+    setAppendOrderId(null);
+    setExistingOrder(null);
+    setExistingOpen(false);
     await loadTables();
   };
 
@@ -475,6 +547,9 @@ export default function ServePage() {
                   </span>
                   <span className="font-body-sm text-body-sm text-text-secondary">
                     {partyName || 'Walk-in'} · {selectedTable.zone} · Server {server?.name ?? '—'}
+                    {appendOrderId && existingOrder
+                      ? ` · round on check #${existingOrder.orderNumber}`
+                      : ''}
                   </span>
                 </div>
               </div>
@@ -482,6 +557,11 @@ export default function ServePage() {
                 <span className="rounded-full bg-accent-cyan-bright/15 px-space-sm py-1 font-label-badge text-label-badge font-bold text-accent-cyan-bright">
                   ADDING TO GUEST {activeGuest}
                 </span>
+                {appendOrderId && (
+                  <span className="rounded-full bg-status-caution/15 px-space-sm py-1 font-label-badge text-label-badge font-bold text-status-caution">
+                    NEW ROUND · CHECK #{existingOrder?.orderNumber ?? ''}
+                  </span>
+                )}
                 <button
                   data-action="review"
                   onClick={() => setStep('review')}
@@ -907,10 +987,10 @@ export default function ServePage() {
               <span className="material-symbols-outlined text-[72px] text-status-ready">check_circle</span>
               <div className="flex flex-col">
                 <h2 className="font-headline-xl text-headline-xl font-bold text-text-primary">
-                  Order fired to the kitchen
+                  {appendOrderId ? 'Round added to the check' : 'Order fired to the kitchen'}
                 </h2>
                 <p className="mt-1 font-body-base text-body-base text-text-secondary">
-                  {selectedTable.tableNumber} · {sentOrder.orderNumber} · {covers} guests
+                  {selectedTable.tableNumber} · check #{sentOrder.orderNumber} · {covers} guests
                 </p>
               </div>
               <div className="grid w-full grid-cols-3 gap-space-xs">
@@ -936,11 +1016,11 @@ export default function ServePage() {
                   Next table
                 </button>
                 <button
-                  onClick={() => router.push('/kds')}
+                  onClick={() => router.push(appendOrderId ? '/pos' : '/kds')}
                   className="flex h-12 flex-1 items-center justify-center gap-space-xs rounded-xl bg-surface-container font-body-base font-bold text-text-primary hover:bg-surface-container-high"
                 >
-                  <span className="material-symbols-outlined">skillet</span>
-                  View KDS
+                  <span className="material-symbols-outlined">{appendOrderId ? 'receipt_long' : 'skillet'}</span>
+                  {appendOrderId ? 'View check' : 'View KDS'}
                 </button>
               </div>
             </div>
@@ -1051,6 +1131,122 @@ export default function ServePage() {
                 <span className="material-symbols-outlined">arrow_forward</span>
                 Start Order · Guest 1
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {existingOpen && selectedTable && (
+        <div className="fixed inset-0 z-[70] flex items-center justify-center bg-bg-canvas/80 p-space-md backdrop-blur-md">
+          <div className="flex max-h-[90vh] w-full max-w-lg flex-col gap-space-md overflow-y-auto rounded-2xl border border-border-subtle bg-surface-container-high p-space-lg shadow-2xl">
+            <div className="flex items-start justify-between gap-space-sm">
+              <div className="flex min-w-0 flex-col">
+                <div className="flex items-center gap-space-xs">
+                  <span className="material-symbols-outlined text-status-caution">receipt_long</span>
+                  <span className="font-headline-lg text-headline-lg font-bold text-text-primary">
+                    {selectedTable.tableNumber} has an open check
+                  </span>
+                </div>
+                <span className="mt-0.5 font-body-sm text-body-sm text-text-secondary">
+                  {selectedTable.zone} · {selectedTable.currentPartyName ?? 'Open table'} ·{' '}
+                  {selectedTable.currentPartySize ?? 0} covers
+                </span>
+              </div>
+              <button
+                onClick={() => setExistingOpen(false)}
+                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-surface-container text-text-tertiary hover:text-text-primary"
+                aria-label="Close"
+              >
+                <span className="material-symbols-outlined">close</span>
+              </button>
+            </div>
+
+            {loadingCheck ? (
+              <div className="flex items-center justify-center gap-2 py-8 font-body-sm text-body-sm text-text-tertiary">
+                <span className="material-symbols-outlined animate-spin text-body-base">
+                  progress_activity
+                </span>
+                Loading check…
+              </div>
+            ) : existingOrder ? (
+              <>
+                <div className="flex items-center justify-between gap-space-sm rounded-xl border border-status-caution/30 bg-status-caution/10 p-space-sm">
+                  <div className="flex min-w-0 flex-col">
+                    <span className="font-label-badge text-label-badge uppercase text-status-caution">
+                      Check #{existingOrder.orderNumber}
+                    </span>
+                    <span className="font-body-sm text-body-sm text-text-secondary">
+                      {existingOrder.serverName ?? 'Unassigned'} ·{' '}
+                      {existingOrder.items.reduce((sum, item) => sum + item.quantity, 0)} items ·
+                      opened {timeLabel(existingOrder.createdAt)}
+                    </span>
+                  </div>
+                  <span className="shrink-0 font-mono-metric-lg text-mono-metric-lg font-bold text-text-primary">
+                    {money(existingOrder.total)}
+                  </span>
+                </div>
+
+                <ul className="flex max-h-48 flex-col gap-1 overflow-y-auto rounded-xl bg-surface-container-low p-2">
+                  {existingOrder.items.map((item) => (
+                    <li
+                      key={item.id}
+                      className="flex items-center justify-between gap-2 px-1 py-0.5 font-body-sm text-body-sm"
+                    >
+                      <span className="min-w-0 truncate text-text-secondary">
+                        {item.quantity}× {item.name}
+                        {item.seat ? (
+                          <span className="text-text-subtle"> · Guest {item.seat}</span>
+                        ) : null}
+                      </span>
+                      <span className="shrink-0 font-mono-metric-sm text-mono-metric-sm text-text-tertiary">
+                        {money(item.unitPrice * item.quantity)}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+
+                {existingOrder.allergyNotes && (
+                  <p className="rounded-lg border border-status-urgent/30 bg-status-urgent/10 px-3 py-2 font-body-sm text-body-sm text-text-primary">
+                    <span className="font-bold text-status-urgent">Allergy: </span>
+                    {existingOrder.allergyNotes}
+                  </p>
+                )}
+
+                <p className="font-body-sm text-body-sm text-text-subtle">
+                  Add another round to this check — the table keeps one ticket, and the kitchen
+                  receives only the new items.
+                </p>
+              </>
+            ) : (
+              <p className="py-4 font-body-sm text-body-sm text-text-secondary">
+                Could not load this check. Close and tap the table again.
+              </p>
+            )}
+
+            <div className="flex flex-col gap-space-sm sm:flex-row">
+              <button
+                onClick={() => setExistingOpen(false)}
+                className="h-12 flex-1 rounded-lg bg-surface-container font-body-base font-bold text-text-secondary hover:bg-surface-container-high"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => router.push('/pos')}
+                className="flex h-12 flex-1 items-center justify-center gap-space-xs whitespace-nowrap rounded-lg bg-surface-container font-body-base font-bold text-text-primary hover:bg-surface-container-high"
+              >
+                <span className="material-symbols-outlined text-body-base">receipt_long</span>
+                Open checks
+              </button>
+              {canOrder && (
+                <button
+                  onClick={startAppend}
+                  disabled={!existingOrder || loadingCheck}
+                  className="flex h-12 flex-[1.6] items-center justify-center gap-space-xs rounded-lg bg-gradient-to-r from-accent-purple-glow to-secondary font-body-base font-bold text-bg-canvas shadow-lg transition-all hover:brightness-110 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  <span className="material-symbols-outlined">add</span>
+                  Add items to check
+                </button>
+              )}
             </div>
           </div>
         </div>

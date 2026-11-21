@@ -1,9 +1,10 @@
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
-import { createOrderSchema } from '@shift-happens/shared';
+import { createOrderSchema, orderItemInputSchema } from '@shift-happens/shared';
 import { parse } from '../lib/validate.js';
 import { requirePermission } from '../lib/staff-auth.js';
 import {
+  appendOrderItems,
   createOrder,
   getOrder,
   listOrders,
@@ -19,6 +20,21 @@ const posRoutes: FastifyPluginAsync = async (app) => {
     const body = parse(createOrderSchema, request.body);
     const result = await createOrder(body);
     return reply.code(201).send(result);
+  });
+
+  app.post('/orders/:id/items', async (request) => {
+    await requirePermission(request, 'serve.order');
+    const { id } = parse(idParams, request.params);
+    const body = parse(
+      z.object({
+        items: z.array(orderItemInputSchema).min(1),
+        allergyNotes: z.string().max(1000).optional().nullable(),
+        sendToKitchen: z.boolean().default(true),
+        autoGratuity: z.boolean().default(false),
+      }),
+      request.body,
+    );
+    return appendOrderItems(id, body);
   });
 
   app.get('/orders', async (request) => {
