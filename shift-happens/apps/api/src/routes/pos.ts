@@ -10,6 +10,7 @@ import {
 } from '../lib/staff-auth.js';
 import { forbidden } from '../errors.js';
 import {
+  addOrderPayment,
   appendOrderItems,
   createOrder,
   getOrder,
@@ -56,6 +57,24 @@ const posRoutes: FastifyPluginAsync = async (app) => {
       ...query,
       ...(staff && !canViewAllTables(staff) ? { serverId: staff.id } : {}),
     });
+  });
+
+  app.post('/orders/:id/payments', async (request) => {
+    const { id } = parse(idParams, request.params);
+    await requireOrderAccess(request, id, 'serve.pay');
+    const body = parse(
+      z.object({
+        amount: z.number().positive().max(100000),
+        method: z.enum(['card', 'cash', 'gift_card', 'house']),
+        cardBrand: z
+          .enum(['visa', 'mastercard', 'amex', 'debit', 'other'])
+          .optional(),
+        tip: z.number().min(0).max(5000).optional(),
+        label: z.string().max(60).nullish(),
+      }),
+      request.body,
+    );
+    return addOrderPayment(id, body);
   });
 
   app.get('/orders/:id', async (request) => {

@@ -254,10 +254,26 @@ model Order {
   table      DiningTable? @relation(fields: [tableId], references: [id], onDelete: SetNull)
   server     Staff      @relation(fields: [serverId], references: [id])
   items      OrderItem[]
+  payments   Payment[]
   stockTransactions StockTransaction[]
 
   @@index([restaurantId, status, createdAt])
   @@map("orders")
+}
+
+model Payment {
+  id        String   @id @default(uuid()) @db.Uuid
+  orderId   String   @map("order_id") @db.Uuid
+  amount    Decimal  @db.Decimal(10, 2)
+  method    String   @db.VarChar(20)
+  cardBrand String?  @map("card_brand") @db.VarChar(20)
+  label     String?  @db.VarChar(60)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@index([orderId])
+  @@map("payments")
 }
 
 model OrderItem {

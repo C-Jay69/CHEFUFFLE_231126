@@ -124,6 +124,15 @@ export interface OrderItem {
   bumpedAt: string | null;
 }
 
+export interface OrderPayment {
+  id: string;
+  amount: number;
+  method: string;
+  cardBrand: string | null;
+  label: string | null;
+  createdAt: string;
+}
+
 export interface Order {
   id: string;
   orderNumber: number;
@@ -142,6 +151,9 @@ export interface Order {
   createdAt: string;
   closedAt: string | null;
   items: OrderItem[];
+  payments?: OrderPayment[];
+  paidAmount?: number;
+  balance?: number;
 }
 
 export interface Reservation {

@@ -81,6 +81,11 @@ function addToTally(
     paymentMethod: string | null;
     cardBrand: string | null;
     items?: Array<{ seat: string | null }>;
+    payments?: Array<{
+      amount: unknown;
+      method: string;
+      cardBrand: string | null;
+    }>;
   },
 ) {
   tally.sales = round(tally.sales + num(order.subtotal));
@@ -89,9 +94,31 @@ function addToTally(
   tally.gross = round(tally.gross + num(order.total));
   tally.checks += 1;
   tally.covers += coversFor(order);
-  const key = tenderKey(order);
-  tally.tenders[key].count += 1;
-  tally.tenders[key].amount = round(tally.tenders[key].amount + num(order.total));
+
+  // Split/partial payments: each payment row is one tender (one card slip).
+  // Legacy paid orders without payment rows fall back to the order fields.
+  const payments =
+    order.payments && order.payments.length > 0
+      ? order.payments.map((payment) => ({
+          key: tenderKey({
+            paymentMethod: payment.method,
+            cardBrand: payment.cardBrand,
+          }),
+          amount: num(payment.amount),
+        }))
+      : [
+          {
+            key: tenderKey(order),
+            amount: num(order.total),
+          },
+        ];
+
+  for (const payment of payments) {
+    tally.tenders[payment.key].count += 1;
+    tally.tenders[payment.key].amount = round(
+      tally.tenders[payment.key].amount + payment.amount,
+    );
+  }
 }
 
 function finishTally<T extends Tally>(tally: T) {
@@ -142,6 +169,7 @@ export async function getEndOfNight(
       server: true,
       table: true,
       items: { select: { seat: true } },
+      payments: true,
     },
     orderBy: { closedAt: 'asc' },
   });

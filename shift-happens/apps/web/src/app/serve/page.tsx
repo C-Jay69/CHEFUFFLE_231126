@@ -59,6 +59,7 @@ export default function ServePage() {
   const router = useRouter();
   const { can } = useSession();
   const canOrder = can('serve.order');
+  const canPay = can('serve.pay');
   const [tables, setTables] = useState<DiningTable[]>([]);
   const [menu, setMenu] = useState<MenuResponse | null>(null);
   const [staff, setStaff] = useState<StaffMember[]>([]);
@@ -1230,21 +1231,23 @@ export default function ServePage() {
               >
                 Cancel
               </button>
-              <button
-                onClick={() => router.push('/pos')}
-                className="flex h-12 flex-1 items-center justify-center gap-space-xs whitespace-nowrap rounded-lg bg-surface-container font-body-base font-bold text-text-primary hover:bg-surface-container-high"
-              >
-                <span className="material-symbols-outlined text-body-base">receipt_long</span>
-                Open checks
-              </button>
+              {canPay && existingOrder && (
+                <button
+                  onClick={() => router.push(`/pay/${existingOrder.id}`)}
+                  className="flex h-12 flex-1 items-center justify-center gap-space-xs whitespace-nowrap rounded-lg bg-gradient-to-r from-accent-purple-glow to-secondary font-body-base font-bold text-bg-canvas shadow-lg transition-all hover:brightness-110 active:scale-[0.98]"
+                >
+                  <span className="material-symbols-outlined">payments</span>
+                  Pay check
+                </button>
+              )}
               {canOrder && (
                 <button
                   onClick={startAppend}
                   disabled={!existingOrder || loadingCheck}
-                  className="flex h-12 flex-[1.6] items-center justify-center gap-space-xs rounded-lg bg-gradient-to-r from-accent-purple-glow to-secondary font-body-base font-bold text-bg-canvas shadow-lg transition-all hover:brightness-110 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
+                  className="flex h-12 flex-[1.4] items-center justify-center gap-space-xs whitespace-nowrap rounded-lg bg-surface-container font-body-base font-bold text-text-primary transition-colors hover:bg-surface-container-high disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   <span className="material-symbols-outlined">add</span>
-                  Add items to check
+                  Add items
                 </button>
               )}
             </div>

@@ -16,6 +16,7 @@ const round = (v: number, places = 2) => Number(v.toFixed(places));
 
 const orderInclude = {
   items: { include: { menuItem: true }, orderBy: { createdAt: 'asc' as const } },
+  payments: { orderBy: { createdAt: 'asc' as const } },
   table: true,
   server: true,
 };
@@ -38,6 +39,27 @@ function serializeOrder(order: any) {
     paymentMethod: order.paymentMethod ?? null,
     cardBrand: order.cardBrand ?? null,
     allergyNotes: order.allergyNotes,
+    payments: (order.payments ?? []).map((payment: any) => ({
+      id: payment.id,
+      amount: num(payment.amount),
+      method: payment.method,
+      cardBrand: payment.cardBrand,
+      label: payment.label,
+      createdAt: payment.createdAt.toISOString(),
+    })),
+    paidAmount: round(
+      (order.payments ?? []).reduce(
+        (sum: number, payment: any) => sum + num(payment.amount),
+        0,
+      ),
+    ),
+    balance: round(
+      num(order.total) -
+        (order.payments ?? []).reduce(
+          (sum: number, payment: any) => sum + num(payment.amount),
+          0,
+        ),
+    ),
     createdAt: order.createdAt.toISOString(),
     closedAt: order.closedAt?.toISOString() ?? null,
     items: order.items.map((item: any) => ({
@@ -524,23 +546,28 @@ export async function payOrder(
   });
   if (!order) throw notFound('Order not found');
   if (order.status === 'void') throw conflict('Cannot pay a voided order');
+  if (order.status === 'paid') throw conflict('This check is already paid');
 
   const tip = input.tip !== undefined ? round(input.tip) : num(order.tip);
   const total = round(num(order.subtotal) + num(order.tax) + tip);
-  const updated = await prisma.order.update({
-    where: { id: orderId },
-    data: {
-      status: 'paid',
-      tip,
-      total,
-      closedAt: new Date(),
-      paymentMethod: input.method ?? 'card',
-      cardBrand:
-        (input.method ?? 'card') === 'cash'
-          ? null
-          : (input.cardBrand ?? 'other'),
-    },
-    include: orderInclude,
+  const method = input.method ?? 'card';
+  const cardBrand = method === 'cash' ? null : (input.cardBrand ?? 'other');
+  const updated = await prisma.$transaction(async (tx) => {
+    await tx.payment.create({
+      data: { orderId, amount: total, method, cardBrand, label: 'Full payment' },
+    });
+    return tx.order.update({
+      where: { id: orderId },
+      data: {
+        status: 'paid',
+        tip,
+        total,
+        closedAt: new Date(),
+        paymentMethod: method,
+        cardBrand,
+      },
+      include: orderInclude,
+    });
   });
   const serialized = serializeOrder(updated);
   emitRestaurant('ORDER_CREATED', {
@@ -553,6 +580,99 @@ export async function payOrder(
     timestamp: new Date().toISOString(),
   }, restaurantId);
   void calculateLaborPacing(restaurantId).catch(() => undefined);
+  return serialized;
+}
+
+/**
+ * Records a (possibly partial) payment against an open check. The guest can
+ * pay part card, part cash, part gift card; the check closes automatically
+ * when the payments cover the total.
+ */
+export async function addOrderPayment(
+  orderId: string,
+  input: {
+    amount: number;
+    method: string;
+    cardBrand?: string;
+    tip?: number;
+    label?: string | null;
+  },
+  restaurantId = env.RESTAURANT_ID,
+) {
+  const order = await prisma.order.findFirst({
+    where: { id: orderId, restaurantId },
+    include: { payments: true },
+  });
+  if (!order) throw notFound('Order not found');
+  if (order.status === 'void') throw conflict('Cannot pay a voided check');
+  if (order.status === 'paid') throw conflict('This check is already paid');
+
+  const subtotal = num(order.subtotal);
+  const tax = num(order.tax);
+  const tip =
+    input.tip !== undefined ? Math.max(0, round(input.tip)) : num(order.tip);
+  const total = round(subtotal + tax + tip);
+  const paidBefore = round(
+    order.payments.reduce((sum, payment) => sum + num(payment.amount), 0),
+  );
+  const amount = round(input.amount);
+  const remaining = round(total - paidBefore);
+
+  if (remaining < -0.005) {
+    throw badRequest(
+      'The tip is lower than the amount already paid. Raise the tip or refund a payment first.',
+    );
+  }
+  if (!(amount > 0)) throw badRequest('Enter a payment amount above zero');
+  if (amount > remaining + 0.005) {
+    throw badRequest(
+      `That is more than the remaining balance of $${remaining.toFixed(2)}.`,
+    );
+  }
+
+  const fullyPaid = round(paidBefore + amount) >= total - 0.005;
+  const method = input.method;
+  const cardBrand = method === 'cash' ? null : (input.cardBrand ?? 'other');
+  const isFirstPayment = order.payments.length === 0;
+
+  const updated = await prisma.$transaction(async (tx) => {
+    await tx.payment.create({
+      data: {
+        orderId,
+        amount,
+        method,
+        cardBrand,
+        label: input.label ?? null,
+      },
+    });
+    return tx.order.update({
+      where: { id: orderId },
+      data: {
+        tip,
+        total,
+        ...(fullyPaid
+          ? {
+              status: 'paid',
+              closedAt: new Date(),
+              paymentMethod: isFirstPayment ? method : 'split',
+              cardBrand,
+            }
+          : {}),
+      },
+      include: orderInclude,
+    });
+  });
+
+  const serialized = serializeOrder(updated);
+  emitRestaurant('ORDER_CREATED', {
+    event: 'ORDER_CREATED',
+    order: serialized,
+    payment: { method, cardBrand, amount },
+    timestamp: new Date().toISOString(),
+  }, restaurantId);
+  if (fullyPaid) {
+    void calculateLaborPacing(restaurantId).catch(() => undefined);
+  }
   return serialized;
 }
 

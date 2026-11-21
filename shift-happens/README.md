@@ -8,6 +8,7 @@ Fastify + PostgreSQL + Socket.io API.
 apps/web  Next.js 14 App Router  ── REST + WebSocket ──  apps/api  Fastify
         │                                              │
         ├── /serve          table → covers → guest order ├── POS engine
+        ├── /pay/:id        tip + split + part payments
         ├── /kds            live station tickets         ├── KDS + stage engine
         ├── /floor-plan     table status + actions       ├── Labor pacing engine
         ├── /reservations   calendar + arrivals          ├── Inventory engine
@@ -137,11 +138,35 @@ an eight-hour shift, and closes yesterday’s forgotten punch automatically.
 
 **Tables that already have a check never open a second one.** Tapping an
 occupied table opens that check — number, server, items, seats, total and
-allergies — with **Add items to check** and **Open checks** actions. Adding
-items posts the new round to `POST /api/orders/:id/items`, which appends to the
-same check, recalculates the totals, depletes stock for only the new items and
-sends only the new items to the kitchen. Managers and servers can pick up any
-table this way, whoever opened it.
+allergies — with **Pay check**, **Add items** and **Cancel** actions. **Pay
+check** opens the payment screen for that table.
+
+Adding items posts the new round to `POST /api/orders/:id/items`, which appends
+to the same check, recalculates the totals, depletes stock for only the new
+items and sends only the new items to the kitchen. Managers and servers can pick
+up any table this way, whoever opened it.
+
+### Taking payment
+
+`/pay/[orderId]` is the server’s payment screen (also reached from **Pay** in
+Open Checks and **Pay check** on a table):
+
+* **Bill** — every item with its guest seat, subtotal, 8% tax and a **blank
+  gratuity field** for the guest to fill in (15/18/20% shortcuts are offered,
+  but nothing is pre-populated). Total, amount paid and balance update live.
+* **Split the bill** — pay in full, **split equally** between 2, 3, 4, 5, 6 or
+  8 people, or **pay by guest** using the seats on the check. Each share shows
+  what is still due and prefills the tender amount when selected.
+* **Take payment** — Card / Cash / Gift card / House, and for cards the brand
+  (Visa / Mastercard / Amex / Debit / Other), with an **editable amount**. A
+  guest can pay part Visa, part cash, part gift card; each payment is a row on
+  the check and one card payment is one slip at close-out.
+* The check closes itself when the payments cover the total (tip included);
+  the screen then shows the paid receipt with every tender. The API rejects
+  overpayments and a tip lower than what has already been taken.
+
+Payments live in the `payments` table (`amount`, `method`, `card_brand`,
+`label`) and feed the End of Night tender mix and slip counts.
 
 ### Courses: starters versus mains
 
@@ -212,9 +237,8 @@ every payment records its tender at the till.
 * **Reconciliation** — computer total vs slips + cash counted, expected to
   count, and the over/short once every drawer is counted.
 
-At the till, **Pay** asks for the tender (Card / Cash / Gift / House) and, for
-cards, the brand (Visa / Mastercard / Amex / Debit / Other), stored on the order
-as `payment_method` / `card_brand`.
+Tenders come from the **payment rows** recorded on each check (one card payment
+= one slip), with the legacy order fields as a fallback for older checks.
 
 ## Floor plan designer
 
@@ -364,7 +388,8 @@ GET    /api/dashboard/summary             GET   /api/end-of-night?date=
 GET    /api/menu                          PATCH /api/menu/:id/availability
 POST   /api/orders                        GET   /api/orders
 GET    /api/orders/:id                    POST  /api/orders/:id/items
-POST   /api/orders/:id/pay                 POST  /api/orders/:id/void
+POST   /api/orders/:id/payments            POST  /api/orders/:id/pay
+POST   /api/orders/:id/void
 GET    /api/kds/tickets?station=          GET   /api/kds/counts
 POST   /api/kds/bump                      GET   /api/kds/bumps
 POST   /api/kds/simulate/:tableId

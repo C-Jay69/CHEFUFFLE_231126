@@ -405,7 +405,7 @@ export default function OpenChecksPage() {
                         <Button
                           variant="success"
                           icon="payments"
-                          onClick={() => requestAction('pay', order)}
+                          onClick={() => router.push(`/pay/${order.id}`)}
                         >
                           Pay
                         </Button>

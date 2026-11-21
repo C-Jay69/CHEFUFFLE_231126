@@ -6,7 +6,12 @@ import {
   permissionsForRole,
   roleHasPermission,
 } from '@shift-happens/shared';
-import { appendOrderItems, createOrder, payOrder } from '../src/services/pos-engine';
+import {
+  addOrderPayment,
+  appendOrderItems,
+  createOrder,
+  payOrder,
+} from '../src/services/pos-engine';
 import { getEndOfNight } from '../src/services/end-of-night-engine';
 import { getTables } from '../src/services/stage-engine';
 import { bumpTicket, getTickets } from '../src/services/kds-engine';
@@ -364,6 +369,46 @@ describe('POS → KDS → Floor Plan → Inventory integration', () => {
 
     const all = await getTables(restaurantId, { viewAll: true });
     expect(all.map((table) => table.tableNumber)).toContain('S-OTH');
+  });
+
+  it('records partial payments and closes the check once covered', async () => {
+    const created = await createOrder(
+      {
+        tableId,
+        serverId: staffId,
+        items: [{ menuItemId, quantity: 1, modifiers: [] }],
+        sendToKitchen: true,
+        autoGratuity: false,
+      },
+      restaurantId,
+    );
+
+    const afterCard = await addOrderPayment(
+      created.order.id,
+      { amount: 20, method: 'card', cardBrand: 'visa', tip: 0, label: 'Guest 1' },
+      restaurantId,
+    );
+    expect(afterCard.status).not.toBe('paid');
+    expect(afterCard.paidAmount).toBe(20);
+    expect(afterCard.balance).toBeGreaterThan(0);
+
+    const afterCash = await addOrderPayment(
+      created.order.id,
+      {
+        amount: afterCard.balance ?? 0,
+        method: 'cash',
+        tip: 0,
+        label: 'Guest 2',
+      },
+      restaurantId,
+    );
+    expect(afterCash.status).toBe('paid');
+    expect(afterCash.payments).toHaveLength(2);
+    expect(
+      afterCash.payments?.map((payment: { method: string }) => payment.method),
+    ).toEqual(['card', 'cash']);
+    expect(afterCash.paidAmount).toBeCloseTo(created.order.total, 2);
+    expect(afterCash.balance).toBe(0);
   });
 
 });
