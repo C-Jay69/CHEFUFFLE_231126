@@ -60,6 +60,9 @@ const posRoutes: FastifyPluginAsync = async (app) => {
       z.object({
         tip: z.number().min(0).max(5000).optional(),
         method: z.enum(['card', 'cash', 'gift_card', 'house']).optional(),
+        cardBrand: z
+          .enum(['visa', 'mastercard', 'amex', 'debit', 'other'])
+          .optional(),
       }),
       request.body ?? {},
     );

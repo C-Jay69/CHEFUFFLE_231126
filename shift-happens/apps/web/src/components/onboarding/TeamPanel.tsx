@@ -54,6 +54,7 @@ const PERMISSION_LABELS: Record<Permission, string> = {
   'floor.seat': 'Seat tables',
   'floor.manage': 'Edit floor plan',
   'floor.close': 'Close tables',
+  'night.close': 'End of night',
   'reservations.manage': 'Reservations',
   'kds.operate': 'Kitchen display',
   'inventory.manage': 'Inventory',

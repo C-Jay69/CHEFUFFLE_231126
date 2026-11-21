@@ -707,7 +707,18 @@ async function main() {
     { n: 20, table: 24, server: 12, status: 'paid', mins: 80, tip: '24.00', items: [{ menu: 144, qty: 2, seat: '1' }, { menu: 115, qty: 2, seat: '2' }, { menu: 157, qty: 1, seat: '2' }] },
   ];
   const menuById = new Map(menuSeed.map((m) => [m.n, m]));
+  // Deterministic tender mix for paid checks so the end-of-night report is
+  // populated (Visa / Mastercard / Amex / cash).
+  const paidTenders: Array<{ method: string; brand: string | null }> = [
+    { method: 'card', brand: 'visa' },
+    { method: 'card', brand: 'visa' },
+    { method: 'card', brand: 'mastercard' },
+    { method: 'card', brand: 'amex' },
+    { method: 'cash', brand: null },
+    { method: 'card', brand: 'mastercard' },
+  ];
   for (const o of orderSeed) {
+    const tender = paidTenders[o.n % paidTenders.length];
     const prepared = o.items.map((it) => ({ it, menu: menuById.get(it.menu)! }));
     const hasStarters = prepared.some((p) => p.menu.course === 'starter');
     const items = prepared.map(({ it, menu }) => {
@@ -747,6 +758,8 @@ async function main() {
         tax: tax.toFixed(2),
         tip: tip.toFixed(2),
         total: (subtotal + tax + tip).toFixed(2),
+        paymentMethod: o.status === 'paid' ? tender.method : null,
+        cardBrand: o.status === 'paid' ? tender.brand : null,
         allergyNotes: o.allergy ?? null,
         createdAt: minutesAgo(o.mins),
         closedAt: o.status === 'paid' ? minutesAgo(o.mins - 20) : null,

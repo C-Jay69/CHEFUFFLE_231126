@@ -3,6 +3,7 @@ import architectRoutes from './architect.js';
 import authRoutes from './auth.js';
 import briefingRoutes from './briefing.js';
 import dashboardRoutes from './dashboard.js';
+import endOfNightRoutes from './end-of-night.js';
 import floorPlanRoutes from './floor-plan.js';
 import inventoryRoutes from './inventory.js';
 import kdsRoutes from './kds.js';
@@ -30,5 +31,6 @@ export async function registerRoutes(app: FastifyInstance) {
   await app.register(voiceRoutes, { prefix: '/api' });
   await app.register(authRoutes, { prefix: '/api' });
   await app.register(staffRoutes, { prefix: '/api' });
+  await app.register(endOfNightRoutes, { prefix: '/api' });
   await app.register(dashboardRoutes, { prefix: '/api' });
 }

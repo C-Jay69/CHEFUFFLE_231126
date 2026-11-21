@@ -23,6 +23,7 @@ const NAV: Array<{
   { href: '/floor-plan', label: 'Floor Plan', icon: 'table_restaurant', color: 'text-secondary', permissions: ['floor.seat', 'floor.manage'] },
   { href: '/reservations', label: 'Reservations', icon: 'book_online', color: 'text-secondary', permissions: ['reservations.manage'] },
   { href: '/pos', label: 'Open Checks', icon: 'receipt_long', color: 'text-secondary', permissions: ['serve.pay'] },
+  { href: '/end-of-night', label: 'End of Night', icon: 'nightlife', color: 'text-status-caution', permissions: ['night.close'] },
   { href: '/inventory', label: 'Inventory', icon: 'inventory_2', color: 'text-secondary', permissions: ['inventory.manage'] },
   { href: '/scheduling', label: 'Scheduling', icon: 'calendar_month', color: 'text-secondary', permissions: ['scheduling.manage'] },
   { href: '/briefing', label: 'Briefing', icon: 'campaign', color: 'text-accent-purple-glow', permissions: ['briefing.manage'] },

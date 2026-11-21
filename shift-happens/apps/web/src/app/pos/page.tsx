@@ -45,6 +45,8 @@ export default function OpenChecksPage() {
   const [refreshing, setRefreshing] = useState(false);
   const [confirm, setConfirm] = useState<Confirm | null>(null);
   const [voidReason, setVoidReason] = useState('Manager void');
+  const [payMethod, setPayMethod] = useState<'card' | 'cash' | 'gift_card' | 'house'>('card');
+  const [payBrand, setPayBrand] = useState<'visa' | 'mastercard' | 'amex' | 'debit' | 'other'>('visa');
   const [busy, setBusy] = useState(false);
   const [now, setNow] = useState(() => Date.now());
   const [tables, setTables] = useState<DiningTable[]>([]);
@@ -138,6 +140,8 @@ export default function OpenChecksPage() {
 
   const requestAction = (kind: Confirm['kind'], order: Order) => {
     setVoidReason('Manager void');
+    setPayMethod('card');
+    setPayBrand('visa');
     setConfirm({ kind, order });
   };
 
@@ -148,7 +152,8 @@ export default function OpenChecksPage() {
       if (confirm.kind === 'pay') {
         const paid = await api.post<Order>(`/orders/${confirm.order.id}/pay`, {
           tip: tipFor(confirm.order),
-          method: 'card',
+          method: payMethod,
+          ...(payMethod === 'card' ? { cardBrand: payBrand } : {}),
         });
         showToast(`Check #${paid.orderNumber} paid · ${money(paid.total)}.`, 'success');
       } else {
@@ -458,6 +463,61 @@ export default function OpenChecksPage() {
           }
         >
           {confirm.kind === 'pay' ? (
+            <>
+            <div className="flex flex-col gap-2">
+              <span className="font-label-badge text-label-badge uppercase text-text-tertiary">
+                Tender
+              </span>
+              <div className="grid grid-cols-4 gap-1">
+                {(
+                  [
+                    ['card', 'Card'],
+                    ['cash', 'Cash'],
+                    ['gift_card', 'Gift'],
+                    ['house', 'House'],
+                  ] as const
+                ).map(([value, label]) => (
+                  <button
+                    key={value}
+                    type="button"
+                    onClick={() => setPayMethod(value)}
+                    className={`h-10 rounded-lg font-body-sm text-body-sm font-bold transition-colors ${
+                      payMethod === value
+                        ? 'bg-accent-cyan-bright text-bg-canvas'
+                        : 'bg-surface-container text-text-secondary hover:bg-surface-container-high'
+                    }`}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
+              {payMethod === 'card' && (
+                <div className="flex flex-wrap gap-1">
+                  {(
+                    [
+                      ['visa', 'Visa'],
+                      ['mastercard', 'Mastercard'],
+                      ['amex', 'Amex'],
+                      ['debit', 'Debit'],
+                      ['other', 'Other'],
+                    ] as const
+                  ).map(([value, label]) => (
+                    <button
+                      key={value}
+                      type="button"
+                      onClick={() => setPayBrand(value)}
+                      className={`h-8 rounded-full px-3 font-body-sm text-[12px] font-bold transition-colors ${
+                        payBrand === value
+                          ? 'bg-secondary text-bg-canvas'
+                          : 'bg-surface-container text-text-secondary hover:bg-surface-container-high'
+                      }`}
+                    >
+                      {label}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
             <div className="flex flex-col gap-2 rounded-xl bg-surface-container p-3 font-body-sm text-body-sm text-text-secondary">
               <div className="flex justify-between">
                 <span>Subtotal</span>
@@ -484,6 +544,7 @@ export default function OpenChecksPage() {
                 </span>
               </div>
             </div>
+            </>
           ) : (
             <label className="flex flex-col gap-1">
               <span className="font-label-badge text-label-badge uppercase text-text-tertiary">

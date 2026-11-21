@@ -35,6 +35,8 @@ function serializeOrder(order: any) {
     tax: num(order.tax),
     tip: num(order.tip),
     total: num(order.total),
+    paymentMethod: order.paymentMethod ?? null,
+    cardBrand: order.cardBrand ?? null,
     allergyNotes: order.allergyNotes,
     createdAt: order.createdAt.toISOString(),
     closedAt: order.closedAt?.toISOString() ?? null,
@@ -509,7 +511,7 @@ export async function getOrder(orderId: string, restaurantId = env.RESTAURANT_ID
 
 export async function payOrder(
   orderId: string,
-  input: { tip?: number; method?: string } = {},
+  input: { tip?: number; method?: string; cardBrand?: string } = {},
   restaurantId = env.RESTAURANT_ID,
 ) {
   const order = await prisma.order.findFirst({
@@ -527,6 +529,11 @@ export async function payOrder(
       tip,
       total,
       closedAt: new Date(),
+      paymentMethod: input.method ?? 'card',
+      cardBrand:
+        (input.method ?? 'card') === 'cash'
+          ? null
+          : (input.cardBrand ?? 'other'),
     },
     include: orderInclude,
   });
@@ -534,7 +541,10 @@ export async function payOrder(
   emitRestaurant('ORDER_CREATED', {
     event: 'ORDER_CREATED',
     order: serialized,
-    payment: { method: input.method ?? 'card' },
+    payment: {
+      method: input.method ?? 'card',
+      cardBrand: input.cardBrand ?? null,
+    },
     timestamp: new Date().toISOString(),
   }, restaurantId);
   void calculateLaborPacing(restaurantId).catch(() => undefined);
