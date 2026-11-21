@@ -1,7 +1,10 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
-import type { Permission } from '@shift-happens/shared/permissions';
+import {
+  permissionsForRole,
+  type Permission,
+} from '@shift-happens/shared/permissions';
 
 export interface SessionStaff {
   id: string;
@@ -107,6 +110,9 @@ export function useSession() {
     (permission: Permission) => {
       // An unidentified terminal keeps full access; this is a PIN demo gate.
       if (!staff) return true;
+      // Derive from the role so a session stored before a permission was added
+      // still sees the current matrix (e.g. End of Night).
+      if (staff.role) return permissionsForRole(staff.role).includes(permission);
       if (!staff.permissions) return true;
       return staff.permissions.includes(permission);
     },

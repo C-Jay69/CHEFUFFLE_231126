@@ -404,7 +404,10 @@ export default function EndOfNightPage() {
                       {money(row.amount)}
                     </span>
                     <span className="font-body-sm text-body-sm text-text-tertiary">
-                      {row.count} {row.key === 'cash' ? 'cash checks' : 'slips'}
+                      {row.count}{' '}
+                      {row.key === 'cash'
+                        ? `cash check${row.count === 1 ? '' : 's'}`
+                        : `slip${row.count === 1 ? '' : 's'}`}
                     </span>
                   </div>
                 ))}
@@ -453,7 +456,9 @@ export default function EndOfNightPage() {
                             {isBar ? (
                               <Badge tone="violet">Bar</Badge>
                             ) : (
-                              <Badge tone="neutral">{drawer.checks} checks</Badge>
+                              <Badge tone="neutral">
+                                {drawer.checks} check{drawer.checks === 1 ? '' : 's'}
+                              </Badge>
                             )}
                             <span className="font-body-sm text-body-sm text-text-tertiary">
                               {drawer.covers} covers
@@ -533,7 +538,11 @@ export default function EndOfNightPage() {
                                   {field.label}
                                 </span>
                                 <span className="font-body-sm text-body-sm text-text-subtle">
-                                  Expect {money(expectedAmount)}
+                                  {field.key === 'cash'
+                                    ? `Expect ${money(expectedAmount)}`
+                                    : `Expect ${drawer.tenders[field.key].count} slip${
+                                        drawer.tenders[field.key].count === 1 ? '' : 's'
+                                      } · ${money(expectedAmount)}`}
                                 </span>
                                 <input
                                   inputMode="decimal"
@@ -662,11 +671,11 @@ export default function EndOfNightPage() {
                 <p className="font-body-sm text-body-sm text-text-tertiary">
                   {allCounted
                     ? 'Every drawer is counted. File the slips in the night envelope and close the till.'
-                    : `Count ${
-                        drawers.length - countedDrawers
-                      } more drawer(s) to see the over / short against the ${
-                        data.totals.checks
-                      } paid checks on the computer.`}
+                    : `Count ${drawers.length - countedDrawers} more drawer${
+                        drawers.length - countedDrawers === 1 ? '' : 's'
+                      } to see the over / short against the ${data.totals.checks} paid check${
+                        data.totals.checks === 1 ? '' : 's'
+                      } on the computer.`}
                 </p>
               </div>
             </Card>

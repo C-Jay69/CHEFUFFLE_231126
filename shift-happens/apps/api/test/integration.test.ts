@@ -6,7 +6,8 @@ import {
   permissionsForRole,
   roleHasPermission,
 } from '@shift-happens/shared';
-import { appendOrderItems, createOrder } from '../src/services/pos-engine';
+import { appendOrderItems, createOrder, payOrder } from '../src/services/pos-engine';
+import { getEndOfNight } from '../src/services/end-of-night-engine';
 import { bumpTicket, getTickets } from '../src/services/kds-engine';
 
 /**
@@ -271,6 +272,36 @@ describe('POS → KDS → Floor Plan → Inventory integration', () => {
     expect(appended.order.subtotal).toBe(110);
     expect(appended.order.status).toBe('sent_to_kitchen');
   });
+  it('reports the tender mix, slip counts and cash due per server', async () => {
+    const created = await createOrder(
+      {
+        tableId,
+        serverId: staffId,
+        items: [{ menuItemId, quantity: 1, modifiers: [] }],
+        sendToKitchen: true,
+        autoGratuity: false,
+      },
+      restaurantId,
+    );
+    await payOrder(
+      created.order.id,
+      { tip: 0, method: 'card', cardBrand: 'visa' },
+      restaurantId,
+    );
+
+    const report = await getEndOfNight(restaurantId, new Date().toISOString());
+
+    expect(report.totals.checks).toBeGreaterThanOrEqual(1);
+    expect(report.tenders.visa.count).toBeGreaterThanOrEqual(1);
+    expect(report.totals.gross).toBeGreaterThan(0);
+
+    const server = report.servers.find((entry) => entry.serverId === staffId);
+    expect(server).toBeTruthy();
+    expect(server?.slipCount).toBeGreaterThanOrEqual(1);
+    expect(server?.cashDue).toBe(0);
+    expect(server?.cardTotal).toBeGreaterThan(0);
+  });
+
 });
 
 describe('role permissions', () => {

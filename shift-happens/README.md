@@ -12,8 +12,9 @@ apps/web  Next.js 14 App Router  ── REST + WebSocket ──  apps/api  Fasti
         ├── /floor-plan     table status + actions       ├── Labor pacing engine
         ├── /reservations   calendar + arrivals          ├── Inventory engine
         ├── /pos            checks + close tables        ├── Reservations engine
-        ├── /inventory      stock + reorders             ├── Voice AI (RAG)
-        ├── /scheduling     shifts + labor pacing        └── Training engine
+        ├── /end-of-night   close-out + slip count       ├── Voice AI (RAG)
+        ├── /inventory      stock + reorders             └── Training engine
+        ├── /scheduling     shifts + labor pacing
         ├── /briefing       lineup + sign-off
         ├── /onboarding     employee records + training
         ├── /architect      menu media publishing
@@ -98,7 +99,7 @@ The selected **position** sets the role permission list (shared by
 | Host | Floor Plan, Reservations | Orders, payments, voids, inventory, menus |
 | Line Cook | Kitchen, Inventory | Service floor, payments, voids |
 | Chef / Expo | Kitchen, Inventory, Menu & 86s, Briefing, Training | Service floor, payments, scheduling |
-| Floor Manager | Everything day-to-day including voids, floor design and table close-out | Employee records, Voice AI |
+| Floor Manager | Everything day-to-day including voids, floor design, table close-out and End of Night | Employee records, Voice AI |
 | General Manager / Owner | Everything | — |
 
 The nav only shows screens the role can open, and the API enforces the same
@@ -178,6 +179,33 @@ ordering cockpit was removed.
 
 The same **Close table** action is on the Floor Plan service panel for managers
 (`floor.close` permission).
+
+### End of Night
+
+`/end-of-night` is the close-out report for a business day (`night.close`
+permission: owner, GM, floor manager). It is populated from **paid checks**, and
+every payment records its tender at the till.
+
+* **Totals** — collected, net sales, tax and declared tips for the day, with
+  check and cover counts.
+* **Tender mix** — Visa / Mastercard / Amex / debit / other card / cash / gift
+  cards / house accounts, each with a slip count and a total, or an
+  **Unallocated** bucket when a check was settled without a tender (with a
+  prompt to pick the brand next time).
+* **Server & bar tallies** — one drawer per server plus the **bar till** as its
+  own drawer (bar-zone orders are attributed to the till, so server tallies +
+  bar reconcile to the computer total). Each row shows sales, card total, cash
+  due (`sales − card − gift − house`), and the expected Visa / Mastercard / Amex
+  slip counts. **Count** opens a worksheet to enter the counted Visa,
+  Mastercard, Amex, other-card and cash amounts; line-by-line and total
+  short/over appear as you type. Counts are saved per date in the terminal
+  (localStorage) and can be cleared with **Clear count sheet**.
+* **Reconciliation** — computer total vs slips + cash counted, expected to
+  count, and the over/short once every drawer is counted.
+
+At the till, **Pay** asks for the tender (Card / Cash / Gift / House) and, for
+cards, the brand (Visa / Mastercard / Amex / Debit / Other), stored on the order
+as `payment_method` / `card_brand`.
 
 ## Floor plan designer
 
@@ -323,7 +351,7 @@ in-process pub/sub.
 
 ```
 GET    /api/health
-GET    /api/dashboard/summary
+GET    /api/dashboard/summary             GET   /api/end-of-night?date=
 GET    /api/menu                          PATCH /api/menu/:id/availability
 POST   /api/orders                        GET   /api/orders
 GET    /api/orders/:id                    POST  /api/orders/:id/items

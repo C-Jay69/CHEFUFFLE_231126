@@ -443,7 +443,15 @@ export default function OpenChecksPage() {
           title={confirm.kind === 'pay' ? `Pay check #${confirm.order.orderNumber}?` : `Void check #${confirm.order.orderNumber}?`}
           description={
             confirm.kind === 'pay'
-              ? `${confirm.order.tableNumber ?? 'Takeout'} · card payment with a 20% tip.`
+              ? `${confirm.order.tableNumber ?? 'Takeout'} · ${
+                  payMethod === 'card'
+                    ? `${payBrand} card`
+                    : payMethod === 'gift_card'
+                      ? 'gift card'
+                      : payMethod === 'house'
+                        ? 'house account'
+                        : 'cash'
+                } payment with a 20% tip.`
               : `${confirm.order.tableNumber ?? 'Takeout'} · this cannot be undone.`
           }
           footer={
