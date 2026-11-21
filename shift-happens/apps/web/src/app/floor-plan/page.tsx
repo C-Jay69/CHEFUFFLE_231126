@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import AppShell from '@/components/AppShell';
+import CloseTableModal from '@/components/CloseTableModal';
 import {
   Avatar,
   Badge,
@@ -116,6 +117,7 @@ export default function FloorPlanPage() {
   const router = useRouter();
   const { can } = useSession();
   const canDesign = can('floor.manage');
+  const canClose = can('floor.close');
   const [tables, setTables] = useState<DiningTable[]>([]);
   const [config, setConfig] = useState<FloorPlanConfig | null>(null);
   const [mode, setMode] = useState<Mode>('service');
@@ -131,6 +133,7 @@ export default function FloorPlanPage() {
   const [partyName, setPartyName] = useState('');
   const [partySize, setPartySize] = useState(2);
   const [resetTarget, setResetTarget] = useState<DiningTable | null>(null);
+  const [closeOpen, setCloseOpen] = useState(false);
   const [tableEditor, setTableEditor] = useState<'create' | 'edit' | null>(null);
   const [form, setForm] = useState({
     tableNumber: '',
@@ -854,10 +857,22 @@ export default function FloorPlanPage() {
                       <Button variant="secondary" size="md" icon="restaurant_menu" disabled={busy} onClick={() => startOrder(selected)}>
                         Start Order
                       </Button>
-                      {selected.status === 'occupied' ? (
-                        <Button variant="danger" size="md" icon="cleaning_services" disabled={busy} onClick={() => requestReset(selected)}>
-                          Reset / Bus
-                        </Button>
+                      {selected.status === 'occupied' || selected.status === 'reserved' ? (
+                        canClose ? (
+                          <Button
+                            variant="danger"
+                            size="md"
+                            icon="table_restaurant"
+                            disabled={busy}
+                            onClick={() => setCloseOpen(true)}
+                          >
+                            Close table
+                          </Button>
+                        ) : (
+                          <Button variant="danger" size="md" icon="cleaning_services" disabled={busy} onClick={() => requestReset(selected)}>
+                            Reset / Bus
+                          </Button>
+                        )
                       ) : (
                         <Button variant="secondary" size="md" icon="arrow_forward" disabled={busy} onClick={() => void advanceStage(selected)}>
                           Advance stage
@@ -927,6 +942,13 @@ export default function FloorPlanPage() {
           This clears the party, covers and server, and returns <span className="font-bold text-text-primary">{resetTarget?.tableNumber}</span> to ready.
         </p>
       </Modal>
+
+      <CloseTableModal
+        table={selected}
+        open={closeOpen && Boolean(selected)}
+        onClose={() => setCloseOpen(false)}
+        onClosed={() => void load(true)}
+      />
 
       <Modal
         open={Boolean(tableEditor)}

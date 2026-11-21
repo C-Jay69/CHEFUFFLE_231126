@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import AppShell from '@/components/AppShell';
+import CloseTableModal from '@/components/CloseTableModal';
 import {
   Avatar,
   Badge,
@@ -19,7 +20,7 @@ import { money } from '@/lib/format';
 import { useSession } from '@/lib/session';
 import { listen } from '@/lib/socket';
 import { showToast } from '@/lib/toast';
-import type { Order } from '@/lib/types';
+import type { DiningTable, Order } from '@/lib/types';
 
 const OPEN_STATUSES = new Set(['open', 'sent_to_kitchen', 'preparing', 'ready_at_pass']);
 
@@ -38,6 +39,7 @@ export default function OpenChecksPage() {
   const router = useRouter();
   const { can } = useSession();
   const canVoid = can('orders.void');
+  const canClose = can('floor.close');
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -45,6 +47,17 @@ export default function OpenChecksPage() {
   const [voidReason, setVoidReason] = useState('Manager void');
   const [busy, setBusy] = useState(false);
   const [now, setNow] = useState(() => Date.now());
+  const [tables, setTables] = useState<DiningTable[]>([]);
+  const [closeTarget, setCloseTarget] = useState<DiningTable | null>(null);
+
+  const loadTables = useCallback(async () => {
+    try {
+      const data = await api.get<DiningTable[]>('/tables');
+      setTables(data);
+    } catch {
+      /* the checks list already surfaces API errors */
+    }
+  }, []);
 
   const loadOrders = useCallback(async (mode: 'initial' | 'refresh' | 'silent' = 'silent') => {
     if (mode === 'initial') setLoading(true);
@@ -67,16 +80,26 @@ export default function OpenChecksPage() {
 
   useEffect(() => {
     void loadOrders('initial');
-  }, [loadOrders]);
+    void loadTables();
+  }, [loadOrders, loadTables]);
 
   useEffect(() => {
     const offs = [
-      listen('ORDER_CREATED', () => void loadOrders('silent')),
-      listen('ORDER_VOIDED', () => void loadOrders('silent')),
-      listen('TABLE_UPDATED', () => void loadOrders('silent')),
+      listen('ORDER_CREATED', () => {
+        void loadOrders('silent');
+        void loadTables();
+      }),
+      listen('ORDER_VOIDED', () => {
+        void loadOrders('silent');
+        void loadTables();
+      }),
+      listen('TABLE_UPDATED', () => {
+        void loadOrders('silent');
+        void loadTables();
+      }),
     ];
     return () => offs.forEach((off) => off());
-  }, [loadOrders]);
+  }, [loadOrders, loadTables]);
 
   useEffect(() => {
     const id = window.setInterval(() => setNow(Date.now()), 30_000);
@@ -97,6 +120,16 @@ export default function OpenChecksPage() {
     (order: Order) =>
       Math.max(0, Math.floor((now - new Date(order.createdAt).getTime()) / 60_000)),
     [now],
+  );
+
+  const openTables = useMemo(
+    () =>
+      tables
+        .filter((table) => table.status !== 'available')
+        .sort((a, b) =>
+          a.tableNumber.localeCompare(b.tableNumber, undefined, { numeric: true }),
+        ),
+    [tables],
   );
 
   const openValue = openChecks.reduce((sum, order) => sum + order.total, 0);
@@ -160,15 +193,18 @@ export default function OpenChecksPage() {
         <PageHeader
           eyebrow="Service floor"
           icon="receipt_long"
-          title="Open Checks"
-          description="Every check still on the floor. Add items in Serve, then settle or void it here."
+          title="Checks & Tables"
+          description="Every open table and check on the floor. Close a table to settle or void its check, then free it for the next party."
           actions={
             <>
               <Button
                 variant="secondary"
                 icon="refresh"
                 loading={refreshing}
-                onClick={() => void loadOrders('refresh')}
+                onClick={() => {
+                  void loadOrders('refresh');
+                  void loadTables();
+                }}
               >
                 Refresh
               </Button>
@@ -202,6 +238,85 @@ export default function OpenChecksPage() {
             hint={oldestOrder?.tableNumber ? `${oldestOrder.tableNumber} · #${oldestOrder.orderNumber}` : 'minutes'}
           />
         </div>
+
+        <Card
+          title="Open tables"
+          icon="table_restaurant"
+          subtitle="Occupied, reserved or waiting to be bussed — clear them here"
+          actions={
+            <Badge tone={openTables.length ? 'caution' : 'neutral'}>
+              {openTables.length} open
+            </Badge>
+          }
+          bodyClassName="flex flex-col gap-2"
+        >
+          {openTables.length === 0 ? (
+            <p className="py-4 text-center font-body-sm text-body-sm text-text-tertiary">
+              Every table is clear.
+            </p>
+          ) : (
+            <ul className="flex flex-col gap-2">
+              {openTables.map((table) => (
+                <li
+                  key={table.id}
+                  className="flex flex-col gap-2 rounded-xl border border-border-subtle bg-surface-container p-3 sm:flex-row sm:items-center sm:justify-between"
+                >
+                  <div className="flex min-w-0 flex-wrap items-center gap-x-3 gap-y-1">
+                    <span className="font-body-base text-body-base font-bold text-text-primary">
+                      {table.tableNumber}
+                    </span>
+                    <Badge
+                      tone={
+                        table.status === 'dirty'
+                          ? 'neutral'
+                          : table.status === 'reserved'
+                            ? 'caution'
+                            : 'info'
+                      }
+                    >
+                      {table.stageShort}
+                    </Badge>
+                    <span className="font-body-sm text-body-sm text-text-tertiary">
+                      {table.currentPartyName ?? 'Open table'} · {table.currentPartySize ?? 0}{' '}
+                      covers
+                      {table.seatedMinutes != null ? ` · ${table.seatedMinutes}m` : ''}
+                    </span>
+                    {table.activeOrder ? (
+                      <span className="font-body-sm text-body-sm text-text-secondary">
+                        #{table.activeOrder.orderNumber} · {money(table.activeOrder.total)}
+                      </span>
+                    ) : (
+                      <span className="font-body-sm text-body-sm text-text-subtle">
+                        No open check
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-2">
+                    {canClose ? (
+                      <Button
+                        variant="danger"
+                        size="sm"
+                        icon="table_restaurant"
+                        onClick={() => setCloseTarget(table)}
+                      >
+                        Close
+                      </Button>
+                    ) : (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        icon="table_restaurant"
+                        onClick={() => router.push('/floor-plan')}
+                      >
+                        Floor Plan
+                      </Button>
+                    )}
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )}
+        </Card>
 
         <Card
           title="Checks"
@@ -384,6 +499,16 @@ export default function OpenChecksPage() {
           )}
         </Modal>
       )}
+
+      <CloseTableModal
+        table={closeTarget}
+        open={Boolean(closeTarget)}
+        onClose={() => setCloseTarget(null)}
+        onClosed={() => {
+          void loadTables();
+          void loadOrders('silent');
+        }}
+      />
     </AppShell>
   );
 }

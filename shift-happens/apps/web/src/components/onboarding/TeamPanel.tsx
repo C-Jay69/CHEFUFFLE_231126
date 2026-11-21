@@ -53,6 +53,7 @@ const PERMISSION_LABELS: Record<Permission, string> = {
   'orders.void': 'Void checks',
   'floor.seat': 'Seat tables',
   'floor.manage': 'Edit floor plan',
+  'floor.close': 'Close tables',
   'reservations.manage': 'Reservations',
   'kds.operate': 'Kitchen display',
   'inventory.manage': 'Inventory',

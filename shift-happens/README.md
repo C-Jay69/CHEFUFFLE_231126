@@ -11,7 +11,7 @@ apps/web  Next.js 14 App Router  ── REST + WebSocket ──  apps/api  Fasti
         ├── /kds            live station tickets         ├── KDS + stage engine
         ├── /floor-plan     table status + actions       ├── Labor pacing engine
         ├── /reservations   calendar + arrivals          ├── Inventory engine
-        ├── /pos            open checks / settle         ├── Reservations engine
+        ├── /pos            checks + close tables        ├── Reservations engine
         ├── /inventory      stock + reorders             ├── Voice AI (RAG)
         ├── /scheduling     shifts + labor pacing        └── Training engine
         ├── /briefing       lineup + sign-off
@@ -98,7 +98,7 @@ The selected **position** sets the role permission list (shared by
 | Host | Floor Plan, Reservations | Orders, payments, voids, inventory, menus |
 | Line Cook | Kitchen, Inventory | Service floor, payments, voids |
 | Chef / Expo | Kitchen, Inventory, Menu & 86s, Briefing, Training | Service floor, payments, scheduling |
-| Floor Manager | Everything day-to-day including voids and floor design | Employee records, Voice AI |
+| Floor Manager | Everything day-to-day including voids, floor design and table close-out | Employee records, Voice AI |
 | General Manager / Owner | Everything | — |
 
 The nav only shows screens the role can open, and the API enforces the same
@@ -152,9 +152,24 @@ stations, 103 stock ingredients and 68 recipes. Source fractions such as
 `¼`, `½`, `¾` are converted to decimals. Wine prices use the bottle price and
 the description retains the 9oz/6oz prices where the source lists them.
 
-`/pos` is the manager view now: **Open Checks** lists active tickets so a
-manager can add items (deep-links back into Serve), settle, or void. The full
+`/pos` (**Checks & Tables**) is the manager view: **Open tables** lists every
+table that is occupied, reserved or waiting to be bussed, with its party, stage,
+minutes seated and open check. The **Close** action opens the close-out dialog:
+
+* **Settle check & close** — pays the open check (card or cash), then frees the
+  table.
+* **Void check & close** — manager void with a reason, then frees the table.
+* **Clear table only** — resets a table that has no check (stale demo tables,
+  forgotten parties, dirty tables).
+
+Clearing resets the stage to ready, and clears the party, covers, seated time
+and server. The API refuses to clear a table while a check is still open, so no
+orphan checks are left behind. **Open Checks** below it still lists active
+tickets to add items (deep-links back into Serve), settle, or void. The full
 ordering cockpit was removed.
+
+The same **Close table** action is on the Floor Plan service panel for managers
+(`floor.close` permission).
 
 ## Floor plan designer
 
@@ -312,6 +327,7 @@ GET    /api/tables                        POST  /api/tables
 PATCH  /api/tables/:id                    DELETE /api/tables/:id
 POST   /api/tables/:id/seat               PATCH  /api/tables/:id/stage
 POST   /api/tables/:id/advance            POST   /api/tables/:id/reset
+POST   /api/tables/:id/close
 GET    /api/floor-plan/config             POST   /api/floor-plan/background
 DELETE /api/floor-plan/background         GET/POST /api/floor-layout
 GET    /api/inventory                     POST  /api/inventory/adjust

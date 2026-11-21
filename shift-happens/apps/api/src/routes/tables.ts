@@ -7,6 +7,7 @@ import {
 } from '@shift-happens/shared';
 import { parse } from '../lib/validate.js';
 import { requirePermission } from '../lib/staff-auth.js';
+import { closeTable } from '../services/table-close-engine.js';
 import {
   advanceTableStage,
   createTable,
@@ -98,6 +99,20 @@ const tableRoutes: FastifyPluginAsync = async (app) => {
     await requirePermission(request, 'floor.seat');
     const { id } = parse(z.object({ id: z.string().uuid() }), request.params);
     return resetTable(id);
+  });
+
+  app.post('/tables/:id/close', async (request) => {
+    await requirePermission(request, 'floor.close');
+    const { id } = parse(z.object({ id: z.string().uuid() }), request.params);
+    const body = parse(
+      z.object({
+        action: z.enum(['settle', 'void', 'clear']),
+        method: z.enum(['card', 'cash', 'gift_card', 'house']).optional(),
+        reason: z.string().max(300).optional(),
+      }),
+      request.body ?? {},
+    );
+    return closeTable(id, body);
   });
 
   app.get('/floor-layout', async () => getTables());

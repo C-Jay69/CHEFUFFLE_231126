@@ -19,11 +19,17 @@ export async function requirePermission(
   permission: Permission,
 ) {
   const header = request.headers['x-staff-id'];
+  if (header === undefined) return null;
+
   const staffId = Array.isArray(header) ? header[0] : header;
-  if (!staffId || !/^[0-9a-f-]{36}$/i.test(staffId)) return null;
+  if (!staffId || !/^[0-9a-f-]{36}$/i.test(staffId)) {
+    throw forbidden('Unknown staff session. Sign in again.');
+  }
 
   const staff = await prisma.staff.findUnique({ where: { id: staffId } });
-  if (!staff || !staff.isActive) return null;
+  if (!staff || !staff.isActive) {
+    throw forbidden('This staff login is no longer active. Sign in again.');
+  }
 
   const permissions = permissionsForRole(staff.role);
   if (!permissions.includes(permission)) {

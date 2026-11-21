@@ -249,9 +249,11 @@ describe('role permissions', () => {
     expect(roleHasPermission('server', 'staff.manage')).toBe(false);
   });
 
-  it('gives managers voids, floor design and employee records', () => {
+  it('gives managers voids, floor design, table close-out and employee records', () => {
     expect(roleHasPermission('general_manager', 'orders.void')).toBe(true);
     expect(roleHasPermission('floor_manager', 'floor.manage')).toBe(true);
+    expect(roleHasPermission('floor_manager', 'floor.close')).toBe(true);
+    expect(roleHasPermission('server', 'floor.close')).toBe(false);
     expect(roleHasPermission('general_manager', 'staff.manage')).toBe(true);
     expect(roleHasPermission('host', 'orders.void')).toBe(false);
   });
