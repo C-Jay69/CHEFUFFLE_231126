@@ -3,7 +3,9 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import type { Permission } from '@shift-happens/shared/permissions';
 import { api } from '@/lib/api';
+import { clearSession, readStaff, writeShift, writeStaff } from '@/lib/session';
 
 interface StaffSummary {
   id: string;
@@ -25,13 +27,15 @@ export default function LoginPage() {
       .get<{ staff: StaffSummary[] }>('/auth/staff')
       .then((response) => setStaff(response.staff))
       .catch(() => undefined);
-    try {
-      const raw = localStorage.getItem('sh-staff');
-      if (raw) setSignedIn(JSON.parse(raw));
-    } catch {
-      /* ignore */
-    }
+    const stored = readStaff();
+    if (stored) setSignedIn({ name: stored.name, roleLabel: stored.roleLabel });
   }, []);
+
+  const signOut = () => {
+    clearSession();
+    setSignedIn(null);
+    setPin('');
+  };
 
   const submit = async (value = pin) => {
     if (value.length < 3) {
@@ -43,21 +47,36 @@ export default function LoginPage() {
     try {
       const response = await api.post<{
         token: string;
-        staff: { id: string; name: string; role: string; roleLabel: string };
+        staff: {
+          id: string;
+          name: string;
+          role: string;
+          roleLabel: string;
+          permissions?: Permission[];
+          serveOnlyWhenClockedIn?: boolean;
+        };
+        activeShift: {
+          id: string;
+          staffId: string | null;
+          clockIn: string | null;
+          clockOut: string | null;
+          status: string;
+        } | null;
       }>('/auth/pin', { pin: value });
       try {
         localStorage.setItem('sh-token', response.token);
-        localStorage.setItem(
-          'sh-staff',
-          JSON.stringify({
-            id: response.staff.id,
-            name: response.staff.name,
-            roleLabel: response.staff.roleLabel,
-          }),
-        );
       } catch {
         /* private mode */
       }
+      writeStaff({
+        id: response.staff.id,
+        name: response.staff.name,
+        role: response.staff.role,
+        roleLabel: response.staff.roleLabel,
+        permissions: response.staff.permissions,
+        serveOnlyWhenClockedIn: response.staff.serveOnlyWhenClockedIn,
+      });
+      writeShift(response.activeShift ?? null);
       setSignedIn({ name: response.staff.name, roleLabel: response.staff.roleLabel });
       router.push('/serve');
     } catch (err) {
@@ -109,12 +128,19 @@ export default function LoginPage() {
               </span>
               <span className="font-body-sm text-body-sm text-text-secondary">{signedIn.roleLabel}</span>
               <Link
-                href="/pos"
+                href="/serve"
                 className="mt-space-sm flex h-12 items-center gap-space-xs rounded-lg bg-gradient-to-r from-accent-purple-glow to-secondary px-space-lg font-bold text-bg-canvas"
               >
                 <span className="material-symbols-outlined">room_service</span>
                 Continue to Serve
               </Link>
+              <button
+                type="button"
+                onClick={signOut}
+                className="font-body-sm text-body-sm font-bold text-text-tertiary underline-offset-4 hover:text-status-urgent hover:underline"
+              >
+                Sign out
+              </button>
             </div>
           ) : (
             <>

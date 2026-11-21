@@ -2,6 +2,7 @@ import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
 import { stockAdjustSchema } from '@shift-happens/shared';
 import { parse } from '../lib/validate.js';
+import { requirePermission } from '../lib/staff-auth.js';
 import {
   adjustStock,
   approvePurchaseOrder,
@@ -32,6 +33,7 @@ const inventoryRoutes: FastifyPluginAsync = async (app) => {
   });
 
   app.post('/inventory/adjust', async (request) => {
+    await requirePermission(request, 'inventory.manage');
     const body = parse(stockAdjustSchema, request.body);
     return adjustStock(body);
   });
@@ -39,6 +41,7 @@ const inventoryRoutes: FastifyPluginAsync = async (app) => {
   app.get('/inventory/purchase-orders', async () => getPurchaseOrders());
 
   app.post('/inventory/purchase-orders/approve', async (request) => {
+    await requirePermission(request, 'inventory.manage');
     const body = parse(
       z.object({
         supplier: z.string().min(1),

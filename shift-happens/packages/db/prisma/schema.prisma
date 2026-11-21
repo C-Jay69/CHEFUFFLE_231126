@@ -104,6 +104,11 @@ model Staff {
   role       UserRole
   pin        String   @default("1234") @db.VarChar(10)
   hourlyRate Decimal  @default(18.00) @map("hourly_rate") @db.Decimal(10, 2)
+  phone      String?  @db.VarChar(30)
+  email      String?  @db.VarChar(120)
+  address    String?  @db.VarChar(240)
+  sin        String?  @db.VarChar(20)
+  startDate  DateTime? @map("start_date") @db.Date
   isActive   Boolean  @default(true) @map("is_active")
   createdAt  DateTime @default(now()) @map("created_at") @db.Timestamptz
 

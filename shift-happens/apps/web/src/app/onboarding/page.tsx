@@ -15,6 +15,7 @@ import {
   Stat,
   Tabs,
 } from '@/components/ui';
+import TeamPanel from '@/components/onboarding/TeamPanel';
 import { api } from '@/lib/api';
 import { cn } from '@/lib/cn';
 import { titleCase } from '@/lib/format';
@@ -75,6 +76,7 @@ function Field({
 }
 
 export default function OnboardingPage() {
+  const [section, setSection] = useState<'team' | 'training'>('team');
   const [data, setData] = useState<TrainingResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -251,26 +253,45 @@ export default function OnboardingPage() {
       <div className="mx-auto flex w-full max-w-[1500px] flex-col gap-4 p-4 lg:p-6">
         <PageHeader
           eyebrow="People ops"
-          icon="school"
-          title="Training"
-          description="Enroll new hires, track their progress through each station track, and award badges as modules complete."
+          icon="badge"
+          title="Onboarding"
+          description={
+            section === 'team'
+              ? 'Capture each hire’s details, pay rate and position. The position sets what they can open and what they can approve.'
+              : 'Enroll new hires, track their progress through each station track, and award badges as modules complete.'
+          }
           actions={
-            <>
-              <Button
-                variant="ghost"
-                icon="refresh"
-                loading={refreshing}
-                onClick={() => void load(true)}
-              >
-                Refresh
-              </Button>
-              <Button variant="primary" icon="person_add" onClick={openEnroll}>
-                Enroll
-              </Button>
-            </>
+            section === 'training' ? (
+              <>
+                <Button
+                  variant="ghost"
+                  icon="refresh"
+                  loading={refreshing}
+                  onClick={() => void load(true)}
+                >
+                  Refresh
+                </Button>
+                <Button variant="primary" icon="person_add" onClick={openEnroll}>
+                  Enroll
+                </Button>
+              </>
+            ) : undefined
           }
         />
 
+        <Tabs
+          value={section}
+          onChange={(id) => setSection(id as 'team' | 'training')}
+          items={[
+            { id: 'team', label: 'Team' },
+            { id: 'training', label: 'Training' },
+          ]}
+        />
+
+        {section === 'team' ? (
+          <TeamPanel />
+        ) : (
+        <>
         {loading && !data ? (
           <div className="flex min-h-[50vh] items-center justify-center">
             <span className="material-symbols-outlined animate-spin text-headline-xl text-secondary">
@@ -473,6 +494,8 @@ export default function OnboardingPage() {
               )}
             </Card>
           </>
+        )}
+        </>
         )}
       </div>
 

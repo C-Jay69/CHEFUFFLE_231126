@@ -10,6 +10,7 @@ import menuRoutes from './menu.js';
 import posRoutes from './pos.js';
 import reservationsRoutes from './reservations.js';
 import schedulingRoutes from './scheduling.js';
+import staffRoutes from './staff.js';
 import tablesRoutes from './tables.js';
 import trainingRoutes from './training.js';
 import voiceRoutes from './voice.js';
@@ -28,5 +29,6 @@ export async function registerRoutes(app: FastifyInstance) {
   await app.register(architectRoutes, { prefix: '/api' });
   await app.register(voiceRoutes, { prefix: '/api' });
   await app.register(authRoutes, { prefix: '/api' });
+  await app.register(staffRoutes, { prefix: '/api' });
   await app.register(dashboardRoutes, { prefix: '/api' });
 }

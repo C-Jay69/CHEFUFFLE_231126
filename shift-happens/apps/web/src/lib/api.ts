@@ -14,12 +14,25 @@ export class ApiError extends Error {
 
 type RequestOptions = Omit<RequestInit, 'body'> & { body?: unknown };
 
+function currentStaffId(): string | null {
+  try {
+    const raw = localStorage.getItem('sh-staff');
+    if (!raw) return null;
+    const staff = JSON.parse(raw) as { id?: string };
+    return staff?.id ?? null;
+  } catch {
+    return null;
+  }
+}
+
 async function request<T>(path: string, options: RequestOptions = {}): Promise<T> {
   const { body, headers, ...rest } = options;
+  const staffId = typeof window === 'undefined' ? null : currentStaffId();
   const response = await fetch(`${API_BASE}/api${path}`, {
     ...rest,
     headers: {
       ...(body !== undefined ? { 'Content-Type': 'application/json' } : {}),
+      ...(staffId ? { 'x-staff-id': staffId } : {}),
       ...(headers ?? {}),
     },
     body: body !== undefined ? JSON.stringify(body) : undefined,
@@ -61,5 +74,12 @@ export const api = {
 };
 
 export async function rawRequest(path: string, options: RequestInit = {}) {
-  return fetch(`${API_BASE}${path}`, options);
+  const staffId = typeof window === 'undefined' ? null : currentStaffId();
+  return fetch(`${API_BASE}${path}`, {
+    ...options,
+    headers: {
+      ...(staffId ? { 'x-staff-id': staffId } : {}),
+      ...((options.headers as Record<string, string> | undefined) ?? {}),
+    },
+  });
 }

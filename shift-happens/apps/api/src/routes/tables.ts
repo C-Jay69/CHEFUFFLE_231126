@@ -6,6 +6,7 @@ import {
   tableStageSchema,
 } from '@shift-happens/shared';
 import { parse } from '../lib/validate.js';
+import { requirePermission } from '../lib/staff-auth.js';
 import {
   advanceTableStage,
   createTable,
@@ -23,6 +24,7 @@ const tableRoutes: FastifyPluginAsync = async (app) => {
   app.get('/tables', async () => getTables());
 
   app.post('/tables', async (request, reply) => {
+    await requirePermission(request, 'floor.manage');
     const body = parse(
       z.object({
         tableNumber: z.string().min(1).max(20),
@@ -45,6 +47,7 @@ const tableRoutes: FastifyPluginAsync = async (app) => {
   });
 
   app.patch('/tables/:id', async (request) => {
+    await requirePermission(request, 'floor.manage');
     const { id } = parse(z.object({ id: z.string().uuid() }), request.params);
     const body = parse(
       z.object({
@@ -63,11 +66,13 @@ const tableRoutes: FastifyPluginAsync = async (app) => {
   });
 
   app.delete('/tables/:id', async (request) => {
+    await requirePermission(request, 'floor.manage');
     const { id } = parse(z.object({ id: z.string().uuid() }), request.params);
     return removeTable(id);
   });
 
   app.post('/tables/:id/seat', async (request) => {
+    await requirePermission(request, 'floor.seat');
     const { id } = parse(z.object({ id: z.string().uuid() }), request.params);
     const body = parse(tableSeatSchema, request.body);
     const table = await seatTable(id, body);
@@ -75,6 +80,7 @@ const tableRoutes: FastifyPluginAsync = async (app) => {
   });
 
   app.patch('/tables/:id/stage', async (request) => {
+    await requirePermission(request, 'floor.seat');
     const { id } = parse(z.object({ id: z.string().uuid() }), request.params);
     const body = parse(tableStageSchema, request.body);
     return setTableStage(id, body.stage, {
@@ -83,11 +89,13 @@ const tableRoutes: FastifyPluginAsync = async (app) => {
   });
 
   app.post('/tables/:id/advance', async (request) => {
+    await requirePermission(request, 'floor.seat');
     const { id } = parse(z.object({ id: z.string().uuid() }), request.params);
     return advanceTableStage(id, 'FLOOR_MANAGER');
   });
 
   app.post('/tables/:id/reset', async (request) => {
+    await requirePermission(request, 'floor.seat');
     const { id } = parse(z.object({ id: z.string().uuid() }), request.params);
     return resetTable(id);
   });
@@ -95,6 +103,7 @@ const tableRoutes: FastifyPluginAsync = async (app) => {
   app.get('/floor-layout', async () => getTables());
 
   app.post('/floor-layout', async (request) => {
+    await requirePermission(request, 'floor.manage');
     const body = parse(floorLayoutSchema, request.body);
     return saveFloorLayout(body.tables);
   });

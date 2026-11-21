@@ -108,6 +108,7 @@ async function main() {
     { n: 15, name: 'Mateo Rivera', role: 'server', pin: '1616', rate: '17.50' },
     { n: 16, name: 'Imani Clark', role: 'host', pin: '1717', rate: '17.00' },
   ];
+  const streets = ['King St W', 'Queen St W', 'Dundas St W', 'College St', 'Queen St E'];
   await prisma.staff.createMany({
     data: staffSeed.map((s) => ({
       id: STAFF(s.n),
@@ -116,6 +117,10 @@ async function main() {
       role: s.role,
       pin: s.pin,
       hourlyRate: s.rate,
+      phone: `+1 555-01${String(20 + s.n).padStart(2, '0')}`,
+      email: `${s.name.toLowerCase().replace(/[^a-z]+/g, '.')}@restaurant.local`,
+      address: `${120 + s.n * 7} ${streets[s.n % streets.length]}, Toronto, ON`,
+      startDate: new Date(now.getFullYear() - 1 - (s.n % 3), (s.n * 3) % 12, 1 + (s.n % 27)),
     })),
   });
 

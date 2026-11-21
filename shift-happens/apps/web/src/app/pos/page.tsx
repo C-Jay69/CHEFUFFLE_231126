@@ -16,6 +16,7 @@ import {
 import type { BadgeTone } from '@/components/ui';
 import { api } from '@/lib/api';
 import { money } from '@/lib/format';
+import { useSession } from '@/lib/session';
 import { listen } from '@/lib/socket';
 import { showToast } from '@/lib/toast';
 import type { Order } from '@/lib/types';
@@ -35,6 +36,8 @@ const tipFor = (order: Order) => Math.round(order.subtotal * 0.2 * 100) / 100;
 
 export default function OpenChecksPage() {
   const router = useRouter();
+  const { can } = useSession();
+  const canVoid = can('orders.void');
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -286,13 +289,20 @@ export default function OpenChecksPage() {
                         >
                           Pay
                         </Button>
-                        <Button
-                          variant="danger"
-                          icon="block"
-                          onClick={() => requestAction('void', order)}
-                        >
-                          Void
-                        </Button>
+                        {canVoid ? (
+                          <Button
+                            variant="danger"
+                            icon="block"
+                            onClick={() => requestAction('void', order)}
+                          >
+                            Void
+                          </Button>
+                        ) : (
+                          <span className="flex h-11 items-center gap-1 rounded-xl border border-border-subtle px-3 font-body-sm text-body-sm text-text-subtle">
+                            <span className="material-symbols-outlined text-[16px]">lock</span>
+                            Void needs a manager
+                          </span>
+                        )}
                       </div>
                     </div>
                   </li>

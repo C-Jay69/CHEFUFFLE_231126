@@ -7,6 +7,7 @@ import { pipeline } from 'node:stream/promises';
 import { prisma } from '@shift-happens/db';
 import { env } from '../env.js';
 import { badRequest } from '../errors.js';
+import { requirePermission } from '../lib/staff-auth.js';
 import {
   getFloorPlanConfig,
   setFloorPlanBackground,
@@ -23,6 +24,7 @@ const floorPlanRoutes: FastifyPluginAsync = async (app) => {
   app.get('/floor-plan/config', async () => getFloorPlanConfig());
 
   app.post('/floor-plan/background', async (request) => {
+    await requirePermission(request, 'floor.manage');
     const data = await request.file();
     if (!data) throw badRequest('No file uploaded');
     const extension = MIME_EXT[data.mimetype];
@@ -50,7 +52,8 @@ const floorPlanRoutes: FastifyPluginAsync = async (app) => {
     return { ...config, filename: data.filename };
   });
 
-  app.delete('/floor-plan/background', async () => {
+  app.delete('/floor-plan/background', async (request) => {
+    await requirePermission(request, 'floor.manage');
     const current = await prisma.restaurant.findUnique({
       where: { id: env.RESTAURANT_ID },
       select: { floorPlanImageUrl: true },

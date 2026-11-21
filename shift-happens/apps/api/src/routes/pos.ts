@@ -2,6 +2,7 @@ import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
 import { createOrderSchema } from '@shift-happens/shared';
 import { parse } from '../lib/validate.js';
+import { requirePermission } from '../lib/staff-auth.js';
 import {
   createOrder,
   getOrder,
@@ -14,6 +15,7 @@ const idParams = z.object({ id: z.string().uuid() });
 
 const posRoutes: FastifyPluginAsync = async (app) => {
   app.post('/orders', async (request, reply) => {
+    await requirePermission(request, 'serve.order');
     const body = parse(createOrderSchema, request.body);
     const result = await createOrder(body);
     return reply.code(201).send(result);
@@ -36,6 +38,7 @@ const posRoutes: FastifyPluginAsync = async (app) => {
   });
 
   app.post('/orders/:id/pay', async (request) => {
+    await requirePermission(request, 'serve.pay');
     const { id } = parse(idParams, request.params);
     const body = parse(
       z.object({
@@ -48,6 +51,7 @@ const posRoutes: FastifyPluginAsync = async (app) => {
   });
 
   app.post('/orders/:id/void', async (request) => {
+    await requirePermission(request, 'orders.void');
     const { id } = parse(idParams, request.params);
     const body = parse(
       z.object({ reason: z.string().max(300).optional() }),

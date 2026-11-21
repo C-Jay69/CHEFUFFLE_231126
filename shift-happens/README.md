@@ -15,7 +15,7 @@ apps/web  Next.js 14 App Router  ── REST + WebSocket ──  apps/api  Fasti
         ├── /inventory      stock + reorders             ├── Voice AI (RAG)
         ├── /scheduling     shifts + labor pacing        └── Training engine
         ├── /briefing       lineup + sign-off
-        ├── /onboarding     training tracks + roster
+        ├── /onboarding     employee records + training
         ├── /architect      menu media publishing
         ├── /mobile         one-hand floor manager
         ├── /voice-ai       Voice AI command centre (Twilio + Gemini RAG)
@@ -75,8 +75,42 @@ pnpm dev
 | `3333` | Maya Santos | Bartender |
 | `6666` | Priya Kapoor | Host |
 
-`/login` accepts any seeded staff PIN (3-6 digits). The token is stored locally
-for the terminal session. This is a demo gate, not a hardened auth boundary.
+`/login` accepts any seeded staff PIN (3-6 digits). The token, the staff member
+and their permission list are stored locally for the terminal session. This is a
+demo gate, not a hardened auth boundary.
+
+### Onboarding and permissions
+
+`/onboarding` has two tabs:
+
+* **Team** — add an employee with full name, position, pay rate, phone, email,
+  home address, S.I.N. (stored masked, only the last three digits are returned),
+  start date and terminal PIN. Edits and removals work too; removing
+  deactivates rather than deletes, so shifts and orders stay on record.
+* **Training** — the existing tracks, roster and badge flow.
+
+The selected **position** sets the role permission list (shared by
+`packages/shared/src/permissions.ts`, the API and the web app):
+
+| Position | Can open | Cannot |
+| --- | --- | --- |
+| Server / Bartender | Serve (order food & drink), Open Checks (bill + payment), Floor Plan (seat) | Voids, inventory, menu/86s, scheduling, employee records |
+| Host | Floor Plan, Reservations | Orders, payments, voids, inventory, menus |
+| Line Cook | Kitchen, Inventory | Service floor, payments, voids |
+| Chef / Expo | Kitchen, Inventory, Menu & 86s, Briefing, Training | Service floor, payments, scheduling |
+| Floor Manager | Everything day-to-day including voids and floor design | Employee records, Voice AI |
+| General Manager / Owner | Everything | — |
+
+The nav only shows screens the role can open, and the API enforces the same
+matrix on order create/pay/void, inventory adjustments, menu availability, KDS
+bumps, floor-plan edits and employee records (`x-staff-id` header → 403).
+
+**Clocking in:** the header has a Clock in / Clock out control for the signed-in
+staff member. A clocked-in **server or bartender** is restricted to `/serve` —
+the table plan — with a note in the sidebar; any other route redirects back.
+Clock out to regain the rest of their permitted screens. Managers keep full
+access while clocked in. The time clock reuses today’s scheduled shift or opens
+an eight-hour shift, and closes yesterday’s forgotten punch automatically.
 
 ## The Serve workflow
 
@@ -304,6 +338,9 @@ POST   /api/voice/ask                     POST  /api/voice/simulate
 POST   /api/voice/inbound                 POST  /api/voice/gather
 GET    /api/voice/twilio-status
 GET    /api/auth/staff                    POST  /api/auth/pin
+POST   /api/auth/clock-in                 POST  /api/auth/clock-out
+GET    /api/staff                         POST  /api/staff
+PATCH  /api/staff/:id                     DELETE /api/staff/:id
 ```
 
 Validation is Zod-first (`packages/shared/src/schemas.ts`); every mutation

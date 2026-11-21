@@ -19,6 +19,7 @@ import {
 import { API_BASE, api, rawRequest } from '@/lib/api';
 import { cn } from '@/lib/cn';
 import { money, timeLabel, titleCase } from '@/lib/format';
+import { useSession } from '@/lib/session';
 import { listen } from '@/lib/socket';
 import { showToast } from '@/lib/toast';
 import type { DiningTable } from '@/lib/types';
@@ -113,6 +114,8 @@ function DetailRow({ label, value }: { label: string; value: string }) {
 
 export default function FloorPlanPage() {
   const router = useRouter();
+  const { can } = useSession();
+  const canDesign = can('floor.manage');
   const [tables, setTables] = useState<DiningTable[]>([]);
   const [config, setConfig] = useState<FloorPlanConfig | null>(null);
   const [mode, setMode] = useState<Mode>('service');
@@ -563,9 +566,11 @@ export default function FloorPlanPage() {
               </>
             ) : (
               <>
-                <Button variant="primary" icon="edit" onClick={enterDesign}>
-                  Design layout
-                </Button>
+                {canDesign && (
+                  <Button variant="primary" icon="edit" onClick={enterDesign}>
+                    Design layout
+                  </Button>
+                )}
                 <Button
                   variant="secondary"
                   icon="refresh"

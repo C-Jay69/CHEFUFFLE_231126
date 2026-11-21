@@ -1,6 +1,11 @@
 import { randomUUID } from 'node:crypto';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { prisma } from '@shift-happens/db';
+import {
+  isServeOnlyRole,
+  permissionsForRole,
+  roleHasPermission,
+} from '@shift-happens/shared';
 import { createOrder } from '../src/services/pos-engine';
 import { bumpTicket, getTickets } from '../src/services/kds-engine';
 
@@ -231,5 +236,30 @@ describe('POS → KDS → Floor Plan → Inventory integration', () => {
     });
     expect(menuItem.is86ed).toBe(true);
     expect(menuItem.eightySixReason).toContain('Depleting Truffle');
+  });
+});
+
+describe('role permissions', () => {
+  it('lets a server order, take payment and seat tables — and nothing else', () => {
+    expect(permissionsForRole('server').sort()).toEqual(
+      ['floor.seat', 'serve.order', 'serve.pay'].sort(),
+    );
+    expect(roleHasPermission('server', 'orders.void')).toBe(false);
+    expect(roleHasPermission('server', 'inventory.manage')).toBe(false);
+    expect(roleHasPermission('server', 'staff.manage')).toBe(false);
+  });
+
+  it('gives managers voids, floor design and employee records', () => {
+    expect(roleHasPermission('general_manager', 'orders.void')).toBe(true);
+    expect(roleHasPermission('floor_manager', 'floor.manage')).toBe(true);
+    expect(roleHasPermission('general_manager', 'staff.manage')).toBe(true);
+    expect(roleHasPermission('host', 'orders.void')).toBe(false);
+  });
+
+  it('restricts only servers and bartenders to the table plan on shift', () => {
+    expect(isServeOnlyRole('server')).toBe(true);
+    expect(isServeOnlyRole('bartender')).toBe(true);
+    expect(isServeOnlyRole('host')).toBe(false);
+    expect(isServeOnlyRole('general_manager')).toBe(false);
   });
 });

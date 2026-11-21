@@ -2,6 +2,7 @@ import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
 import { bumpTicketSchema, KDS_STATIONS } from '@shift-happens/shared';
 import { parse } from '../lib/validate.js';
+import { requirePermission } from '../lib/staff-auth.js';
 import {
   bumpTicket,
   getRecentBumps,
@@ -32,6 +33,7 @@ const kdsRoutes: FastifyPluginAsync = async (app) => {
   });
 
   app.post('/kds/bump', async (request) => {
+    await requirePermission(request, 'kds.operate');
     const body = parse(bumpTicketSchema, request.body);
     return bumpTicket(body);
   });
@@ -45,6 +47,7 @@ const kdsRoutes: FastifyPluginAsync = async (app) => {
   });
 
   app.post('/kds/simulate/:tableId', async (request) => {
+    await requirePermission(request, 'kds.operate');
     const { tableId } = parse(
       z.object({ tableId: z.string().uuid() }),
       request.params,
