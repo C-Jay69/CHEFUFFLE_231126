@@ -124,17 +124,22 @@ export default function ServePage() {
     return () => offs.forEach((off) => off());
   }, [loadMenu, loadTables]);
 
-  // The full menu is large (158 items), so start on the first food section
-  // instead of dumping every drink and bottle into the "All" grid.
+  // The full menu is 182 items, so open on the first food section instead of
+  // dumping every drink and bottle into the "All" grid.
+  const defaultCategoryId = useCallback(() => {
+    const list = menu?.categories ?? [];
+    const preferred =
+      list.find((entry) => entry.name === 'Start & Share') ??
+      list.find((entry) => entry.name === 'Features') ??
+      list[0];
+    return preferred?.id ?? 'all';
+  }, [menu]);
+
   useEffect(() => {
     if (!menu || categoryInitialized.current) return;
     categoryInitialized.current = true;
-    const preferred =
-      menu.categories.find((entry) => entry.name === 'Start & Share') ??
-      menu.categories.find((entry) => entry.name === 'Features') ??
-      menu.categories[0];
-    if (preferred) setCategory(preferred.id);
-  }, [menu]);
+    setCategory(defaultCategoryId());
+  }, [menu, defaultCategoryId]);
 
   const openTable = useCallback((table: DiningTable) => {
     if (table.status === 'dirty') {
@@ -248,7 +253,7 @@ export default function ServePage() {
     setLines([]);
     setNotes('');
     setSearch('');
-    setCategory('all');
+    setCategory(defaultCategoryId());
     setCoverOpen(false);
   };
 
@@ -520,8 +525,8 @@ export default function ServePage() {
 
             <div className="grid grid-cols-1 gap-space-md xl:grid-cols-12">
               <section className="flex flex-col gap-space-sm xl:col-span-8">
-                <div className="flex flex-col gap-space-sm rounded-2xl border border-border-subtle bg-surface-container-low p-space-sm shadow-md sm:flex-row sm:items-center">
-                  <label className="flex h-12 flex-1 items-center gap-space-xs rounded-lg bg-surface-container px-space-sm">
+                <div className="flex flex-col gap-2 rounded-2xl border border-border-subtle bg-surface-container-low p-space-sm shadow-md">
+                  <label className="flex h-11 items-center gap-space-xs rounded-lg bg-surface-container px-space-sm">
                     <span className="material-symbols-outlined text-secondary">search</span>
                     <input
                       className="w-full bg-transparent font-body-base text-body-base text-text-primary outline-none placeholder:text-text-subtle"
@@ -530,15 +535,15 @@ export default function ServePage() {
                       onChange={(event) => setSearch(event.target.value)}
                     />
                   </label>
-                  <div className="flex gap-space-xs overflow-x-auto">
+                  <div className="flex flex-wrap gap-1.5">
                     {categories.map((entry) => (
                       <button
                         key={entry.id}
                         onClick={() => setCategory(entry.id)}
-                        className={`h-10 whitespace-nowrap rounded-full px-space-md font-body-sm font-bold transition-colors ${
+                        className={`h-8 whitespace-nowrap rounded-full px-3 font-body-sm text-body-sm font-bold transition-colors ${
                           category === entry.id
-                            ? 'bg-surface-container-highest text-text-primary'
-                            : 'bg-surface-container text-text-secondary hover:text-text-primary'
+                            ? 'bg-accent-cyan-bright text-surface-container-lowest'
+                            : 'bg-surface-container text-text-secondary hover:bg-surface-container-high hover:text-text-primary'
                         }`}
                       >
                         {entry.name}

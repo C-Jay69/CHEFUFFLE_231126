@@ -18,6 +18,8 @@ const reservationRoutes: FastifyPluginAsync = async (app) => {
     const query = parse(
       z.object({
         date: z.string().optional(),
+        from: z.string().optional(),
+        to: z.string().optional(),
         status: z.string().optional(),
         search: z.string().optional(),
         view: z.string().optional(),

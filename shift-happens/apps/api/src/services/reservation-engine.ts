@@ -42,11 +42,38 @@ const dayBounds = (date = new Date()) => {
   return { start, end };
 };
 
+/**
+ * Resolves the requested window. `from`/`to` are ISO timestamps with `to`
+ * exclusive (day/week/month/year ranges from the calendar UI). `date` keeps the
+ * original single-day behaviour for existing callers.
+ */
+function resolveRange(filters: { date?: string; from?: string; to?: string }) {
+  if (filters.from || filters.to) {
+    const start = new Date(filters.from ?? filters.to!);
+    const end = new Date(filters.to ?? filters.from!);
+    if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime())) {
+      throw badRequest('Invalid reservation date range');
+    }
+    if (end <= start) {
+      return dayBounds(start);
+    }
+    return { start, end };
+  }
+  return dayBounds(filters.date ? new Date(filters.date) : new Date());
+}
+
 export async function listReservations(
   restaurantId = env.RESTAURANT_ID,
-  filters: { date?: string; status?: string; search?: string; view?: string } = {},
+  filters: {
+    date?: string;
+    from?: string;
+    to?: string;
+    status?: string;
+    search?: string;
+    view?: string;
+  } = {},
 ) {
-  const { start, end } = dayBounds(filters.date ? new Date(filters.date) : new Date());
+  const { start, end } = resolveRange(filters);
   const todayReservations = await prisma.reservation.findMany({
     where: {
       restaurantId,
@@ -64,6 +91,7 @@ export async function listReservations(
     },
     include: reservationInclude,
     orderBy: { reservationTime: 'asc' },
+    take: 2000,
   });
 
   const stats = {
@@ -89,6 +117,7 @@ export async function listReservations(
 
   return {
     date: start.toISOString(),
+    range: { from: start.toISOString(), to: end.toISOString() },
     reservations: todayReservations.map(serializeReservation),
     upcoming: upcoming.map(serializeReservation),
     stats,

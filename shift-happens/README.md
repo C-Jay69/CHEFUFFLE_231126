@@ -41,8 +41,14 @@ pnpm install
 pnpm db:up                     # starts a local PG16 cluster on :5433 (trust auth)
 pnpm db:push                   # prisma db push + generate
 pnpm db:seed                   # realistic 24-table Downtown Flagship dataset
-pnpm dev                       # API :4000 + web :3010 in parallel
+pnpm dev                       # ensures the DB is up, then API :4000 + web :3010
 ```
+
+`pnpm dev` runs `scripts/db-ensure.sh` first: if nothing is listening on the
+database port it starts the repo-local cluster, so a reboot no longer leaves the
+app pointed at a dead database. If the cluster is not running and you start the
+API by hand, every screen shows `Database unreachable … Start it with
+pnpm db:up` instead of a bare `Internal server error`.
 
 Open <http://localhost:3010/serve>. The root redirects to the Serve workflow.
 You can also run the same commands from the repository root; the root
@@ -344,6 +350,7 @@ See `.env.example`. Every integration degrades gracefully:
 
 | Command | What it does |
 | --- | --- |
+| `pnpm db:ensure` | start the local cluster only if the DB port is closed |
 | `pnpm db:up` / `pnpm db:down` | start/stop the repo-local Postgres cluster |
 | `pnpm db:push` | Prisma push + client generate |
 | `pnpm db:seed` | wipe + reseed the Downtown Flagship dataset |
