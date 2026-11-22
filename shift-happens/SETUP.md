@@ -191,7 +191,7 @@ Edit `deploy/.env`:
 SITE_ADDRESS=pos.example.com          # or https://whiteout.local
 PUBLIC_ORIGIN=https://pos.example.com # or https://whiteout.local
 PUBLIC_API_URL=same-origin            # Caddy proxies /api and /socket.io
-POSTGRES_PASSWORD=<long random>       # openssl rand -base64 24
+POSTGRES_PASSWORD=<long hex random>    # openssl rand -hex 24
 RESTAURANT_ID=11111111-1111-4111-8111-111111111111
 ```
 
