@@ -25,7 +25,30 @@ export interface ActiveShift {
 
 const STAFF_KEY = 'sh-staff';
 const SHIFT_KEY = 'sh-shift';
+const TOKEN_KEY = 'sh-token';
 export const SESSION_EVENT = 'sh-session-change';
+
+/**
+ * Opaque bearer token issued by `POST /api/auth/pin`. This is the only piece
+ * of session state the API trusts; the staff object is a cached display copy.
+ */
+export function readToken(): string | null {
+  try {
+    return localStorage.getItem(TOKEN_KEY);
+  } catch {
+    return null;
+  }
+}
+
+export function writeToken(token: string | null) {
+  try {
+    if (token) localStorage.setItem(TOKEN_KEY, token);
+    else localStorage.removeItem(TOKEN_KEY);
+  } catch {
+    /* private mode */
+  }
+  emitSessionChange();
+}
 
 export function readStaff(): SessionStaff | null {
   try {
@@ -74,7 +97,7 @@ export function clearSession() {
   try {
     localStorage.removeItem(STAFF_KEY);
     localStorage.removeItem(SHIFT_KEY);
-    localStorage.removeItem('sh-token');
+    localStorage.removeItem(TOKEN_KEY);
   } catch {
     /* private mode */
   }
@@ -108,13 +131,13 @@ export function useSession() {
 
   const can = useCallback(
     (permission: Permission) => {
-      // An unidentified terminal keeps full access; this is a PIN demo gate.
-      if (!staff) return true;
+      // No authenticated staff means no permissions. There is no anonymous
+      // "demo" default any more.
+      if (!staff) return false;
       // Derive from the role so a session stored before a permission was added
       // still sees the current matrix (e.g. End of Night).
       if (staff.role) return permissionsForRole(staff.role).includes(permission);
-      if (!staff.permissions) return true;
-      return staff.permissions.includes(permission);
+      return staff.permissions?.includes(permission) ?? false;
     },
     [staff],
   );
