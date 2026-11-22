@@ -1,8 +1,3 @@
-{
-  "extends": "../../tsconfig.base.json",
-  "compilerOptions": {
-    "rootDir": "src",
-    "outDir": "dist"
-  },
-  "include": ["src/**/*.ts"]
-}
+version https://git-lfs.github.com/spec/v1
+oid sha256:b1df01c7b3ffbfde2f65f433286f600e3ff181d47db39bce8337daea3c30a2c7
+size 145

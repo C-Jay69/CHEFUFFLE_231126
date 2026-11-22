@@ -1,28 +1,3 @@
-{
-  "name": "shift-happens",
-  "private": true,
-  "version": "1.0.0",
-  "description": "Chefuffle by HYDRAFORGE AI \u2014 restaurant operations engine",
-  "packageManager": "pnpm@12.21.0",
-  "scripts": {
-    "db:ensure": "bash scripts/db-ensure.sh",
-    "db:up": "bash scripts/db-up.sh",
-    "db:down": "bash scripts/db-down.sh",
-    "db:push": "pnpm --filter @shift-happens/db db:push",
-    "db:seed": "pnpm --filter @shift-happens/db seed",
-    "db:reset": "pnpm --filter @shift-happens/db db:reset",
-    "gen:screens": "node scripts/gen-screens.mjs",
-    "dev": "bash scripts/db-ensure.sh && pnpm gen:screens && turbo run dev",
-    "dev:api": "pnpm --filter @shift-happens/api dev",
-    "dev:web": "pnpm --filter @shift-happens/web dev",
-    "build": "pnpm gen:screens && turbo run build",
-    "start": "turbo run start",
-    "test": "pnpm --filter @shift-happens/api test",
-    "typecheck": "turbo run typecheck"
-  },
-  "devDependencies": {
-    "concurrently": "^9.1.0",
-    "turbo": "^2.3.3",
-    "typescript": "^5.6.3"
-  }
-}
+version https://git-lfs.github.com/spec/v1
+oid sha256:7d9b648bfa16bbcc9f1e4229ce31f3fcfbfa34949914e88efcfcc00e34bbef85
+size 1031

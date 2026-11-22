@@ -1,7 +1,3 @@
-{
-  "extends": "../../tsconfig.base.json",
-  "compilerOptions": {
-    "noEmit": true
-  },
-  "include": ["src/**/*.ts"]
-}
+version https://git-lfs.github.com/spec/v1
+oid sha256:9e388ea60852028037c4fd8a6e0311c02d4ff1703d66e5f9b22276b07dcb82d2
+size 121

@@ -1,9 +1,3 @@
-packages:
-  - apps/*
-  - packages/*
-
-allowBuilds:
-  '@prisma/client': true
-  '@prisma/engines': true
-  esbuild: true
-  prisma: true
+version https://git-lfs.github.com/spec/v1
+oid sha256:4d6448eb345a75cbdd83ec58ce90399cafc7c5f8dabda59e105f7ea3334edf7d
+size 132

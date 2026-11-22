@@ -1,29 +1,3 @@
-# syntax=docker/dockerfile:1
-FROM node:22-alpine AS build
-
-ENV COREPACK_ENABLE_DOWNLOAD_PROMPT=0
-RUN apk add --no-cache openssl libc6-compat && corepack enable
-WORKDIR /app
-
-COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
-COPY apps/api/package.json apps/api/package.json
-COPY apps/web/package.json apps/web/package.json
-COPY packages/db/package.json packages/db/package.json
-COPY packages/shared/package.json packages/shared/package.json
-RUN pnpm install --frozen-lockfile
-
-COPY . .
-RUN pnpm --filter @shift-happens/db generate
-
-FROM node:22-alpine AS runtime
-
-ENV NODE_ENV=production
-ENV COREPACK_ENABLE_DOWNLOAD_PROMPT=0
-RUN apk add --no-cache openssl libc6-compat && corepack enable
-WORKDIR /app
-
-COPY --from=build /app /app
-RUN mkdir -p /app/apps/api/uploads/floorplans
-
-EXPOSE 4000
-CMD ["pnpm", "--filter", "@shift-happens/api", "start"]
+version https://git-lfs.github.com/spec/v1
+oid sha256:6d12729d0238165c6608aea38694780b6136066c7b5108a1b4c67f72b7f87d8b
+size 851

@@ -1,16 +1,3 @@
-import type { FastifyPluginAsync } from 'fastify';
-import { z } from 'zod';
-import { parse } from '../lib/validate.js';
-import { getEndOfNight } from '../services/end-of-night-engine.js';
-
-const endOfNightRoutes: FastifyPluginAsync = async (app) => {
-  app.get('/end-of-night', async (request) => {
-    const { date } = parse(
-      z.object({ date: z.string().optional() }),
-      request.query,
-    );
-    return getEndOfNight(undefined, date);
-  });
-};
-
-export default endOfNightRoutes;
+version https://git-lfs.github.com/spec/v1
+oid sha256:85109b4696ba4896aaac3d00f7da27b2a27f7804748bbfe9e03bfe8409ffa8c6
+size 490

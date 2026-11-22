@@ -1,12 +1,3 @@
-import type { Metadata } from 'next';
-import SetupPanel from './SetupPanel';
-
-export const metadata: Metadata = {
-  title: 'Setup & diagnostics',
-  description: 'Check that this terminal can reach the Chefuffle server, database and realtime gateway.',
-  robots: { index: false, follow: false },
-};
-
-export default function SetupPage() {
-  return <SetupPanel />;
-}
+version https://git-lfs.github.com/spec/v1
+oid sha256:a8abeb8857a3ab11dc04ba71e7dcb32e80e7d0c1100760029333b2075fe43700
+size 364

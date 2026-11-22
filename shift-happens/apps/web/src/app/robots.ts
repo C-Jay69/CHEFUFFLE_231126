@@ -1,33 +1,3 @@
-import type { MetadataRoute } from 'next';
-
-export default function robots(): MetadataRoute.Robots {
-  return {
-    rules: [
-      {
-        userAgent: '*',
-        allow: ['/', '/pricing'],
-        disallow: [
-          '/api/',
-          '/serve',
-          '/kds',
-          '/pos',
-          '/floor-plan',
-          '/reservations',
-          '/inventory',
-          '/scheduling',
-          '/briefing',
-          '/onboarding',
-          '/architect',
-          '/mobile',
-          '/voice-ai',
-          '/end-of-night',
-          '/pay/',
-          '/setup',
-          '/login',
-        ],
-      },
-    ],
-    sitemap: 'https://chefuffle.online/sitemap.xml',
-    host: 'https://chefuffle.online',
-  };
-}
+version https://git-lfs.github.com/spec/v1
+oid sha256:5eb9d20b60b87b1c28feb59ac9228de87f12be947f6d5a3ca3ea57d91696f8b5
+size 714
