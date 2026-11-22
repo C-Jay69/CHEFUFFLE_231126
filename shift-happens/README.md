@@ -186,6 +186,12 @@ Every menu item can carry shared modifier groups from a single library
   carries its own price delta (for example *Prawn skewer +$9.00*).
 * The item card has a **Modifiers** button; items with required groups open the
   sheet on tap, other items quick-add and can be customised via the button.
+* **Custom modifiers** — type anything that isn't in the list (for example
+  *extra cold* or *no cilantro*) and add it. A built-in **on-screen keyboard**
+  (numbers, QWERTY, shift, space, backspace, clear) makes text entry possible on
+  a touch terminal with no physical keyboard. Custom entries are stored as
+  `Custom: …` at no charge, appear on the cart, bill and KDS ticket, and can be
+  removed before adding the item.
 * Selections are stored on the order item as `modifiers` (name and priceDelta),
   so the price, the printed bill, the KDS ticket and reporting all agree.
 

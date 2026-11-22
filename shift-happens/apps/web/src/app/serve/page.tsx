@@ -42,6 +42,7 @@ interface CartLine {
 }
 
 const COURSE_ORDER: Course[] = ['starter', 'main', 'dessert', 'drink'];
+const KEY_ROWS = ['1234567890', 'qwertyuiop', 'asdfghjkl', 'zxcvbnm'];
 
 type Step = 'map' | 'order' | 'review' | 'sent';
 
@@ -96,6 +97,10 @@ export default function ServePage() {
   const [modifierItem, setModifierItem] = useState<MenuItem | null>(null);
   const [modifierGuest, setModifierGuest] = useState(1);
   const [modifierSelections, setModifierSelections] = useState<Record<string, string[]>>({});
+  const [customModifiers, setCustomModifiers] = useState<string[]>([]);
+  const [customInput, setCustomInput] = useState('');
+  const [keyboardOpen, setKeyboardOpen] = useState(false);
+  const [keyboardShift, setKeyboardShift] = useState(false);
   const [loadingCheck, setLoadingCheck] = useState(false);
   const [appendOrderId, setAppendOrderId] = useState<string | null>(null);
   const prefillHandled = useRef(false);
@@ -345,6 +350,32 @@ export default function ServePage() {
     setModifierItem(item);
     setModifierGuest(guest);
     setModifierSelections(defaults);
+    setCustomModifiers([]);
+    setCustomInput('');
+    setKeyboardOpen(false);
+    setKeyboardShift(false);
+  };
+
+  const addCustomModifier = () => {
+    const text = customInput.trim();
+    if (!text) {
+      showToast('Type a modifier first.', 'warn');
+      return;
+    }
+    if (customModifiers.includes(text)) {
+      setCustomInput('');
+      return;
+    }
+    setCustomModifiers((current) => [...current, text]);
+    setCustomInput('');
+  };
+
+  const removeCustomModifier = (text: string) => {
+    setCustomModifiers((current) => current.filter((entry) => entry !== text));
+  };
+
+  const typeKey = (key: string) => {
+    setCustomInput((current) => current + (keyboardShift ? key.toUpperCase() : key));
   };
 
   const toggleModifier = (group: ModifierGroup, optionId: string) => {
@@ -406,7 +437,24 @@ export default function ServePage() {
         };
       }),
     );
-    addItem(modifierItem, chosen, modifierGuest);
+    const pending = customInput.trim();
+    const customs =
+      pending && !customModifiers.includes(pending)
+        ? [...customModifiers, pending]
+        : customModifiers;
+    addItem(
+      modifierItem,
+      [
+        ...chosen,
+        ...customs.map((text) => ({
+          groupId: 'custom',
+          groupName: 'Custom',
+          name: `Custom: ${text}`,
+          priceDelta: 0,
+        })),
+      ],
+      modifierGuest,
+    );
     setModifierItem(null);
   };
 
@@ -823,7 +871,7 @@ export default function ServePage() {
                             </span>
                           </div>
                           <div className="flex items-center gap-1">
-                            {(item.modifierGroups?.length ?? 0) > 0 && !out && (
+                            {!out && (
                               <button
                                 type="button"
                                 onClick={(event) => {
@@ -1382,7 +1430,134 @@ export default function ServePage() {
                   </section>
                 );
               })}
+
+              {(modifierItem.modifierGroups ?? []).length === 0 && (
+                <p className="font-body-sm text-body-sm text-text-tertiary">
+                  No preset modifiers for this item — add a custom one below.
+                </p>
+              )}
+
+              <section className="flex flex-col gap-1.5 border-t border-border-subtle pt-space-sm">
+                <div className="flex items-center justify-between gap-2">
+                  <span className="font-headline-md text-headline-md font-bold text-text-primary">
+                    Custom modifier
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => setKeyboardOpen((open) => !open)}
+                    className="flex h-8 items-center gap-1 rounded-full bg-surface-container px-2.5 font-label-badge text-label-badge font-bold uppercase text-secondary transition-colors hover:bg-surface-container-high hover:text-text-primary"
+                  >
+                    <span className="material-symbols-outlined text-[16px]">keyboard</span>
+                    {keyboardOpen ? 'Hide keyboard' : 'Keyboard'}
+                  </button>
+                </div>
+                <span className="font-body-sm text-body-sm text-text-subtle">
+                  Not in the list? Type exactly what the kitchen should do.
+                </span>
+                <div className="flex gap-1.5">
+                  <input
+                    value={customInput}
+                    onChange={(event) => setCustomInput(event.target.value)}
+                    onKeyDown={(event) => {
+                      if (event.key === 'Enter') {
+                        event.preventDefault();
+                        addCustomModifier();
+                      }
+                    }}
+                    placeholder="e.g. extra hot, no cilantro"
+                    className="h-11 flex-1 rounded-lg border border-border-subtle bg-surface-container-lowest px-3 font-body-sm text-body-sm text-text-primary outline-none placeholder:text-text-subtle focus:border-secondary"
+                  />
+                  <button
+                    type="button"
+                    onClick={addCustomModifier}
+                    className="h-11 rounded-lg bg-surface-container px-3 font-body-sm text-body-sm font-bold text-text-primary transition-colors hover:bg-surface-container-high"
+                  >
+                    Add
+                  </button>
+                </div>
+                {customModifiers.length > 0 && (
+                  <div className="flex flex-wrap gap-1.5">
+                    {customModifiers.map((text) => (
+                      <span
+                        key={text}
+                        className="flex items-center gap-1 rounded-full bg-accent-cyan-bright/15 px-2 py-1 font-body-sm text-[12px] font-bold text-accent-cyan-bright"
+                      >
+                        Custom: {text}
+                        <button
+                          type="button"
+                          onClick={() => removeCustomModifier(text)}
+                          aria-label={`Remove ${text}`}
+                          className="flex h-4 w-4 items-center justify-center rounded-full hover:bg-accent-cyan-bright/25"
+                        >
+                          <span className="material-symbols-outlined text-[13px]">close</span>
+                        </button>
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </section>
             </div>
+
+            {keyboardOpen && (
+              <div className="flex flex-col gap-1 border-t border-border-subtle bg-surface-container-low p-2">
+                {KEY_ROWS.map((row) => (
+                  <div key={row} className="flex gap-1">
+                    {row.split('').map((key) => (
+                      <button
+                        key={key}
+                        type="button"
+                        onClick={() => typeKey(key)}
+                        className="h-9 flex-1 rounded-md bg-surface-container font-body-sm text-body-sm font-bold text-text-primary transition-colors hover:bg-surface-container-high active:bg-surface-bright"
+                      >
+                        {keyboardShift ? key.toUpperCase() : key}
+                      </button>
+                    ))}
+                  </div>
+                ))}
+                <div className="flex gap-1">
+                  <button
+                    type="button"
+                    onClick={() => setKeyboardShift((shift) => !shift)}
+                    className={`h-9 w-10 rounded-md font-body-sm text-body-sm font-bold transition-colors ${
+                      keyboardShift
+                        ? 'bg-accent-cyan-bright text-bg-canvas'
+                        : 'bg-surface-container text-text-primary hover:bg-surface-container-high'
+                    }`}
+                  >
+                    ⇧
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => typeKey(' ')}
+                    className="h-9 flex-[4] rounded-md bg-surface-container font-body-sm text-body-sm font-bold text-text-primary transition-colors hover:bg-surface-container-high"
+                  >
+                    Space
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setCustomInput((current) => current.slice(0, -1))}
+                    className="h-9 w-10 rounded-md bg-surface-container font-body-sm text-body-sm font-bold text-text-primary transition-colors hover:bg-surface-container-high"
+                    aria-label="Backspace"
+                  >
+                    ⌫
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setCustomInput('')}
+                    className="h-9 rounded-md bg-surface-container px-2 font-label-badge text-label-badge font-bold uppercase text-text-secondary transition-colors hover:bg-surface-container-high"
+                  >
+                    CLR
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setKeyboardOpen(false)}
+                    className="h-9 rounded-md bg-secondary px-3 font-body-sm text-body-sm font-bold text-bg-canvas transition-colors hover:brightness-110"
+                  >
+                    Done
+                  </button>
+                </div>
+              </div>
+            )}
 
             <footer className="flex items-center gap-space-sm border-t border-border-subtle p-space-md">
               <button
