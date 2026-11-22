@@ -136,8 +136,12 @@ export default function VoiceAiPage() {
 
   const filteredKnowledge = useMemo(() => {
     const term = kbSearch.trim().toLowerCase();
-    if (!term) return knowledge.slice(0, 8);
-    return knowledge.filter(
+    // Newest first so a just-added entry is always visible at the top.
+    const sorted = [...knowledge].sort(
+      (a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime(),
+    );
+    if (!term) return sorted;
+    return sorted.filter(
       (entry) =>
         entry.title.toLowerCase().includes(term) ||
         entry.content.toLowerCase().includes(term) ||
