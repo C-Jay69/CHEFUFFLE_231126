@@ -67,23 +67,29 @@ export default function AppShell({
     NAV.some((item) => item.href === pathname) &&
     !visibleNav.some((item) => item.href === pathname);
   const blocked = ready && (lockedToServe ? pathname !== '/serve' : deniedScreen);
+  const unauthenticated = ready && !staff;
 
   useEffect(() => {
     if (!ready) return;
+    // No server-verified session: operational screens are not reachable.
+    if (!staff) {
+      router.replace('/login');
+      return;
+    }
     if (lockedToServe && pathname !== '/serve') {
       router.replace('/serve');
       return;
     }
     if (deniedScreen) router.replace(homeHref);
-  }, [ready, lockedToServe, pathname, deniedScreen, homeHref, router]);
+  }, [ready, staff, lockedToServe, pathname, deniedScreen, homeHref, router]);
 
   const clockIn = async () => {
     if (!staff) return;
     setClocking('in');
     try {
+      // Identity is resolved from the bearer session on the server.
       const response = await api.post<{ shift: ActiveShift; clockedIn: boolean }>(
         '/auth/clock-in',
-        { staffId: staff.id },
       );
       writeShift(response.shift);
       showToast(`${staff.name} clocked in.`, 'success');
@@ -108,7 +114,7 @@ export default function AppShell({
     if (!staff) return;
     setClocking('out');
     try {
-      await api.post('/auth/clock-out', { staffId: staff.id });
+      await api.post('/auth/clock-out');
       writeShift(null);
       showToast(`${staff.name} clocked out.`, 'success');
     } catch (error) {
@@ -277,7 +283,21 @@ export default function AppShell({
               {subtitle && <p className="mt-1 max-w-4xl font-body-base text-body-base text-text-secondary">{subtitle}</p>}
             </div>
           )}
-          {blocked ? (
+          {unauthenticated ? (
+            <div className="flex min-h-[60vh] items-center justify-center px-6">
+              <div className="flex max-w-sm flex-col items-center gap-2 text-center">
+                <span className="material-symbols-outlined text-headline-xl text-text-tertiary">
+                  lock
+                </span>
+                <p className="font-body-base text-body-base font-bold text-text-primary">
+                  Sign in required
+                </p>
+                <p className="font-body-sm text-body-sm text-text-tertiary">
+                  Taking you to the PIN screen…
+                </p>
+              </div>
+            </div>
+          ) : blocked ? (
             <div className="flex min-h-[60vh] items-center justify-center px-6">
               <div className="flex max-w-sm flex-col items-center gap-2 text-center">
                 <span className="material-symbols-outlined text-headline-xl text-status-caution">

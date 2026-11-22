@@ -19,7 +19,25 @@ interface Share {
   amount: number;
 }
 
-const round2 = (value: number) => Math.round((value + Number.EPSILON) * 100) / 100;
+/** Money helpers: all arithmetic happens on integer cents. */
+const toCents = (value: number | string | null | undefined) =>
+  Math.round(Number(value ?? 0) * 100);
+const fromCents = (cents: number) => cents / 100;
+const percentOfCents = (cents: number, percent: number) =>
+  Math.round((cents * percent) / 100);
+const taxFromGrossCents = (
+  cents: number,
+  percent: number,
+  inclusive: boolean,
+) =>
+  inclusive
+    ? Math.round((cents * percent) / (100 + percent))
+    : percentOfCents(cents, percent);
+const centsToInput = (cents: number) => {
+  const sign = cents < 0 ? '-' : '';
+  const absolute = Math.abs(Math.round(cents));
+  return `${sign}${Math.floor(absolute / 100)}.${String(absolute % 100).padStart(2, '0')}`;
+};
 
 const METHOD_LABELS: Record<Method, string> = {
   card: 'Card',
@@ -89,16 +107,24 @@ function equalShares(total: number, count: number): Share[] {
   }));
 }
 
-function guestShares(order: Order, tip: number): Share[] {
-  const subtotal = order.items.reduce(
-    (sum, item) => sum + item.unitPrice * item.quantity,
+function guestShares(
+  order: Order,
+  tip: number,
+  taxRatePercent: number,
+  taxInclusive: boolean,
+): Share[] {
+  const subtotalCents = order.items.reduce(
+    (sum, item) => sum + toCents(item.unitPrice * item.quantity),
     0,
   );
-  const taxRate = subtotal > 0 ? order.tax / subtotal : 0;
+  const tipCents = toCents(tip);
   const bySeat = new Map<string, number>();
   for (const item of order.items) {
     const key = item.seat?.trim() || 'Shared';
-    bySeat.set(key, (bySeat.get(key) ?? 0) + item.unitPrice * item.quantity);
+    bySeat.set(
+      key,
+      (bySeat.get(key) ?? 0) + toCents(item.unitPrice * item.quantity),
+    );
   }
   return [...bySeat.entries()]
     .sort(([a], [b]) => {
@@ -106,11 +132,18 @@ function guestShares(order: Order, tip: number): Share[] {
       if (b === 'Shared') return -1;
       return a.localeCompare(b, undefined, { numeric: true });
     })
-    .map(([seat, amount]) => {
-      const tipShare = subtotal > 0 ? tip * (amount / subtotal) : 0;
+    .map(([seat, amountCents]) => {
+      const tipShareCents =
+        subtotalCents > 0
+          ? Math.round((tipCents * amountCents) / subtotalCents)
+          : 0;
       return {
         label: seat === 'Shared' ? 'Shared items' : `Guest ${seat}`,
-        amount: round2(amount + amount * taxRate + tipShare),
+        amount: fromCents(
+          amountCents +
+            taxFromGrossCents(amountCents, taxRatePercent, taxInclusive) +
+            tipShareCents,
+        ),
       };
     });
 }
@@ -132,13 +165,25 @@ export default function PayPage() {
   const [amountInput, setAmountInput] = useState('');
   const [busy, setBusy] = useState(false);
   const [printOpen, setPrintOpen] = useState(false);
+  const [taxRatePercent, setTaxRatePercent] = useState(8);
+  const [taxInclusive, setTaxInclusive] = useState(false);
+
+  useEffect(() => {
+    void api
+      .get<{ taxRate: number; taxInclusive: boolean }>('/pos/config')
+      .then((config) => {
+        setTaxRatePercent(Number(config.taxRate) || 8);
+        setTaxInclusive(Boolean(config.taxInclusive));
+      })
+      .catch(() => undefined);
+  }, []);
 
   const load = useCallback(async () => {
     setLoading(true);
     try {
       const response = await api.get<Order>(`/orders/${params.id}`);
       setOrder(response);
-      setTipInput(response.tip > 0 ? response.tip.toFixed(2) : '');
+      setTipInput(response.tip > 0 ? centsToInput(toCents(response.tip)) : '');
     } catch (error) {
       showToast(
         error instanceof Error ? error.message : 'Could not load this check.',
@@ -156,38 +201,39 @@ export default function PayPage() {
   const subtotal = order?.subtotal ?? 0;
   const tax = order?.tax ?? 0;
   const tip = Number(tipInput) || 0;
-  const total = round2(subtotal + tax + tip);
+  const total = fromCents(toCents(subtotal) + toCents(tax) + toCents(tip));
   const paid = order?.paidAmount ?? 0;
-  const balance = order ? round2(total - paid) : 0;
+  const balance = order ? fromCents(toCents(total) - toCents(paid)) : 0;
   const isPaid = order?.status === 'paid';
 
   const shares = useMemo<Share[]>(() => {
     if (!order) return [];
     if (splitMode === 'equal') return equalShares(total, splitCount);
-    if (splitMode === 'guest') return guestShares(order, tip);
+    if (splitMode === 'guest') return guestShares(order, tip, taxRatePercent, taxInclusive);
     return [];
-  }, [order, splitMode, splitCount, total, tip]);
+  }, [order, splitMode, splitCount, total, tip, taxRatePercent, taxInclusive]);
 
   const allocated = useMemo(() => {
-    let left = paid;
+    let left = toCents(paid);
     return shares.map((share) => {
-      const applied = Math.max(0, Math.min(share.amount, left));
-      left = round2(left - applied);
+      const shareCents = toCents(share.amount);
+      const applied = Math.max(0, Math.min(shareCents, left));
+      left -= applied;
       return {
         ...share,
-        paid: applied,
-        remaining: round2(share.amount - applied),
+        paid: fromCents(applied),
+        remaining: fromCents(shareCents - applied),
       };
     });
   }, [shares, paid]);
 
   useEffect(() => {
     const selected = selectedShare !== null ? allocated[selectedShare] : null;
-    const target = selected ? selected.remaining : Math.max(0, balance);
-    setAmountInput(target > 0.005 ? target.toFixed(2) : '');
+    const targetCents = selected ? toCents(selected.remaining) : Math.max(0, toCents(balance));
+    setAmountInput(targetCents > 0 ? centsToInput(targetCents) : '');
   }, [allocated, selectedShare, balance]);
 
-  const taxRate = subtotal > 0 ? tax / subtotal : 0;
+  const taxLabel = `Tax (${taxRatePercent}%)`;
 
   const seatGroups = useMemo(() => {
     if (!order) return [] as Array<{ key: string; items: Order['items']; subtotal: number }>;
@@ -249,7 +295,7 @@ export default function PayPage() {
       <hr/>
       <table>
         <tr><td>Subtotal</td><td class="right">${money(subtotal)}</td></tr>
-        <tr><td>Tax (8%)</td><td class="right">${money(tax)}</td></tr>
+        <tr><td>${taxLabel}</td><td class="right">${money(tax)}</td></tr>
         ${tipRow(tip)}
         <tr class="total"><td>Total</td><td class="right">${money(total)}</td></tr>
         ${
@@ -269,24 +315,30 @@ export default function PayPage() {
 
   const printBySeat = () => {
     if (!order) return;
+    const subtotalCents = toCents(subtotal);
+    const tipCents = toCents(tip);
     const sections = seatGroups
       .map((group) => {
-        const groupTax = round2(group.subtotal * taxRate);
-        const groupTip = subtotal > 0 ? round2(tip * (group.subtotal / subtotal)) : 0;
+        const groupSubtotalCents = toCents(group.subtotal);
+        const groupTaxCents = percentOfCents(groupSubtotalCents, taxRatePercent);
+        const groupTipCents =
+          subtotalCents > 0
+            ? Math.round((tipCents * groupSubtotalCents) / subtotalCents)
+            : 0;
         return `<div class="seat">${
           group.key === 'Shared' ? 'Shared items' : `Guest ${escapeHtml(group.key)}`
         }</div>
           <table>${itemRows(group.items)}</table>
           <table>
             <tr><td>Guest subtotal</td><td class="right">${money(group.subtotal)}</td></tr>
-            <tr><td>Tax share</td><td class="right">${money(groupTax)}</td></tr>
+            <tr><td>Tax share</td><td class="right">${money(fromCents(groupTaxCents))}</td></tr>
             ${
-              groupTip > 0
-                ? `<tr><td>Tip share</td><td class="right">${money(groupTip)}</td></tr>`
+              groupTipCents > 0
+                ? `<tr><td>Tip share</td><td class="right">${money(fromCents(groupTipCents))}</td></tr>`
                 : ''
             }
             <tr class="total"><td>Due</td><td class="right">${money(
-              round2(group.subtotal + groupTax + groupTip),
+              fromCents(groupSubtotalCents + groupTaxCents + groupTipCents),
             )}</td></tr>
           </table>`;
       })
@@ -297,7 +349,7 @@ export default function PayPage() {
       <hr/>
       <table>
         <tr><td>Subtotal</td><td class="right">${money(subtotal)}</td></tr>
-        <tr><td>Tax (8%)</td><td class="right">${money(tax)}</td></tr>
+        <tr><td>${taxLabel}</td><td class="right">${money(tax)}</td></tr>
         ${tipRow(tip)}
         <tr class="total"><td>Total</td><td class="right">${money(total)}</td></tr>
       </table>
@@ -309,10 +361,16 @@ export default function PayPage() {
 
   const printIndividualBills = () => {
     if (!order) return;
+    const subtotalCents = toCents(subtotal);
+    const tipCents = toCents(tip);
     const pages = seatGroups
       .map((group, index) => {
-        const groupTax = round2(group.subtotal * taxRate);
-        const groupTip = subtotal > 0 ? round2(tip * (group.subtotal / subtotal)) : 0;
+        const groupSubtotalCents = toCents(group.subtotal);
+        const groupTaxCents = percentOfCents(groupSubtotalCents, taxRatePercent);
+        const groupTipCents =
+          subtotalCents > 0
+            ? Math.round((tipCents * groupSubtotalCents) / subtotalCents)
+            : 0;
         return `<div class="page">
           <h1>CHEFUFFLE</h1>
           <div class="meta">Downtown Flagship</div>
@@ -328,10 +386,10 @@ export default function PayPage() {
           <hr/>
           <table>
             <tr><td>Subtotal</td><td class="right">${money(group.subtotal)}</td></tr>
-            <tr><td>Tax (8%)</td><td class="right">${money(groupTax)}</td></tr>
-            ${tipRow(groupTip)}
+            <tr><td>${taxLabel}</td><td class="right">${money(fromCents(groupTaxCents))}</td></tr>
+            ${tipRow(fromCents(groupTipCents))}
             <tr class="total"><td>Total</td><td class="right">${money(
-              round2(group.subtotal + groupTax + groupTip),
+              fromCents(groupSubtotalCents + groupTaxCents + groupTipCents),
             )}</td></tr>
           </table>
           <hr/>
@@ -344,13 +402,13 @@ export default function PayPage() {
   };
 
   const setTipPreset = (percent: number) => {
-    setTipInput((subtotal * (percent / 100)).toFixed(2));
+    setTipInput(centsToInput(percentOfCents(toCents(subtotal), percent)));
   };
 
   const addPayment = async () => {
     if (!order) return;
-    const amount = round2(Number(amountInput));
-    if (!(amount > 0)) {
+    const amountCents = toCents(Number(amountInput));
+    if (!(amountCents > 0)) {
       showToast('Enter a payment amount.', 'warn');
       return;
     }
@@ -358,19 +416,27 @@ export default function PayPage() {
     try {
       const label =
         selectedShare !== null ? allocated[selectedShare]?.label ?? null : null;
-      const updated = await api.post<Order>(`/orders/${order.id}/payments`, {
-        amount,
-        method,
-        ...(method === 'card' ? { cardBrand: brand } : {}),
-        tip: round2(tip),
-        label,
-      });
+      const idempotencyKey =
+        typeof crypto !== 'undefined' && 'randomUUID' in crypto
+          ? crypto.randomUUID()
+          : `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+      const updated = await api.post<Order>(
+        `/orders/${order.id}/payments`,
+        {
+          amount: fromCents(amountCents),
+          method,
+          ...(method === 'card' ? { cardBrand: brand } : {}),
+          tip: fromCents(toCents(tip)),
+          label,
+        },
+        { headers: { 'Idempotency-Key': idempotencyKey } },
+      );
       setOrder(updated);
       setSelectedShare(null);
       showToast(
         updated.status === 'paid'
           ? `Check #${updated.orderNumber} paid — ${money(updated.total)}.`
-          : `${money(amount)} taken — ${money(updated.balance ?? 0)} left.`,
+          : `${money(fromCents(amountCents))} taken — ${money(updated.balance ?? 0)} left.`,
         'success',
       );
     } catch (error) {
@@ -601,7 +667,7 @@ export default function PayPage() {
                     <span>{money(subtotal)}</span>
                   </div>
                   <div className="flex items-center justify-between font-body-sm text-body-sm text-text-secondary">
-                    <span>Tax (8%)</span>
+                    <span>{taxLabel}</span>
                     <span>{money(tax)}</span>
                   </div>
 

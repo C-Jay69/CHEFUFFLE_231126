@@ -1,12 +1,93 @@
-import { prisma } from '@shift-happens/db';
+import { randomBytes } from 'node:crypto';
+import {
+  PIN_MAX_LENGTH,
+  PIN_MIN_LENGTH,
+  hashPin,
+  prisma,
+  verifyPin,
+} from '@shift-happens/db';
+import type { Staff } from '@shift-happens/db';
 import {
   ROLE_LABELS,
   isServeOnlyRole,
   permissionsForRole,
 } from '@shift-happens/shared';
 import { env } from '../env.js';
-import { badRequest, notFound } from '../errors.js';
+import { AppError, badRequest, notFound } from '../errors.js';
+import { recordAudit } from '../lib/audit.js';
+import { hashSessionToken } from '../lib/staff-auth.js';
 import { calculateLaborPacing } from './labor-engine.js';
+
+/** Server-issued bearer sessions live for 12 hours. */
+export const SESSION_TTL_MS = 12 * 60 * 60 * 1000;
+
+/** 5 failed PIN attempts from one source locks further attempts for 5 minutes. */
+export const PIN_THROTTLE_WINDOW_MS = 5 * 60 * 1000;
+export const PIN_THROTTLE_MAX_FAILURES = 5;
+
+interface ThrottleEntry {
+  failures: number;
+  firstFailureAt: number;
+  lockedUntil: number | null;
+}
+
+const pinAttempts = new Map<string, ThrottleEntry>();
+
+/** Test hook: clear in-process lockout state. */
+export function resetPinThrottle(): void {
+  pinAttempts.clear();
+}
+
+function throttleKey(ipAddress: string | null | undefined): string {
+  return ipAddress?.trim() || 'unknown';
+}
+
+function assertNotLockedOut(key: string): void {
+  const entry = pinAttempts.get(key);
+  if (!entry) return;
+  const now = Date.now();
+  if (entry.lockedUntil) {
+    if (entry.lockedUntil > now) {
+      const seconds = Math.ceil((entry.lockedUntil - now) / 1000);
+      throw new AppError(
+        429,
+        `Too many incorrect PIN attempts. Try again in ${seconds} seconds.`,
+      );
+    }
+    // The lock has expired; start a fresh failure window.
+    pinAttempts.delete(key);
+    return;
+  }
+  if (now - entry.firstFailureAt > PIN_THROTTLE_WINDOW_MS) {
+    pinAttempts.delete(key);
+  }
+}
+
+function recordFailure(key: string): void {
+  const now = Date.now();
+  const existing = pinAttempts.get(key);
+  const entry =
+    existing && now - existing.firstFailureAt <= PIN_THROTTLE_WINDOW_MS
+      ? existing
+      : { failures: 0, firstFailureAt: now, lockedUntil: null as number | null };
+
+  entry.failures += 1;
+  if (entry.failures >= PIN_THROTTLE_MAX_FAILURES) {
+    entry.lockedUntil = now + PIN_THROTTLE_WINDOW_MS;
+  }
+  pinAttempts.set(key, entry);
+}
+
+function assertPinFormat(pin: string): void {
+  if (!/^\d+$/.test(pin)) {
+    throw badRequest('PIN must contain digits only.');
+  }
+  if (pin.length < PIN_MIN_LENGTH || pin.length > PIN_MAX_LENGTH) {
+    throw badRequest(
+      `PIN must be ${PIN_MIN_LENGTH}-${PIN_MAX_LENGTH} digits.`,
+    );
+  }
+}
 
 export async function listStaff(restaurantId = env.RESTAURANT_ID) {
   const staff = await prisma.staff.findMany({
@@ -23,7 +104,8 @@ export async function listStaff(restaurantId = env.RESTAURANT_ID) {
   }));
 }
 
-function serializeAuthStaff(staff: {
+/** The only staff shape that may cross the wire — never includes PIN material. */
+export function serializeAuthStaff(staff: {
   id: string;
   name: string;
   role: string;
@@ -75,25 +157,175 @@ async function activeShiftFor(staffId: string, restaurantId: string) {
   });
 }
 
-export async function pinLogin(pin: string, restaurantId = env.RESTAURANT_ID) {
-  if (!/^\d{3,6}$/.test(pin)) throw badRequest('PIN must be 3-6 digits');
-  const staff = await prisma.staff.findFirst({
-    where: { restaurantId, pin, isActive: true },
+export interface PinLoginContext {
+  restaurantId?: string;
+  ipAddress?: string | null;
+  userAgent?: string | null;
+}
+
+function combineOrFilter() {
+  return [{ pinHash: { not: null } }, { pin: { not: null } }];
+}
+
+/**
+ * Verify a PIN against the stored hash and issue an opaque bearer session.
+ *
+ * - The PIN is never compared in SQL (hashes are salted), so we verify each
+ *   active candidate with `verifyPin`.
+ * - A legacy plaintext `pin` that matches is transparently upgraded to
+ *   `pinHash` and the legacy column is nulled.
+ * - Successful and failed attempts are audited; an audit failure never blocks
+ *   the login.
+ */
+export async function pinLogin(
+  pin: string,
+  context: PinLoginContext = {},
+) {
+  const restaurantId = context.restaurantId ?? env.RESTAURANT_ID;
+  const ipAddress = context.ipAddress ?? null;
+  const userAgent = context.userAgent?.slice(0, 255) ?? null;
+
+  assertPinFormat(pin);
+
+  const key = throttleKey(ipAddress);
+  assertNotLockedOut(key);
+
+  const candidates = await prisma.staff.findMany({
+    where: {
+      restaurantId,
+      isActive: true,
+      OR: combineOrFilter(),
+    },
   });
-  if (!staff) {
-    const error = new Error('Invalid PIN') as Error & { statusCode?: number };
-    error.statusCode = 401;
-    throw error;
+
+  // Collect every match rather than taking the first: a duplicated PIN must
+  // never silently sign someone in as the wrong employee.
+  const matches: Array<{ staff: Staff; legacy: boolean }> = [];
+  for (const candidate of candidates) {
+    if (candidate.pinHash && verifyPin(pin, candidate.pinHash)) {
+      matches.push({ staff: candidate, legacy: false });
+      continue;
+    }
+    if (!candidate.pinHash && candidate.pin && candidate.pin === pin) {
+      matches.push({ staff: candidate, legacy: true });
+    }
   }
-  const token = Buffer.from(
-    JSON.stringify({ staffId: staff.id, role: staff.role, issuedAt: Date.now() }),
-  ).toString('base64url');
+
+  if (matches.length > 1) {
+    recordFailure(key);
+    await recordAudit({
+      restaurantId,
+      action: 'auth.login_failed',
+      entity: 'auth',
+      reason: 'ambiguous_pin',
+      ipAddress,
+    });
+    throw new AppError(
+      409,
+      'This PIN is assigned to more than one active employee. Ask a manager to make it unique.',
+    );
+  }
+
+  if (matches.length === 0) {
+    recordFailure(key);
+    await recordAudit({
+      restaurantId,
+      action: 'auth.login_failed',
+      entity: 'auth',
+      reason: 'invalid_pin',
+      ipAddress,
+    });
+    throw new AppError(401, 'Invalid PIN');
+  }
+
+  const { staff: matched, legacy: legacyMatch } = matches[0];
+
+  let staff = matched;
+  if (legacyMatch) {
+    staff = await prisma.staff.update({
+      where: { id: matched.id },
+      data: { pinHash: hashPin(pin), pin: null },
+    });
+  }
+
+  const token = randomBytes(32).toString('base64url');
+  const tokenHash = hashSessionToken(token);
+  const expiresAt = new Date(Date.now() + SESSION_TTL_MS);
+
+  const session = await prisma.session.create({
+    data: {
+      restaurantId,
+      staffId: staff.id,
+      tokenHash,
+      expiresAt,
+      ipAddress: ipAddress ?? undefined,
+      userAgent: userAgent ?? undefined,
+    },
+  });
+
   const active = await activeShiftFor(staff.id, restaurantId);
+
+  await recordAudit({
+    restaurantId,
+    actorStaffId: staff.id,
+    action: legacyMatch ? 'auth.login_upgraded' : 'auth.login',
+    entity: 'auth',
+    entityId: staff.id,
+    after: { legacyPinUpgraded: legacyMatch },
+    ipAddress,
+  });
+
   return {
     token,
+    expiresAt: expiresAt.toISOString(),
+    restaurantId,
+    sessionId: session.id,
     staff: serializeAuthStaff(staff),
     activeShift: active ? serializeActiveShift(active) : null,
-    shiftHint: active,
+    shiftHint: active ? serializeActiveShift(active) : null,
+  };
+}
+
+/** Revoke the session behind a bearer token. Idempotent and audit-logged. */
+export async function logoutSession(
+  token: string,
+  context: { ipAddress?: string | null } = {},
+): Promise<boolean> {
+  const session = await prisma.session.findUnique({
+    where: { tokenHash: hashSessionToken(token) },
+  });
+  if (!session) return false;
+
+  if (!session.revokedAt) {
+    await prisma.session.update({
+      where: { id: session.id },
+      data: { revokedAt: new Date() },
+    });
+  }
+
+  await recordAudit({
+    restaurantId: session.restaurantId,
+    actorStaffId: session.staffId,
+    action: 'auth.logout',
+    entity: 'auth',
+    entityId: session.id,
+    ipAddress: context.ipAddress ?? null,
+  });
+
+  return true;
+}
+
+/** Safe `/auth/me` payload: staff, tenant and the live shift. */
+export async function sessionPayload(
+  staff: Staff,
+  restaurantId: string | null,
+) {
+  const tenantId = restaurantId ?? staff.restaurantId;
+  const active = await activeShiftFor(staff.id, tenantId);
+  return {
+    restaurantId: tenantId,
+    staff: serializeAuthStaff(staff),
+    activeShift: active ? serializeActiveShift(active) : null,
   };
 }
 

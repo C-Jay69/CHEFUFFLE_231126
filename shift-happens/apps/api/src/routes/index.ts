@@ -1,5 +1,6 @@
 import type { FastifyInstance } from 'fastify';
 import architectRoutes from './architect.js';
+import auditRoutes from './audit.js';
 import authRoutes from './auth.js';
 import briefingRoutes from './briefing.js';
 import dashboardRoutes from './dashboard.js';
@@ -33,4 +34,5 @@ export async function registerRoutes(app: FastifyInstance) {
   await app.register(staffRoutes, { prefix: '/api' });
   await app.register(endOfNightRoutes, { prefix: '/api' });
   await app.register(dashboardRoutes, { prefix: '/api' });
+  await app.register(auditRoutes, { prefix: '/api' });
 }

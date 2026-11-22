@@ -506,3 +506,39 @@ export interface DashboardSummary {
   sales: { today: number };
   timestamp: string;
 }
+
+/** Safe staff fields returned by the auth endpoints (never PIN material). */
+export interface AuthStaff {
+  id: string;
+  name: string;
+  role: string;
+  roleLabel: string;
+  permissions?: string[];
+  serveOnlyWhenClockedIn?: boolean;
+}
+
+export interface AuthShift {
+  id: string;
+  staffId: string | null;
+  clockIn: string | null;
+  clockOut: string | null;
+  status: string;
+}
+
+/** `POST /api/auth/pin` response. */
+export interface AuthLoginResponse {
+  token: string;
+  expiresAt: string;
+  restaurantId: string;
+  sessionId: string;
+  staff: AuthStaff;
+  activeShift: AuthShift | null;
+  shiftHint: AuthShift | null;
+}
+
+/** `GET /api/auth/me` response. */
+export interface AuthMeResponse {
+  restaurantId: string;
+  staff: AuthStaff;
+  activeShift: AuthShift | null;
+}

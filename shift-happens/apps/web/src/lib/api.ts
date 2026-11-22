@@ -1,3 +1,5 @@
+import { clearSession } from './session';
+
 declare global {
   interface Window {
     __CHEFUFFLE_API_BASE__?: string;
@@ -57,12 +59,9 @@ export class ApiError extends Error {
 
 type RequestOptions = Omit<RequestInit, 'body'> & { body?: unknown };
 
-function currentStaffId(): string | null {
+function currentToken(): string | null {
   try {
-    const raw = localStorage.getItem('sh-staff');
-    if (!raw) return null;
-    const staff = JSON.parse(raw) as { id?: string };
-    return staff?.id ?? null;
+    return localStorage.getItem('sh-token');
   } catch {
     return null;
   }
@@ -70,12 +69,12 @@ function currentStaffId(): string | null {
 
 async function request<T>(path: string, options: RequestOptions = {}): Promise<T> {
   const { body, headers, ...rest } = options;
-  const staffId = typeof window === 'undefined' ? null : currentStaffId();
+  const token = typeof window === 'undefined' ? null : currentToken();
   const response = await fetch(`${API_BASE}/api${path}`, {
     ...rest,
     headers: {
       ...(body !== undefined ? { 'Content-Type': 'application/json' } : {}),
-      ...(staffId ? { 'x-staff-id': staffId } : {}),
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
       ...(headers ?? {}),
     },
     body: body !== undefined ? JSON.stringify(body) : undefined,
@@ -93,6 +92,9 @@ async function request<T>(path: string, options: RequestOptions = {}): Promise<T
   }
 
   if (!response.ok) {
+    // A rejected session (missing/expired/revoked) must not keep looking signed
+    // in. Clearing the cached session makes AppShell bounce to /login.
+    if (response.status === 401) clearSession();
     const message =
       (payload && typeof payload === 'object' && 'error' in payload
         ? String((payload as { error: unknown }).error)
@@ -117,11 +119,11 @@ export const api = {
 };
 
 export async function rawRequest(path: string, options: RequestInit = {}) {
-  const staffId = typeof window === 'undefined' ? null : currentStaffId();
+  const token = typeof window === 'undefined' ? null : currentToken();
   return fetch(`${API_BASE}${path}`, {
     ...options,
     headers: {
-      ...(staffId ? { 'x-staff-id': staffId } : {}),
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
       ...((options.headers as Record<string, string> | undefined) ?? {}),
     },
   });

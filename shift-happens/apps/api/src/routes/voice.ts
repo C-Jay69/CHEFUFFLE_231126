@@ -23,6 +23,8 @@ const knowledgeSchema = z.object({
 
 const voiceRoutes: FastifyPluginAsync = async (app) => {
   app.get('/voice/calls', async (request) => {
+    // Call logs contain guest phone numbers and transcripts: manager only.
+    await requirePermission(request, 'voice.manage');
     const { limit } = parse(
       z.object({ limit: z.coerce.number().int().min(1).max(100).optional() }),
       request.query,

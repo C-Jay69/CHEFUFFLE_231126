@@ -26,7 +26,7 @@ apps/web  Next.js 14 App Router  ── REST + WebSocket ──  apps/api  Fasti
         ├── /architect      menu media publishing
         ├── /mobile         one-hand floor manager
         ├── /voice-ai       Voice AI command centre (Twilio + Gemini RAG)
-        └── /login          PIN terminal + staff roster
+        └── /login          PIN terminal (hashed PIN → bearer session)
                                                         packages/db (Prisma)
                                                         packages/shared (Zod)
 ```
@@ -46,8 +46,8 @@ cp .env.example .env           # already present in this workspace; adjust if ne
 
 pnpm install
 pnpm db:up                     # starts a local PG16 cluster on :5433 (trust auth)
-pnpm db:push                   # prisma db push + generate
-pnpm db:seed                   # demo dataset (WIPES existing data)
+pnpm db:migrate                # prisma migrate deploy (versioned schema)
+SEED_DEMO=1 pnpm db:seed       # demo dataset (WIPES existing data)
 pnpm dev                       # ensures the DB is up, then API :4000 + web :3010
 ```
 
@@ -83,9 +83,12 @@ pnpm dev
 | `3333` | Maya Santos | Bartender |
 | `6666` | Priya Kapoor | Host |
 
-`/login` accepts any seeded staff PIN (3-6 digits). The token, the staff member
-and their permission list are stored locally for the terminal session. This is a
-demo gate, not a hardened auth boundary.
+`/login` accepts any seeded staff PIN (4-8 digits). PINs are stored as salted
+scrypt hashes. A successful login issues a 12-hour server-side bearer session;
+only the token's SHA-256 digest is stored, roles resolve from the database, and
+every `/api` route denies requests without a valid session except health, PIN
+login and the signed Twilio webhooks. The browser keeps the bearer token for the
+terminal session.
 
 ### Onboarding and permissions
 
