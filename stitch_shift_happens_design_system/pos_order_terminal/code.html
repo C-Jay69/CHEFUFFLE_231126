@@ -1,3 +1,654 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:c2d16b76e88fb95a02245da3b63a23f2d5b47fa5a54f6bf84d4574ae09561689
-size 46740
+<!DOCTYPE html><html class="dark" lang="en"><head><meta charset="utf-8"><meta content="width=device-width, initial-scale=1.0" name="viewport"><meta content="web_dashboard" name="shell-type"><link href="https://fonts.googleapis.com" rel="preconnect"><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@500;700&amp;display=swap" rel="stylesheet"><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        "colors": {
+          "bg-surface": "#111827",
+          "on-surface-variant": "#cfc2d6",
+          "secondary-container": "#03b5d3",
+          "text-subtle": "#4b5563",
+          "accent-lime": "#bef754",
+          "bg-canvas": "#000000",
+          "outline": "#988d9f",
+          "on-primary-container": "#400071",
+          "status-caution": "#f59e0b",
+          "on-tertiary-container": "#002a51",
+          "primary-container": "#b76dff",
+          "border-subtle": "#1f2937",
+          "text-secondary": "#d1d5db",
+          "surface-bright": "#323949",
+          "surface-container": "#191f2f",
+          "inverse-primary": "#842bd2",
+          "status-info": "#3b82f6",
+          "tertiary-container": "#4c93e7",
+          "surface-container-low": "#141b2b",
+          "surface": "#0c1322",
+          "on-error": "#690005",
+          "surface-dim": "#0c1322",
+          "surface-container-highest": "#2e3545",
+          "on-primary-fixed": "#2c0051",
+          "tertiary-fixed-dim": "#a4c9ff",
+          "on-tertiary-fixed-variant": "#004883",
+          "primary": "#ddb7ff",
+          "bg-card": "#2a2a2a",
+          "on-primary-fixed-variant": "#6900b3",
+          "status-ready": "#22c55e",
+          "inverse-on-surface": "#293040",
+          "text-primary": "#ffffff",
+          "text-tertiary": "#9ca3af",
+          "secondary-fixed": "#acedff",
+          "accent-cyan-bright": "#22d3ee",
+          "text-muted": "#6b7280",
+          "on-background": "#dce2f7",
+          "primary-fixed": "#f0dbff",
+          "primary-fixed-dim": "#ddb7ff",
+          "status-urgent": "#ef4444",
+          "outline-variant": "#4d4354",
+          "on-secondary-fixed-variant": "#004e5c",
+          "tertiary": "#a4c9ff",
+          "on-error-container": "#ffdad6",
+          "surface-variant": "#2e3545",
+          "border-emphasis": "#ffffff",
+          "secondary-fixed-dim": "#4cd7f6",
+          "on-secondary-fixed": "#001f26",
+          "surface-container-high": "#232a3a",
+          "on-surface": "#dce2f7",
+          "on-tertiary": "#00315d",
+          "on-primary": "#490080",
+          "bg-chrome": "#0a0a0a",
+          "bg-card-subtle": "#1e1e1e",
+          "on-tertiary-fixed": "#001c39",
+          "secondary": "#4cd7f6",
+          "inverse-surface": "#dce2f7",
+          "on-secondary": "#003640",
+          "on-secondary-container": "#00424e",
+          "surface-tint": "#ddb7ff",
+          "accent-shift-blue": "#0000ff",
+          "bg-sidebar": "#1a1a1a",
+          "surface-container-lowest": "#070e1d",
+          "error-container": "#93000a",
+          "accent-purple-glow": "#c084fc",
+          "tertiary-fixed": "#d4e3ff",
+          "error": "#ffb4ab",
+          "background": "#0c1322"
+        },
+        "borderRadius": {
+          "DEFAULT": "0.25rem",
+          "lg": "0.5rem",
+          "xl": "0.75rem",
+          "full": "9999px"
+        },
+        "spacing": {
+          "space-xs": "0.25rem",
+          "gutter": "1rem",
+          "space-md": "1rem",
+          "margin": "1rem",
+          "space-lg": "1.5rem",
+          "margin-lg": "2rem",
+          "gutter-lg": "1.5rem",
+          "margin-md": "1.5rem",
+          "space-sm": "0.5rem",
+          "space-xl": "2rem"
+        },
+        "fontFamily": {
+          "body-lg": [
+            "Inter"
+          ],
+          "headline-xl": [
+            "Inter"
+          ],
+          "label-badge": [
+            "JetBrains Mono"
+          ],
+          "mono-metric-lg": [
+            "JetBrains Mono"
+          ],
+          "headline-lg": [
+            "Inter"
+          ],
+          "body-sm": [
+            "Inter"
+          ],
+          "mono-metric-md": [
+            "JetBrains Mono"
+          ],
+          "label-eyebrow": [
+            "JetBrains Mono"
+          ],
+          "headline-md": [
+            "Inter"
+          ],
+          "headline-hero": [
+            "Inter"
+          ],
+          "mono-metric-sm": [
+            "JetBrains Mono"
+          ],
+          "headline-hero-mobile": [
+            "Inter"
+          ],
+          "body-base": [
+            "Inter"
+          ]
+        },
+        "fontSize": {
+          "body-lg": [
+            "16px",
+            {
+              "lineHeight": "24px",
+              "fontWeight": "500"
+            }
+          ],
+          "headline-xl": [
+            "30px",
+            {
+              "lineHeight": "38px",
+              "letterSpacing": "-0.02em",
+              "fontWeight": "700"
+            }
+          ],
+          "label-badge": [
+            "10px",
+            {
+              "lineHeight": "12px",
+              "letterSpacing": "0.05em",
+              "fontWeight": "700"
+            }
+          ],
+          "mono-metric-lg": [
+            "24px",
+            {
+              "lineHeight": "30px",
+              "fontWeight": "700"
+            }
+          ],
+          "headline-lg": [
+            "24px",
+            {
+              "lineHeight": "32px",
+              "letterSpacing": "-0.01em",
+              "fontWeight": "700"
+            }
+          ],
+          "body-sm": [
+            "12px",
+            {
+              "lineHeight": "18px",
+              "fontWeight": "400"
+            }
+          ],
+          "mono-metric-md": [
+            "16px",
+            {
+              "lineHeight": "24px",
+              "fontWeight": "700"
+            }
+          ],
+          "label-eyebrow": [
+            "11px",
+            {
+              "lineHeight": "14px",
+              "letterSpacing": "0.08em",
+              "fontWeight": "700"
+            }
+          ],
+          "headline-md": [
+            "18px",
+            {
+              "lineHeight": "26px",
+              "letterSpacing": "-0.01em",
+              "fontWeight": "700"
+            }
+          ],
+          "headline-hero": [
+            "72px",
+            {
+              "lineHeight": "76px",
+              "letterSpacing": "-0.03em",
+              "fontWeight": "800"
+            }
+          ],
+          "mono-metric-sm": [
+            "13px",
+            {
+              "lineHeight": "18px",
+              "fontWeight": "500"
+            }
+          ],
+          "headline-hero-mobile": [
+            "36px",
+            {
+              "lineHeight": "42px",
+              "letterSpacing": "-0.02em",
+              "fontWeight": "800"
+            }
+          ],
+          "body-base": [
+            "14px",
+            {
+              "lineHeight": "22px",
+              "fontWeight": "400"
+            }
+          ]
+        }
+      },
+    },
+  }</script></head><body class="bg-bg-canvas font-body-base text-body-base text-on-surface antialiased selection:bg-primary selection:text-on-primary-fixed"><aside class="fixed left-0 top-0 h-full w-64 bg-bg-chrome z-50 flex flex-col justify-between shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="flex flex-col"><div class="h-16 flex items-center gap-space-sm px-space-md bg-surface-container-lowest"><img alt="SHIFT HAPPENS Logo" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/ALJJyrA7z54LxK-mWn3_cEFcaVA841lrwYa-RjeCLO4ZUOoe7YWMCYym99OJOQCt7-30bh_prcMk_kWor80Wvn_d-pXhdvE9XiVSlxPeT9t3N0xccj-12_OMWLACQQJ6d0ObGpm3vl-00hoX6CyGL9l5lAoQusfoaGGriVVjN2DkJCudf-yUgaQsbO7SxBUkwHn9V5ga-eGd4K9RKVG0lgbR00C8we-WGlnqxEBhl9XFkQD9"><div class="flex flex-col min-w-0"><span class="font-headline-md text-headline-md tracking-tight text-text-primary uppercase truncate">SHIFT HAPPENS!</span><span class="font-label-badge text-label-badge text-secondary font-bold tracking-widest uppercase truncate">HYDRAFORGE AI</span></div></div><div class="px-space-md py-space-sm"><div class="p-space-sm rounded-lg bg-surface-container-low flex items-center justify-between"><div class="flex items-center gap-space-xs"><span class="relative flex h-2 w-2"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-status-ready opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-status-ready"></span></span><span class="font-label-badge text-label-badge text-text-secondary uppercase">PWA Live</span></div><span class="font-label-badge text-label-badge text-secondary">99.98% SYNC</span></div></div><nav class="flex flex-col gap-space-xs px-space-sm mt-space-xs" data-active-classes="bg-gradient-to-r from-accent-purple-glow/20 to-secondary/20 text-text-primary font-bold shadow-[inset_2px_0_0_0_#4cd7f6]"><a aria-current="page" class="flex items-center gap-space-sm px-space-md py-space-sm rounded-lg transition-colors bg-gradient-to-r from-accent-purple-glow/20 to-secondary/20 text-text-primary font-bold shadow-[inset_2px_0_0_0_#4cd7f6]" data-path="pos-&amp;-orders" href="#"><span class="material-symbols-outlined text-secondary">point_of_sale</span><span class="font-body-base text-body-base font-semibold">POS &amp; Orders</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors" data-path="floor-plan-&amp;-seating" href="#"><span class="material-symbols-outlined text-secondary">table_restaurant</span><span class="font-body-base text-body-base font-semibold">Floor Plan &amp; Seating</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors" data-path="kitchen-kds" href="#"><span class="material-symbols-outlined text-status-caution">skillet</span><span class="font-body-base text-body-base font-semibold">Kitchen KDS</span><span class="ml-auto px-space-xs py-0.5 rounded bg-status-urgent/20 text-status-urgent font-mono-metric-sm text-mono-metric-sm">4</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors" data-path="reservations-&amp;-crm" href="#"><span class="material-symbols-outlined text-secondary">book_online</span><span class="font-body-base text-body-base font-semibold">Reservations &amp; CRM</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors" data-path="inventory-management" href="#"><span class="material-symbols-outlined text-secondary">inventory_2</span><span class="font-body-base text-body-base font-semibold">Inventory Management</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors" data-path="voice-ai-agent" href="#"><span class="material-symbols-outlined text-accent-purple-glow">neurology</span><span class="font-body-base text-body-base font-semibold">Voice AI Agent</span><span class="ml-auto h-2 w-2 rounded-full bg-accent-purple-glow animate-pulse"></span></a></nav></div><div class="p-space-md flex flex-col gap-space-sm bg-surface-container-lowest"><div class="flex items-center justify-between text-text-subtle font-mono-metric-sm text-mono-metric-sm"><span>HOTKEYS</span><span class="px-space-xs py-0.5 rounded bg-surface-variant text-text-secondary">⌘ + K</span></div><div class="flex items-center gap-space-sm p-space-sm rounded-lg bg-surface-container-low"><div class="flex flex-col"><span class="font-label-eyebrow text-label-eyebrow text-secondary uppercase">Active Grid</span><span class="font-body-sm text-body-sm text-text-secondary truncate">Downtown Flagship</span></div></div></div></aside><div class="pl-64"><header class="fixed top-0 left-64 right-0 h-16 bg-bg-chrome/90 backdrop-blur-xl z-40 flex items-center justify-between px-space-lg shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="flex items-center gap-space-md"><div class="flex items-center gap-space-xs px-space-md py-space-xs rounded-full bg-surface-container-high"><span class="relative flex h-2.5 w-2.5"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-status-ready opacity-75"></span><span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-status-ready"></span></span><span class="font-label-badge text-label-badge text-text-primary uppercase tracking-wider">Dinner Rush • 84% Occupancy • Online</span></div><div class="hidden xl:flex items-center gap-space-xs text-text-secondary font-body-sm text-body-sm px-space-sm py-space-xs rounded bg-surface-container-low"><span class="material-symbols-outlined text-body-base text-text-subtle">store</span><span>Main Dining &amp; Bar — Downtown Flagship</span><span class="material-symbols-outlined text-body-base text-text-subtle">unfold_more</span></div></div><div class="flex items-center gap-space-md"><div class="flex items-center gap-space-xs px-space-sm py-space-xs rounded-full bg-surface-container-high"><span class="material-symbols-outlined text-accent-purple-glow text-body-base animate-pulse">graphic_eq</span><span class="font-label-badge text-label-badge text-accent-purple-glow font-bold">VOICE AI ACTIVE</span></div><button class="relative p-space-xs rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors"><span class="material-symbols-outlined text-status-caution">notifications</span><span class="absolute top-1 right-1 h-2 w-2 rounded-full bg-status-urgent"></span></button><div class="flex items-center gap-space-sm pl-space-sm"><div class="text-right hidden sm:flex flex-col"><span class="font-body-base text-body-base font-bold text-text-primary leading-tight">Chef Marco Vance</span><span class="font-label-eyebrow text-label-eyebrow text-secondary uppercase">GM &amp; Head of Ops</span></div><img alt="Profile" class="w-8 h-8 rounded-full object-cover ring-2 ring-primary/40" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDy9ZhtpNDXaG86Ys-0Q1j4OyrTEO-l2Q6rHSk5sbNKIy3_rAMsoV5LbPeVUZG92h1-x4C-c6cJNmPbKaFCGNrUOJIuE6wsbqRqH3KxaNwKL9aVLphQ_bqcAwsR1UW006mNBYrsfewRyzDJo27GYvuKAOBdOAVf7GTWqNZAJMhDXajzqoPDsNxZQhVoNTs7RZp8Sm5QF-D2X2GsLV4r51fpUfWj41xLLFIKS8MxEVY"></div></div></header><div class="fixed top-16 left-64 right-0 z-30 bg-status-urgent/20 border-b border-status-urgent/40 px-space-lg py-1.5 flex items-center justify-between backdrop-blur-xl"><div class="flex items-center gap-space-xs text-body-sm font-body-sm"><span class="material-symbols-outlined text-status-urgent text-body-base animate-pulse">block</span><span class="font-mono-metric-sm font-bold text-status-urgent uppercase tracking-wider">86'D LIVE:</span><span class="text-text-primary font-medium">Black Winter Truffle is OUT (Disabled across menu &amp; Voice AI)</span><span class="text-text-muted">•</span><span class="text-status-caution font-medium">Burrata low stock (3 portions left)</span></div><div class="flex items-center gap-space-xs"><span class="font-label-badge text-label-badge uppercase px-1.5 py-0.5 rounded bg-surface-container-high text-secondary">POS &amp; Voice AI Synced</span></div></div><main class="w-full bg-bg-canvas min-h-screen pt-24"><div class="flex flex-col w-full">
+<!-- POS Cockpit Grid: 3-column operational layout designed for low-light fast-fire rush -->
+<div class="grid grid-cols-12 gap-space-md p-space-md bg-bg-canvas">
+<!-- LEFT COLUMN: Active Ticket & Register Station (Col 1-4 / span 4) -->
+<div class="col-span-12 lg:col-span-4 flex flex-col bg-surface-container-lowest rounded-xl shadow-2xl p-space-md">
+<!-- Ticket Header Telemetry -->
+<div class="flex flex-col gap-space-xs pb-space-sm bg-surface-container-low p-space-sm rounded-lg mb-space-sm">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="px-space-xs py-0.5 rounded bg-primary/20 text-primary font-mono-metric-sm text-mono-metric-sm font-bold">#5000005</span>
+<span class="font-label-eyebrow text-label-eyebrow text-secondary uppercase">DINE-IN</span>
+</div>
+<div class="flex items-center gap-space-xs"><button class="flex items-center gap-1 px-2 py-1 rounded bg-secondary text-bg-canvas font-label-badge text-label-badge uppercase font-bold tracking-wider hover:bg-accent-cyan-bright active:scale-95 transition-all shadow-md" title="Instant walk-up speed tab"><span class="material-symbols-outlined text-body-base">flash_on</span><span>Quick Bar Tab</span></button>
+<button class="p-1 rounded hover:bg-surface-variant text-text-secondary transition-colors" title="Order options">
+<span class="material-symbols-outlined text-body-base">more_horiz</span>
+</button>
+<button class="p-1 rounded hover:bg-status-urgent/20 text-status-urgent transition-colors" title="Void Ticket">
+<span class="material-symbols-outlined text-body-base">delete</span>
+</button>
+</div>
+</div>
+<div class="flex items-center justify-between text-body-sm font-body-sm text-text-secondary mt-1">
+<div class="flex items-center gap-space-xs truncate">
+<span class="material-symbols-outlined text-text-subtle text-body-base">badge</span>
+<span class="text-text-primary font-semibold">Zach Arroyo</span>
+</div>
+<div class="flex items-center gap-space-sm">
+<span class="flex items-center gap-1 text-secondary font-mono-metric-sm text-mono-metric-sm">
+<span class="material-symbols-outlined text-body-base">table_bar</span> T-14 Patio
+            </span>
+<span class="flex items-center gap-1 text-text-muted font-mono-metric-sm text-mono-metric-sm">
+<span class="material-symbols-outlined text-body-base">group</span> 4
+            </span>
+</div>
+</div>
+</div>
+<!-- Quick Guest / Loyalty Row -->
+<div class="flex items-center justify-between bg-surface-container px-space-sm py-2 rounded-lg mb-space-sm">
+<div class="flex items-center gap-space-xs min-w-0">
+<span class="material-symbols-outlined text-secondary text-body-base">account_circle</span>
+<span class="font-body-sm text-body-sm text-text-primary font-medium truncate">Marcus Sterling</span>
+<span class="px-1.5 py-0.5 rounded bg-accent-lime/20 text-accent-lime font-label-badge text-label-badge font-bold">VIP • 850 PTS</span>
+</div>
+<button class="text-secondary hover:text-accent-cyan-bright font-label-badge text-label-badge uppercase font-bold tracking-wider">
+          Edit
+        </button>
+</div>
+<!-- Ticket Items List Table Header -->
+<div class="grid grid-cols-12 text-label-eyebrow font-label-eyebrow text-text-subtle uppercase px-space-xs py-1 border-b border-border-subtle">
+<span class="col-span-6">Item &amp; Modifiers</span>
+<span class="col-span-3 text-center">Qty</span>
+<span class="col-span-3 text-right">Price</span>
+</div>
+<!-- Ticket Items Scrollable Container -->
+<div class="flex-1 flex flex-col gap-space-xs overflow-y-auto max-h-[380px] py-space-xs pr-1" id="ticket-items-scroll">
+<!-- Line Item 1 -->
+<div class="p-space-xs rounded-lg bg-surface-container-low hover:bg-surface-container transition-all group">
+<div class="grid grid-cols-12 items-center">
+<div class="col-span-6 flex flex-col">
+<span class="font-body-base text-body-base font-bold text-text-primary group-hover:text-secondary transition-colors">Truffle Parmesan Fries</span>
+<span class="text-body-sm font-body-sm text-secondary font-mono-metric-sm text-mono-metric-sm">+ Extra Truffle Aioli ($2.00)</span>
+<span class="text-body-sm font-body-sm text-text-muted">+ Shaved Pecorino</span>
+</div>
+<div class="col-span-3 flex items-center justify-center gap-1">
+<button class="w-6 h-6 rounded bg-surface-variant hover:bg-surface-bright text-text-primary flex items-center justify-center font-bold text-body-base">-</button>
+<span class="font-mono-metric-md text-mono-metric-md text-text-primary w-5 text-center">1</span>
+<button class="w-6 h-6 rounded bg-surface-variant hover:bg-surface-bright text-text-primary flex items-center justify-center font-bold text-body-base">+</button>
+</div>
+<div class="col-span-3 text-right font-mono-metric-md text-mono-metric-md text-text-primary font-bold">
+              $16.00
+            </div>
+</div>
+<div class="flex items-center gap-2 mt-1 pl-1">
+<span class="px-1.5 py-0.5 rounded bg-surface-variant text-text-secondary font-label-badge text-label-badge uppercase">Seat 1</span>
+<span class="px-1.5 py-0.5 rounded bg-primary/10 text-primary font-label-badge text-label-badge">KDS Fire: Immediate</span>
+</div>
+</div>
+<!-- Line Item 2 -->
+<div class="p-space-xs rounded-lg bg-surface-container-low hover:bg-surface-container transition-all group">
+<div class="grid grid-cols-12 items-center">
+<div class="col-span-6 flex flex-col">
+<span class="font-body-base text-body-base font-bold text-text-primary group-hover:text-secondary transition-colors">Crispy Chicken Sandwich</span>
+<span class="text-body-sm font-body-sm text-status-caution font-medium">• Spicy Chipotle Mayo</span>
+<span class="text-body-sm font-body-sm text-status-urgent font-medium">• NO PICKLES (Allergy)</span>
+</div>
+<div class="col-span-3 flex items-center justify-center gap-1">
+<button class="w-6 h-6 rounded bg-surface-variant hover:bg-surface-bright text-text-primary flex items-center justify-center font-bold text-body-base">-</button>
+<span class="font-mono-metric-md text-mono-metric-md text-text-primary w-5 text-center">1</span>
+<button class="w-6 h-6 rounded bg-surface-variant hover:bg-surface-bright text-text-primary flex items-center justify-center font-bold text-body-base">+</button>
+</div>
+<div class="col-span-3 text-right font-mono-metric-md text-mono-metric-md text-text-primary font-bold">
+              $19.50
+            </div>
+</div>
+<div class="flex items-center gap-2 mt-1 pl-1">
+<span class="px-1.5 py-0.5 rounded bg-surface-variant text-text-secondary font-label-badge text-label-badge uppercase">Seat 2</span>
+<span class="px-1.5 py-0.5 rounded bg-status-urgent/20 text-status-urgent font-label-badge text-label-badge">KITCHEN ALERT</span>
+</div>
+</div>
+<!-- Line Item 3 -->
+<div class="p-space-xs rounded-lg bg-surface-container-low hover:bg-surface-container transition-all group">
+<div class="grid grid-cols-12 items-center">
+<div class="col-span-6 flex flex-col">
+<span class="font-body-base text-body-base font-bold text-text-primary group-hover:text-secondary transition-colors">Woodfired Margherita</span>
+<span class="text-body-sm font-body-sm text-secondary font-mono-metric-sm text-mono-metric-sm">+ Fresh Buffalo Burrata ($4.00)</span>
+<span class="text-body-sm font-body-sm text-text-muted">+ Hot Honey Drizzle ($1.00)</span>
+</div>
+<div class="col-span-3 flex items-center justify-center gap-1">
+<button class="w-6 h-6 rounded bg-surface-variant hover:bg-surface-bright text-text-primary flex items-center justify-center font-bold text-body-base">-</button>
+<span class="font-mono-metric-md text-mono-metric-md text-text-primary w-5 text-center">1</span>
+<button class="w-6 h-6 rounded bg-surface-variant hover:bg-surface-bright text-text-primary flex items-center justify-center font-bold text-body-base">+</button>
+</div>
+<div class="col-span-3 text-right font-mono-metric-md text-mono-metric-md text-text-primary font-bold">
+              $27.00
+            </div>
+</div>
+<div class="flex items-center gap-2 mt-1 pl-1">
+<span class="px-1.5 py-0.5 rounded bg-surface-variant text-text-secondary font-label-badge text-label-badge uppercase">Share Table</span>
+</div>
+</div>
+<!-- Line Item 4 -->
+<div class="p-space-xs rounded-lg bg-surface-container-low hover:bg-surface-container transition-all group">
+<div class="grid grid-cols-12 items-center">
+<div class="col-span-6 flex flex-col">
+<span class="font-body-base text-body-base font-bold text-text-primary group-hover:text-secondary transition-colors">Smoked Old Fashioned</span>
+<span class="text-body-sm font-body-sm text-secondary font-mono-metric-sm text-mono-metric-sm">• Woodford Bourbon Reserve</span>
+<span class="text-body-sm font-body-sm text-text-muted">• King Cube • Orange Peel</span>
+</div>
+<div class="col-span-3 flex items-center justify-center gap-1">
+<button class="w-6 h-6 rounded bg-surface-variant hover:bg-surface-bright text-text-primary flex items-center justify-center font-bold text-body-base">-</button>
+<span class="font-mono-metric-md text-mono-metric-md text-text-primary w-5 text-center">1</span>
+<button class="w-6 h-6 rounded bg-surface-variant hover:bg-surface-bright text-text-primary flex items-center justify-center font-bold text-body-base">+</button>
+</div>
+<div class="col-span-3 text-right font-mono-metric-md text-mono-metric-md text-text-primary font-bold">
+              $22.00
+            </div>
+</div>
+<div class="flex items-center gap-2 mt-1 pl-1">
+<span class="px-1.5 py-0.5 rounded bg-surface-variant text-text-secondary font-label-badge text-label-badge uppercase">Bar Print</span>
+<span class="px-1.5 py-0.5 rounded bg-status-ready/20 text-status-ready font-label-badge text-label-badge">SENT</span>
+</div>
+</div>
+</div>
+<!-- Financial Calculations Shelf -->
+<div class="mt-auto pt-space-xs flex flex-col gap-1 border-t border-border-subtle text-body-sm font-body-sm text-text-secondary">
+<div class="flex justify-between items-center">
+<span>Subtotal (4 items)</span>
+<span class="font-mono-metric-sm text-mono-metric-sm text-text-primary">$84.50</span>
+</div>
+<div class="flex justify-between items-center">
+<span>Sales Tax (8%)</span>
+<span class="font-mono-metric-sm text-mono-metric-sm text-text-primary">$6.76</span>
+</div>
+<div class="flex justify-between items-center text-secondary">
+<span class="flex items-center gap-1">Auto-Gratuity (18% Patio) <span class="material-symbols-outlined text-xs">info</span></span>
+<span class="font-mono-metric-sm text-mono-metric-sm font-bold">$15.21</span>
+</div>
+<div class="flex justify-between items-baseline pt-space-xs mt-1 border-t border-border-subtle bg-surface-container p-space-xs rounded-lg">
+<span class="font-headline-md text-headline-md font-bold text-text-primary uppercase tracking-tight">Total Due</span>
+<span class="font-mono-metric-lg text-mono-metric-lg font-extrabold text-accent-cyan-bright tracking-tight">$106.47</span>
+</div>
+</div>
+<!-- POS High-Speed Dispatch Action Buttons -->
+<div class="grid grid-cols-3 gap-space-xs mt-space-sm pt-1">
+<!-- Hold / Fire Button -->
+<button class="flex flex-col items-center justify-center p-3 rounded-lg bg-surface-bright hover:bg-surface-variant text-status-caution transition-all active:scale-95 shadow-md">
+<span class="material-symbols-outlined text-mono-metric-lg">pause_circle</span>
+<span class="font-label-badge text-label-badge uppercase font-bold mt-1 tracking-wider">Hold / Fire</span>
+</button>
+<!-- Send to Kitchen Button -->
+<button class="flex flex-col items-center justify-center p-3 rounded-lg bg-gradient-to-r from-accent-purple-glow to-secondary hover:brightness-110 text-bg-canvas transition-all active:scale-95 shadow-lg">
+<span class="material-symbols-outlined text-mono-metric-lg font-bold">soup_kitchen</span>
+<span class="font-label-badge text-label-badge uppercase font-black mt-1 tracking-wider">Send Kitchen</span>
+</button>
+<!-- Pay / Split Check Button -->
+<button class="flex flex-col items-center justify-center p-3 rounded-lg bg-status-ready hover:bg-emerald-400 text-bg-canvas transition-all active:scale-95 shadow-lg">
+<span class="material-symbols-outlined text-mono-metric-lg font-bold">payments</span>
+<span class="font-label-badge text-label-badge uppercase font-black mt-1 tracking-wider">Pay / Split</span>
+</button>
+</div>
+</div>
+<!-- MIDDLE: Category Navigation Rails (Col 5-6 / span 2) -->
+<div class="col-span-12 lg:col-span-2 flex flex-col gap-space-xs">
+<div class="flex items-center justify-between px-space-xs pb-1">
+<span class="font-label-eyebrow text-label-eyebrow text-secondary uppercase tracking-widest">Categories</span>
+<span class="material-symbols-outlined text-text-muted text-body-base">tune</span>
+</div>
+<!-- Vertical Category Pills Inspired by Touchscreen Reference -->
+<div class="flex flex-col gap-space-xs overflow-y-auto max-h-[820px] pr-1">
+<!-- Active Category -->
+<button class="flex items-center gap-space-xs px-space-sm py-3.5 rounded-lg bg-gradient-to-r from-accent-purple-glow/30 to-secondary/30 text-text-primary shadow-[inset_3px_0_0_0_#4cd7f6] transition-all text-left">
+<span class="material-symbols-outlined text-secondary text-body-base">star</span>
+<div class="flex flex-col min-w-0">
+<span class="font-body-base text-body-base font-bold truncate">Chef Favorites</span>
+<span class="font-label-badge text-label-badge text-secondary font-mono-metric-sm">12 Items</span>
+</div>
+</button>
+<!-- Category 2 -->
+<button class="flex items-center gap-space-xs px-space-sm py-3.5 rounded-lg bg-surface-container-low hover:bg-surface-container text-text-secondary hover:text-text-primary transition-all text-left group">
+<span class="material-symbols-outlined text-status-caution group-hover:scale-110 transition-transform text-body-base">tapas</span>
+<div class="flex flex-col min-w-0">
+<span class="font-body-base text-body-base font-semibold truncate">Shareables</span>
+<span class="font-label-badge text-label-badge text-text-subtle font-mono-metric-sm">8 Items</span>
+</div>
+</button>
+<!-- Category 3 -->
+<button class="flex items-center gap-space-xs px-space-sm py-3.5 rounded-lg bg-surface-container-low hover:bg-surface-container text-text-secondary hover:text-text-primary transition-all text-left group">
+<span class="material-symbols-outlined text-accent-cyan-bright group-hover:scale-110 transition-transform text-body-base">local_pizza</span>
+<div class="flex flex-col min-w-0">
+<span class="font-body-base text-body-base font-semibold truncate">Woodfired Pizza</span>
+<span class="font-label-badge text-label-badge text-text-subtle font-mono-metric-sm">10 Items</span>
+</div>
+</button>
+<!-- Category 4 -->
+<button class="flex items-center gap-space-xs px-space-sm py-3.5 rounded-lg bg-surface-container-low hover:bg-surface-container text-text-secondary hover:text-text-primary transition-all text-left group">
+<span class="material-symbols-outlined text-accent-lime group-hover:scale-110 transition-transform text-body-base">lunch_dining</span>
+<div class="flex flex-col min-w-0">
+<span class="font-body-base text-body-base font-semibold truncate">Burgers &amp; Mains</span>
+<span class="font-label-badge text-label-badge text-text-subtle font-mono-metric-sm">14 Items</span>
+</div>
+</button>
+<!-- Category 5 -->
+<button class="flex items-center gap-space-xs px-space-sm py-3.5 rounded-lg bg-surface-container-low hover:bg-surface-container text-text-secondary hover:text-text-primary transition-all text-left group">
+<span class="material-symbols-outlined text-status-urgent group-hover:scale-110 transition-transform text-body-base">local_bar</span>
+<div class="flex flex-col min-w-0">
+<span class="font-body-base text-body-base font-semibold truncate">Cocktails &amp; Spirits</span>
+<span class="font-label-badge text-label-badge text-text-subtle font-mono-metric-sm">18 Items</span>
+</div>
+</button>
+<!-- Category 6 -->
+<button class="flex items-center gap-space-xs px-space-sm py-3.5 rounded-lg bg-surface-container-low hover:bg-surface-container text-text-secondary hover:text-text-primary transition-all text-left group">
+<span class="material-symbols-outlined text-tertiary-fixed-dim group-hover:scale-110 transition-transform text-body-base">wine_bar</span>
+<div class="flex flex-col min-w-0">
+<span class="font-body-base text-body-base font-semibold truncate">Curated Wines</span>
+<span class="font-label-badge text-label-badge text-text-subtle font-mono-metric-sm">22 Bottles</span>
+</div>
+</button>
+<!-- Category 7 -->
+<button class="flex items-center gap-space-xs px-space-sm py-3.5 rounded-lg bg-surface-container-low hover:bg-surface-container text-text-secondary hover:text-text-primary transition-all text-left group">
+<span class="material-symbols-outlined text-accent-purple-glow group-hover:scale-110 transition-transform text-body-base">coffee</span>
+<div class="flex flex-col min-w-0">
+<span class="font-body-base text-body-base font-semibold truncate">Coffee &amp; Cold Tea</span>
+<span class="font-label-badge text-label-badge text-text-subtle font-mono-metric-sm">9 Items</span>
+</div>
+</button>
+<!-- Category 8 -->
+<button class="flex items-center gap-space-xs px-space-sm py-3.5 rounded-lg bg-surface-container-low hover:bg-surface-container text-text-secondary hover:text-text-primary transition-all text-left group">
+<span class="material-symbols-outlined text-primary group-hover:scale-110 transition-transform text-body-base">icecream</span>
+<div class="flex flex-col min-w-0">
+<span class="font-body-base text-body-base font-semibold truncate">Craft Desserts</span>
+<span class="font-label-badge text-label-badge text-text-subtle font-mono-metric-sm">6 Items</span>
+</div>
+</button>
+</div>
+<!-- Quick Action Utilities -->
+<div class="mt-auto flex flex-col gap-space-xs pt-space-xs">
+<button class="flex items-center justify-between px-space-sm py-2 rounded-lg bg-surface-container hover:bg-surface-bright text-text-secondary font-label-badge text-label-badge uppercase font-bold tracking-wider">
+<span>Open Custom Item</span>
+<span class="material-symbols-outlined text-body-base text-secondary">add_circle</span>
+</button>
+<button class="flex items-center justify-between px-space-sm py-2 rounded-lg bg-surface-container hover:bg-surface-bright text-text-secondary font-label-badge text-label-badge uppercase font-bold tracking-wider">
+<span>Manager Discount</span>
+<span class="material-symbols-outlined text-body-base text-status-caution">percent</span>
+</button>
+</div>
+</div>
+<!-- RIGHT: Menu Items Matrix & Interactive Modifier Bay (Col 7-12 / span 6) -->
+<div class="col-span-12 lg:col-span-6 flex flex-col gap-space-sm">
+<!-- Omni Search & Rapid Barcode Input Header -->
+<div class="flex items-center gap-space-sm bg-surface-container-lowest p-space-xs rounded-xl shadow-md">
+<div class="flex-1 flex items-center gap-space-xs px-space-sm py-2 rounded-lg bg-surface-container-low text-text-secondary">
+<span class="material-symbols-outlined text-secondary">search</span>
+<input class="w-full bg-transparent text-text-primary font-body-base text-body-base placeholder:text-text-subtle focus:outline-none" placeholder="Search menu, modifiers, or scan barcode (e.g. #01212)..." type="text">
+<kbd class="px-space-xs py-0.5 rounded bg-surface-variant text-text-subtle font-mono-metric-sm text-mono-metric-sm text-xs">ESC</kbd>
+</div>
+<button class="flex items-center gap-1 px-space-md py-2 rounded-lg bg-surface-container hover:bg-surface-bright text-text-primary transition-colors">
+<span class="material-symbols-outlined text-secondary text-body-base">qr_code_scanner</span>
+<span class="font-label-badge text-label-badge uppercase font-bold tracking-wider">Scan</span>
+</button>
+</div>
+<!-- Menu Grid Shelf: High-Contrast Touch Cards with Stock Alerts -->
+<div class="grid grid-cols-2 md:grid-cols-3 gap-space-sm overflow-y-auto max-h-[460px] pr-1">
+<!-- Menu Tile 1 (Selected State Trigger) -->
+<div class="relative flex flex-col justify-between p-space-sm rounded-xl bg-surface-container-low hover:bg-surface-container shadow-md cursor-pointer transition-all active:scale-[0.98] group overflow-hidden">
+<div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-accent-purple-glow to-secondary"></div>
+<div class="flex justify-between items-start gap-1">
+<span class="font-headline-md text-headline-md font-bold text-text-primary group-hover:text-secondary transition-colors leading-tight">Margherita D.O.P.</span>
+<span class="px-1.5 py-0.5 rounded bg-accent-lime/20 text-accent-lime font-mono-metric-sm text-mono-metric-sm font-bold">$22.00</span>
+</div>
+<p class="text-body-sm font-body-sm text-text-secondary line-clamp-2 mt-1">San Marzano tomatoes, buffalo mozzarella, fresh basil, cold-pressed EVOO.</p>
+<div class="flex items-center justify-between mt-space-sm pt-2 border-t border-border-subtle">
+<span class="px-1.5 py-0.5 rounded bg-status-ready/20 text-status-ready font-label-badge text-label-badge uppercase font-bold">In Stock</span>
+<span class="material-symbols-outlined text-secondary text-body-base group-hover:translate-x-0.5 transition-transform">add_circle</span>
+</div>
+</div>
+<!-- Menu Tile 2 -->
+<div class="relative flex flex-col justify-between p-space-sm rounded-xl bg-surface-container-low hover:bg-surface-container shadow-md cursor-pointer transition-all active:scale-[0.98] group overflow-hidden">
+<div class="flex justify-between items-start gap-1">
+<span class="font-headline-md text-headline-md font-bold text-text-primary group-hover:text-secondary transition-colors leading-tight">Wagyu Smash Burger</span>
+<span class="px-1.5 py-0.5 rounded bg-secondary-container/20 text-secondary font-mono-metric-sm text-mono-metric-sm font-bold">$24.50</span>
+</div>
+<p class="text-body-sm font-body-sm text-text-secondary line-clamp-2 mt-1">Double American Wagyu patties, smoked gouda, caramelized onion jam, brioche.</p>
+<div class="flex items-center justify-between mt-space-sm pt-2 border-t border-border-subtle">
+<span class="px-1.5 py-0.5 rounded bg-status-caution/20 text-status-caution font-label-badge text-label-badge uppercase font-bold">Only 6 Left</span>
+<span class="material-symbols-outlined text-secondary text-body-base group-hover:translate-x-0.5 transition-transform">add_circle</span>
+</div>
+</div>
+<!-- Menu Tile 3 -->
+<div class="relative flex flex-col justify-between p-space-sm rounded-xl bg-surface-container-low hover:bg-surface-container shadow-md cursor-pointer transition-all active:scale-[0.98] group overflow-hidden">
+<div class="flex justify-between items-start gap-1">
+<span class="font-headline-md text-headline-md font-bold text-text-primary group-hover:text-secondary transition-colors leading-tight">Crispy Calamari</span>
+<span class="px-1.5 py-0.5 rounded bg-secondary-container/20 text-secondary font-mono-metric-sm text-mono-metric-sm font-bold">$18.00</span>
+</div>
+<p class="text-body-sm font-body-sm text-text-secondary line-clamp-2 mt-1">Point Judith squid, shaved jalapeños, smoked lemon aioli, fresh parsley.</p>
+<div class="flex items-center justify-between mt-space-sm pt-2 border-t border-border-subtle">
+<span class="px-1.5 py-0.5 rounded bg-status-ready/20 text-status-ready font-label-badge text-label-badge uppercase font-bold">In Stock</span>
+<span class="material-symbols-outlined text-secondary text-body-base group-hover:translate-x-0.5 transition-transform">add_circle</span>
+</div>
+</div>
+<!-- Menu Tile 4 -->
+<div class="relative flex flex-col justify-between p-space-sm rounded-xl bg-surface-container-lowest/60 border border-status-urgent/30 shadow-md cursor-not-allowed group overflow-hidden opacity-75"><div class="flex justify-between items-start gap-1"><span class="font-headline-md text-headline-md font-bold text-text-muted line-through leading-tight">Truffle Cacio e Pepe</span><span class="px-1.5 py-0.5 rounded bg-status-urgent/20 text-status-urgent font-mono-metric-sm text-mono-metric-sm font-bold">86'D</span></div><p class="text-body-sm font-body-sm text-text-subtle line-clamp-2 mt-1">Housemade tonnarelli, toasted black peppercorn medley, aged Pecorino Romano.</p><div class="flex items-center justify-between mt-space-sm pt-2 border-t border-border-subtle"><span class="px-1.5 py-0.5 rounded bg-status-urgent/20 text-status-urgent font-label-badge text-label-badge uppercase font-bold">Out of Stock</span><span class="material-symbols-outlined text-text-subtle text-body-base">do_not_disturb_on</span></div></div>
+<!-- Menu Tile 5 -->
+<div class="relative flex flex-col justify-between p-space-sm rounded-xl bg-surface-container-low hover:bg-surface-container shadow-md cursor-pointer transition-all active:scale-[0.98] group overflow-hidden">
+<div class="flex justify-between items-start gap-1">
+<span class="font-headline-md text-headline-md font-bold text-text-primary group-hover:text-secondary transition-colors leading-tight">Charred Broccolini</span>
+<span class="px-1.5 py-0.5 rounded bg-secondary-container/20 text-secondary font-mono-metric-sm text-mono-metric-sm font-bold">$14.00</span>
+</div>
+<p class="text-body-sm font-body-sm text-text-secondary line-clamp-2 mt-1">Calabrian chili crisps, roasted garlic purée, lemon zest, toasted almonds.</p>
+<div class="flex items-center justify-between mt-space-sm pt-2 border-t border-border-subtle">
+<span class="px-1.5 py-0.5 rounded bg-status-ready/20 text-status-ready font-label-badge text-label-badge uppercase font-bold">Vegan GF</span>
+<span class="material-symbols-outlined text-secondary text-body-base group-hover:translate-x-0.5 transition-transform">add_circle</span>
+</div>
+</div>
+<!-- Menu Tile 6 -->
+<div class="relative flex flex-col justify-between p-space-sm rounded-xl bg-surface-container-low hover:bg-surface-container shadow-md cursor-pointer transition-all active:scale-[0.98] group overflow-hidden">
+<div class="flex justify-between items-start gap-1">
+<span class="font-headline-md text-headline-md font-bold text-text-primary group-hover:text-secondary transition-colors leading-tight">Hibiscus Paloma</span>
+<span class="px-1.5 py-0.5 rounded bg-secondary-container/20 text-secondary font-mono-metric-sm text-mono-metric-sm font-bold">$17.00</span>
+</div>
+<p class="text-body-sm font-body-sm text-text-secondary line-clamp-2 mt-1">Casamigos Blanco, organic hibiscus infusion, fresh lime, grapefruit soda, pink salt.</p>
+<div class="flex items-center justify-between mt-space-sm pt-2 border-t border-border-subtle">
+<span class="px-1.5 py-0.5 rounded bg-primary/20 text-primary font-label-badge text-label-badge uppercase font-bold">Popular</span>
+<span class="material-symbols-outlined text-secondary text-body-base group-hover:translate-x-0.5 transition-transform">add_circle</span>
+</div>
+</div>
+</div>
+<!-- MODIFIER DRAWER DOCK: Fast-touch customization bay -->
+<div class="flex flex-col bg-surface-container-lowest p-space-md rounded-xl shadow-xl mt-auto">
+<div class="flex items-center justify-between pb-2 border-b border-border-subtle">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-primary font-bold">tune</span>
+<span class="font-headline-md text-headline-md font-bold text-text-primary">Customizing: Margherita D.O.P.</span>
+</div>
+<span class="font-mono-metric-md text-mono-metric-md text-secondary font-bold">Base: $22.00</span>
+</div>
+<!-- Modifier Clusters (Tabs / Stepper controls) -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-space-sm pt-space-sm">
+<!-- Size Selector -->
+<div class="flex flex-col gap-1.5">
+<span class="font-label-eyebrow text-label-eyebrow text-text-subtle uppercase">Crust &amp; Size</span>
+<div class="grid grid-cols-2 gap-1">
+<button class="py-2 px-1 text-center rounded bg-gradient-to-r from-accent-purple-glow/20 to-secondary/20 text-text-primary font-bold font-body-sm text-body-sm shadow-[inset_2px_0_0_0_#4cd7f6]">
+                12" Personal
+              </button>
+<button class="py-2 px-1 text-center rounded bg-surface-container hover:bg-surface-bright text-text-secondary font-body-sm text-body-sm">
+                16" Large (+$6)
+              </button>
+</div>
+<button class="py-1.5 px-2 rounded bg-surface-container hover:bg-surface-bright text-text-secondary text-left font-body-sm text-body-sm flex justify-between items-center">
+<span>Gluten-Free Crust</span>
+<span class="text-status-caution font-mono-metric-sm text-mono-metric-sm">+$4.00</span>
+</button>
+</div>
+<!-- Add-ons & Protein Modifiers -->
+<div class="flex flex-col gap-1.5">
+<span class="font-label-eyebrow text-label-eyebrow text-text-subtle uppercase">Premium Add-ons</span>
+<div class="grid grid-cols-2 gap-1">
+<button class="py-1.5 px-2 rounded bg-primary/20 text-primary font-bold text-left font-body-sm text-body-sm flex justify-between items-center">
+<span>Burrata</span>
+<span class="font-mono-metric-sm text-mono-metric-sm">+$4</span>
+</button>
+<button class="py-1.5 px-2 rounded bg-surface-container hover:bg-surface-bright text-text-secondary text-left font-body-sm text-body-sm flex justify-between items-center">
+<span>Prosciutto</span>
+<span class="font-mono-metric-sm text-mono-metric-sm">+$5</span>
+</button>
+<button class="py-1.5 px-2 rounded bg-surface-container hover:bg-surface-bright text-text-secondary text-left font-body-sm text-body-sm flex justify-between items-center">
+<span>Hot Honey</span>
+<span class="font-mono-metric-sm text-mono-metric-sm">+$1</span>
+</button>
+<button class="py-1.5 px-2 rounded bg-surface-container hover:bg-surface-bright text-text-secondary text-left font-body-sm text-body-sm flex justify-between items-center">
+<span>Arugula</span>
+<span class="font-mono-metric-sm text-mono-metric-sm">+$2</span>
+</button>
+</div>
+</div>
+<!-- Kitchen Special Instruction & Fire Actions -->
+<div class="flex flex-col gap-1.5">
+<span class="font-label-eyebrow text-label-eyebrow text-text-subtle uppercase">Kitchen Directive</span>
+<div class="grid grid-cols-2 gap-1">
+<button class="py-1.5 px-2 rounded bg-surface-container hover:bg-surface-bright text-text-secondary font-body-sm text-body-sm text-center">
+                Well Done
+              </button>
+<button class="py-1.5 px-2 rounded bg-surface-container hover:bg-surface-bright text-text-secondary font-body-sm text-body-sm text-center">
+                Cut in 8
+              </button>
+</div>
+<button class="mt-auto py-2.5 px-space-sm rounded-lg bg-secondary hover:bg-accent-cyan-bright text-bg-canvas font-headline-md text-headline-md font-bold uppercase tracking-wider flex items-center justify-center gap-1 shadow-lg active:scale-95 transition-all">
+<span class="material-symbols-outlined text-body-base font-bold">check</span>
+<span>Add to Ticket ($26.00)</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div></main></div>
+
+</body></html>

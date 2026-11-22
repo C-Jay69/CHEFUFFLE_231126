@@ -1,3 +1,14 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:485d90b8b8ceb780d9c22591d30513d17ca2bf9fc5b2710ddad009b1e3d9ad6d
-size 539
+# Offline / LAN install with Caddy's internal certificate authority.
+# Use this file instead of Caddyfile when the restaurant has no public domain.
+# Set SITE_ADDRESS=https://chefuffle.local (or another local name) and install
+# Caddy's root certificate on each tablet: http://<server>/ca  is not exposed,
+# so copy /data/caddy/pki/authorities/local/root.crt from the caddy volume.
+{$SITE_ADDRESS} {
+	tls internal
+	encode zstd gzip
+
+	@backend path /api/* /socket.io/* /uploads/*
+	reverse_proxy @backend api:4000
+
+	reverse_proxy web:3010
+}

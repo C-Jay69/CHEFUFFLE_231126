@@ -1,3 +1,15 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:53a85e411634de3832bd68c482512a8949bdabea312dc5b25f5d97262945b2ce
-size 343
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["ES2022", "DOM"],
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "forceConsistentCasingInFileNames": true,
+    "declaration": true,
+    "sourceMap": true
+  }
+}

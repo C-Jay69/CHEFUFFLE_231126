@@ -1,3 +1,14 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:6aa4d133a9bad479768efa2ae56081a0f672cb28e71be4b25dd5eea6cccefdd4
-size 153
+node_modules
+**/node_modules
+.next
+**/.next
+.dev
+.git
+.gitignore
+**/*.log
+apps/api/uploads
+**/tsconfig.tsbuildinfo
+.env
+.env.*
+!.env.example
+deploy/.env

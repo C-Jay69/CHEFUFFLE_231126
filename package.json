@@ -1,3 +1,20 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:2f97fa05a4de159a3914480eff77aa935d2525269c5e735695b7489bc5e07f72
-size 799
+{
+  "name": "chefuffle-root",
+  "private": true,
+  "description": "Repo-root convenience delegates for the Chefuffle monorepo",
+  "scripts": {
+    "db:up": "pnpm --dir shift-happens db:up",
+    "db:down": "pnpm --dir shift-happens db:down",
+    "db:push": "pnpm --dir shift-happens db:push",
+    "db:seed": "pnpm --dir shift-happens db:seed",
+    "db:reset": "pnpm --dir shift-happens db:reset",
+    "gen:screens": "pnpm --dir shift-happens gen:screens",
+    "dev": "pnpm --dir shift-happens dev",
+    "dev:api": "pnpm --dir shift-happens dev:api",
+    "dev:web": "pnpm --dir shift-happens dev:web",
+    "build": "pnpm --dir shift-happens build",
+    "start": "pnpm --dir shift-happens start",
+    "test": "pnpm --dir shift-happens test",
+    "typecheck": "pnpm --dir shift-happens typecheck"
+  }
+}

@@ -1,3 +1,21 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:43e2fe7b9f84ff5262f649a7d7bf09f84e8f879f5fb012a996931906e28133bb
-size 400
+{
+  "name": "@shift-happens/shared",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./permissions": "./src/permissions.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.3"
+  }
+}

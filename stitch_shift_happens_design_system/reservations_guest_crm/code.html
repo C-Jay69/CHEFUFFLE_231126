@@ -1,3 +1,709 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:a9d0022caab770f12f5e7c22a508e362083657b28bae1c6d9674b524b6030b1a
-size 46630
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_dashboard" name="shell-type"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@500;700&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        "colors": {
+          "bg-surface": "#111827",
+          "on-surface-variant": "#cfc2d6",
+          "secondary-container": "#03b5d3",
+          "text-subtle": "#4b5563",
+          "accent-lime": "#bef754",
+          "bg-canvas": "#000000",
+          "outline": "#988d9f",
+          "on-primary-container": "#400071",
+          "status-caution": "#f59e0b",
+          "on-tertiary-container": "#002a51",
+          "primary-container": "#b76dff",
+          "border-subtle": "#1f2937",
+          "text-secondary": "#d1d5db",
+          "surface-bright": "#323949",
+          "surface-container": "#191f2f",
+          "inverse-primary": "#842bd2",
+          "status-info": "#3b82f6",
+          "tertiary-container": "#4c93e7",
+          "surface-container-low": "#141b2b",
+          "surface": "#0c1322",
+          "on-error": "#690005",
+          "surface-dim": "#0c1322",
+          "surface-container-highest": "#2e3545",
+          "on-primary-fixed": "#2c0051",
+          "tertiary-fixed-dim": "#a4c9ff",
+          "on-tertiary-fixed-variant": "#004883",
+          "primary": "#ddb7ff",
+          "bg-card": "#2a2a2a",
+          "on-primary-fixed-variant": "#6900b3",
+          "status-ready": "#22c55e",
+          "inverse-on-surface": "#293040",
+          "text-primary": "#ffffff",
+          "text-tertiary": "#9ca3af",
+          "secondary-fixed": "#acedff",
+          "accent-cyan-bright": "#22d3ee",
+          "text-muted": "#6b7280",
+          "on-background": "#dce2f7",
+          "primary-fixed": "#f0dbff",
+          "primary-fixed-dim": "#ddb7ff",
+          "status-urgent": "#ef4444",
+          "outline-variant": "#4d4354",
+          "on-secondary-fixed-variant": "#004e5c",
+          "tertiary": "#a4c9ff",
+          "on-error-container": "#ffdad6",
+          "surface-variant": "#2e3545",
+          "border-emphasis": "#ffffff",
+          "secondary-fixed-dim": "#4cd7f6",
+          "on-secondary-fixed": "#001f26",
+          "surface-container-high": "#232a3a",
+          "on-surface": "#dce2f7",
+          "on-tertiary": "#00315d",
+          "on-primary": "#490080",
+          "bg-chrome": "#0a0a0a",
+          "bg-card-subtle": "#1e1e1e",
+          "on-tertiary-fixed": "#001c39",
+          "secondary": "#4cd7f6",
+          "inverse-surface": "#dce2f7",
+          "on-secondary": "#003640",
+          "on-secondary-container": "#00424e",
+          "surface-tint": "#ddb7ff",
+          "accent-shift-blue": "#0000ff",
+          "bg-sidebar": "#1a1a1a",
+          "surface-container-lowest": "#070e1d",
+          "error-container": "#93000a",
+          "accent-purple-glow": "#c084fc",
+          "tertiary-fixed": "#d4e3ff",
+          "error": "#ffb4ab",
+          "background": "#0c1322"
+        },
+        "borderRadius": {
+          "DEFAULT": "0.25rem",
+          "lg": "0.5rem",
+          "xl": "0.75rem",
+          "full": "9999px"
+        },
+        "spacing": {
+          "gutter": "1rem",
+          "space-sm": "0.5rem",
+          "space-xs": "0.25rem",
+          "space-xl": "2rem",
+          "margin": "1rem",
+          "margin-lg": "2rem",
+          "space-lg": "1.5rem",
+          "margin-md": "1.5rem",
+          "space-md": "1rem",
+          "gutter-lg": "1.5rem"
+        },
+        "fontFamily": {
+          "headline-lg": ["Inter"],
+          "body-sm": ["Inter"],
+          "label-eyebrow": ["JetBrains Mono"],
+          "body-base": ["Inter"],
+          "headline-hero-mobile": ["Inter"],
+          "headline-md": ["Inter"],
+          "body-lg": ["Inter"],
+          "label-badge": ["JetBrains Mono"],
+          "mono-metric-md": ["JetBrains Mono"],
+          "headline-xl": ["Inter"],
+          "mono-metric-sm": ["JetBrains Mono"],
+          "headline-hero": ["Inter"],
+          "mono-metric-lg": ["JetBrains Mono"]
+        },
+        "fontSize": {
+          "headline-lg": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+          "body-sm": ["12px", {"lineHeight": "18px", "fontWeight": "400"}],
+          "label-eyebrow": ["11px", {"lineHeight": "14px", "letterSpacing": "0.08em", "fontWeight": "700"}],
+          "body-base": ["14px", {"lineHeight": "22px", "fontWeight": "400"}],
+          "headline-hero-mobile": ["36px", {"lineHeight": "42px", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+          "headline-md": ["18px", {"lineHeight": "26px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+          "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "500"}],
+          "label-badge": ["10px", {"lineHeight": "12px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+          "mono-metric-md": ["16px", {"lineHeight": "24px", "fontWeight": "700"}],
+          "headline-xl": ["30px", {"lineHeight": "38px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+          "mono-metric-sm": ["13px", {"lineHeight": "18px", "fontWeight": "500"}],
+          "headline-hero": ["72px", {"lineHeight": "76px", "letterSpacing": "-0.03em", "fontWeight": "800"}],
+          "mono-metric-lg": ["24px", {"lineHeight": "30px", "fontWeight": "700"}]
+        }
+      }
+    }
+  }</script></head><body class="bg-bg-canvas font-body-base text-body-base text-on-surface antialiased selection:bg-primary selection:text-on-primary-fixed"><aside class="fixed left-0 top-0 h-full w-64 bg-bg-chrome z-50 flex flex-col justify-between shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="flex flex-col"><div class="h-16 flex items-center gap-space-sm px-space-md bg-surface-container-lowest"><img alt="SHIFT HAPPENS Logo" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/ALJJyrA7z54LxK-mWn3_cEFcaVA841lrwYa-RjeCLO4ZUOoe7YWMCYym99OJOQCt7-30bh_prcMk_kWor80Wvn_d-pXhdvE9XiVSlxPeT9t3N0xccj-12_OMWLACQQJ6d0ObGpm3vl-00hoX6CyGL9l5lAoQusfoaGGriVVjN2DkJCudf-yUgaQsbO7SxBUkwHn9V5ga-eGd4K9RKVG0lgbR00C8we-WGlnqxEBhl9XFkQD9"/><div class="flex flex-col min-w-0"><span class="font-headline-md text-headline-md tracking-tight text-text-primary uppercase truncate">SHIFT HAPPENS!</span><span class="font-label-badge text-label-badge text-secondary font-bold tracking-widest uppercase truncate">HYDRAFORGE AI</span></div></div><div class="px-space-md py-space-sm"><div class="p-space-sm rounded-lg bg-surface-container-low flex items-center justify-between"><div class="flex items-center gap-space-xs"><span class="relative flex h-2 w-2"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-status-ready opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-status-ready"></span></span><span class="font-label-badge text-label-badge text-text-secondary uppercase">PWA Live</span></div><span class="font-label-badge text-label-badge text-secondary">99.98% SYNC</span></div></div><nav class="flex flex-col gap-space-xs px-space-sm mt-space-xs" data-active-classes="bg-gradient-to-r from-accent-purple-glow/20 to-secondary/20 text-text-primary font-bold shadow-[inset_2px_0_0_0_#4cd7f6]"><a class="flex items-center px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors font-body-base text-body-base font-semibold" data-path="pos-&amp;-orders" href="#">POS &amp; Orders</a><a class="flex items-center px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors font-body-base text-body-base font-semibold" data-path="floor-plan-&amp;-seating" href="#">Floor Plan &amp; Seating</a><a class="flex items-center px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors font-body-base text-body-base font-semibold" data-path="kitchen-kds" href="#">Kitchen KDS</a><a aria-current="page" class="flex items-center px-space-md py-space-sm rounded-lg transition-colors bg-gradient-to-r from-accent-purple-glow/20 to-secondary/20 text-text-primary font-bold shadow-[inset_2px_0_0_0_#4cd7f6]" data-path="reservations-&amp;-crm" href="#">Reservations &amp; CRM</a><a class="flex items-center px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors font-body-base text-body-base font-semibold" data-path="inventory-management" href="#">Inventory Management</a><a class="flex items-center px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors font-body-base text-body-base font-semibold" data-path="staff-scheduling-&amp;-shifts" href="#">Staff Scheduling &amp; Shifts</a><a class="flex items-center px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors font-body-base text-body-base font-semibold" data-path="team-onboarding-&amp;-training" href="#">Team Onboarding &amp; Training</a><a class="flex items-center px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors font-body-base text-body-base font-semibold" data-path="voice-ai-agent" href="#">Voice AI Agent</a></nav></div><div class="p-space-md flex flex-col gap-space-sm bg-surface-container-lowest"><div class="flex items-center justify-between text-text-subtle font-mono-metric-sm text-mono-metric-sm"><span>HOTKEYS</span><span class="px-space-xs py-0.5 rounded bg-surface-variant text-text-secondary">⌘ + K</span></div><div class="flex items-center gap-space-sm p-space-sm rounded-lg bg-surface-container-low"><div class="flex flex-col"><span class="font-label-eyebrow text-label-eyebrow text-secondary uppercase">Active Grid</span><span class="font-body-sm text-body-sm text-text-secondary truncate">Downtown Flagship</span></div></div></div></aside><div class="pl-64"><header class="fixed top-0 left-64 right-0 h-16 bg-bg-chrome/90 backdrop-blur-xl z-40 flex items-center justify-between px-space-lg shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="flex items-center gap-space-md"><div class="flex items-center gap-space-xs px-space-md py-space-xs rounded-full bg-surface-container-high"><span class="relative flex h-2.5 w-2.5"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-status-ready opacity-75"></span><span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-status-ready"></span></span><span class="font-label-badge text-label-badge text-text-primary uppercase tracking-wider">Dinner Rush • 84% Occupancy • ONLINE</span></div><div class="hidden xl:flex items-center gap-space-xs text-text-secondary font-body-sm text-body-sm px-space-sm py-space-xs rounded bg-surface-container-low"><span class="material-symbols-outlined text-body-base text-text-subtle">store</span><span>Main Dining &amp; Bar — Downtown Flagship</span><span class="material-symbols-outlined text-body-base text-text-subtle">unfold_more</span></div></div><div class="flex items-center gap-space-md"><div class="flex items-center gap-space-xs px-space-sm py-space-xs rounded-full bg-surface-container-high"><span class="material-symbols-outlined text-accent-purple-glow text-body-base animate-pulse">graphic_eq</span><span class="font-label-badge text-label-badge text-accent-purple-glow font-bold">VOICE AI ACTIVE</span></div><button class="relative p-space-xs rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors"><span class="material-symbols-outlined text-status-caution">notifications</span><span class="absolute top-1 right-1 h-2 w-2 rounded-full bg-status-urgent"></span></button><div class="flex items-center gap-space-sm pl-space-sm"><div class="text-right hidden sm:flex flex-col"><span class="font-body-base text-body-base font-bold text-text-primary leading-tight">Chef Marco Vance</span><span class="font-label-eyebrow text-label-eyebrow text-secondary uppercase">GM &amp; Head of Ops</span></div><img alt="Profile" class="w-8 h-8 rounded-full object-cover ring-2 ring-primary/40" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDy9ZhtpNDXaG86Ys-0Q1j4OyrTEO-l2Q6rHSk5sbNKIy3_rAMsoV5LbPeVUZG92h1-x4C-c6cJNmPbKaFCGNrUOJIuE6wsbqRqH3KxaNwKL9aVLphQ_bqcAwsR1UW006mNBYrsfewRyzDJo27GYvuKAOBdOAVf7GTWqNZAJMhDXajzqoPDsNxZQhVoNTs7RZp8Sm5QF-D2X2GsLV4r51fpUfWj41xLLFIKS8MxEVY"/></div></div></header><main class="w-full pt-16 bg-bg-canvas min-h-screen"><div class="flex flex-col w-full">
+<!-- Interactive Reservations & Guest CRM Command Deck -->
+<div class="p-space-md lg:p-space-lg flex flex-col gap-space-md">
+<!-- KPI SHELF / TELEMETRY RUNWAY -->
+<section class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-space-sm">
+<!-- Covers Target Card -->
+<div class="bg-surface-container-low p-space-md rounded-xl shadow-md flex flex-col justify-between">
+<div class="flex items-center justify-between">
+<span class="font-label-eyebrow text-label-eyebrow text-text-tertiary uppercase">Today's Covers</span>
+<span class="material-symbols-outlined text-secondary text-body-base">restaurant</span>
+</div>
+<div class="my-space-xs flex items-baseline gap-space-xs">
+<span class="font-mono-metric-lg text-mono-metric-lg text-text-primary">184</span>
+<span class="font-mono-metric-sm text-mono-metric-sm text-text-muted">/ 210 Target</span>
+</div>
+<div class="w-full bg-surface-container-highest rounded-full h-1.5 overflow-hidden">
+<div class="bg-gradient-to-r from-secondary to-accent-cyan-bright h-full rounded-full" style="width: 87.6%;"></div>
+</div>
+</div>
+<!-- Booked Capacity Card -->
+<div class="bg-surface-container-low p-space-md rounded-xl shadow-md flex flex-col justify-between">
+<div class="flex items-center justify-between">
+<span class="font-label-eyebrow text-label-eyebrow text-text-tertiary uppercase">Peak Saturation</span>
+<span class="material-symbols-outlined text-status-caution text-body-base">show_chart</span>
+</div>
+<div class="my-space-xs">
+<span class="font-mono-metric-lg text-mono-metric-lg text-status-caution">88%</span>
+<span class="font-body-sm text-body-sm text-text-secondary ml-1">Cap (19:00-21:30)</span>
+</div>
+<span class="font-label-badge text-label-badge text-text-muted truncate">3 turns on P1 Booths</span>
+</div>
+<!-- Voice AI Bookings Card -->
+<div class="bg-surface-container-low p-space-md rounded-xl shadow-md flex flex-col justify-between">
+<div class="flex items-center justify-between">
+<span class="font-label-eyebrow text-label-eyebrow text-primary uppercase">Autonomous Bookings</span>
+<span class="material-symbols-outlined text-accent-purple-glow text-body-base animate-pulse">neurology</span>
+</div>
+<div class="my-space-xs flex items-baseline gap-space-xs">
+<span class="font-mono-metric-lg text-mono-metric-lg text-text-primary">42</span>
+<span class="font-label-badge text-label-badge px-space-xs py-0.5 rounded bg-surface-container-high text-accent-purple-glow">0 Overlaps</span>
+</div>
+<span class="font-label-badge text-label-badge text-secondary flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-status-ready"></span>
+          pgvector Sync 1.2s
+        </span>
+</div>
+<!-- Active Waitlist Card -->
+<div class="bg-surface-container-low p-space-md rounded-xl shadow-md flex flex-col justify-between">
+<div class="flex items-center justify-between">
+<span class="font-label-eyebrow text-label-eyebrow text-text-tertiary uppercase">Active Waitlist</span>
+<span class="material-symbols-outlined text-status-info text-body-base">hourglass_top</span>
+</div>
+<div class="my-space-xs flex items-baseline gap-space-xs">
+<span class="font-mono-metric-lg text-mono-metric-lg text-text-primary">7</span>
+<span class="font-mono-metric-sm text-mono-metric-sm text-text-secondary">Parties</span>
+</div>
+<span class="font-body-sm text-body-sm text-text-muted">Avg wait ~22 min</span>
+</div>
+<!-- VIP Alert Card -->
+<div class="col-span-2 md:col-span-1 bg-surface-container-low p-space-md rounded-xl shadow-md flex flex-col justify-between">
+<div class="flex items-center justify-between">
+<span class="font-label-eyebrow text-label-eyebrow text-accent-lime uppercase">VIP Arrivals</span>
+<span class="material-symbols-outlined text-accent-lime text-body-base">hotel_class</span>
+</div>
+<div class="my-space-xs flex items-baseline gap-space-xs">
+<span class="font-mono-metric-lg text-mono-metric-lg text-accent-lime">5</span>
+<span class="font-mono-metric-sm text-mono-metric-sm text-text-secondary">Expected</span>
+</div>
+<div class="flex items-center gap-1">
+<span class="h-2 w-2 rounded-full bg-accent-lime"></span>
+<span class="font-label-badge text-label-badge text-accent-lime truncate">Marcus S. arriving next</span>
+</div>
+</div>
+</section>
+<!-- CONTROL RUNWAY: ACTIONS, DATES, VIEW SWITCHERS -->
+<section class="bg-surface-container-low p-space-sm lg:p-space-md rounded-xl shadow-md flex flex-col xl:flex-row xl:items-center justify-between gap-space-md">
+<!-- Date & Service Shift Navigation -->
+<div class="flex flex-wrap items-center gap-space-sm">
+<div class="flex items-center bg-surface-container px-space-sm py-space-xs rounded-lg shadow-sm">
+<button class="text-on-surface-variant hover:text-text-primary transition-colors p-1" title="Previous Day">
+<span class="material-symbols-outlined text-body-base">chevron_left</span>
+</button>
+<div class="flex items-center gap-space-xs px-space-sm">
+<span class="material-symbols-outlined text-secondary text-body-base">calendar_today</span>
+<span class="font-headline-md text-headline-md text-text-primary">Sat, Nov 23, 2026</span>
+</div>
+<button class="text-on-surface-variant hover:text-text-primary transition-colors p-1" title="Next Day">
+<span class="material-symbols-outlined text-body-base">chevron_right</span>
+</button>
+</div>
+<div class="flex items-center bg-surface-container p-1 rounded-lg">
+<button class="px-space-md py-space-xs rounded font-label-eyebrow text-label-eyebrow text-text-muted hover:text-text-secondary uppercase transition-colors">
+            Lunch (52)
+          </button>
+<button class="px-space-md py-space-xs rounded font-label-eyebrow text-label-eyebrow bg-gradient-to-r from-accent-purple-glow/20 to-secondary/20 text-text-primary uppercase shadow-[inset_2px_0_0_0_#4cd7f6] font-bold">
+            Dinner Rush [Active 132]
+          </button>
+<button class="px-space-md py-space-xs rounded font-label-eyebrow text-label-eyebrow text-text-muted hover:text-text-secondary uppercase transition-colors">
+            Late Night (26)
+          </button>
+</div>
+<div class="hidden sm:flex items-center bg-surface-container rounded-lg p-1">
+<button class="px-space-sm py-1 rounded bg-surface-variant font-label-badge text-label-badge text-text-primary">DAY</button>
+<button class="px-space-sm py-1 rounded font-label-badge text-label-badge text-text-muted hover:text-text-secondary">WEEK</button>
+<button class="px-space-sm py-1 rounded font-label-badge text-label-badge text-text-muted hover:text-text-secondary">SHIFT</button>
+</div>
+</div>
+<!-- Action Cluster -->
+<div class="flex items-center flex-wrap gap-space-sm">
+<div class="relative flex-1 sm:w-64">
+<span class="material-symbols-outlined absolute left-space-sm top-2.5 text-text-muted text-body-base">search</span>
+<input class="w-full bg-surface-container pl-9 pr-3 py-2 rounded-lg font-body-sm text-body-sm text-text-primary placeholder:text-text-muted outline-none focus:bg-surface-container-high transition-all" placeholder="Search party, phone, VIP..." type="text"/>
+</div>
+<button class="px-space-md py-2.5 rounded-lg bg-surface-container hover:bg-surface-container-high font-body-base text-body-base font-semibold text-text-primary transition-all flex items-center gap-space-xs shadow-sm">
+<span class="material-symbols-outlined text-secondary text-body-base">add_to_queue</span>
+<span>Add Waitlist</span>
+</button>
+<button class="px-space-md py-2.5 rounded-lg bg-gradient-to-r from-accent-purple-glow to-secondary text-surface-container-lowest font-body-base text-body-base font-bold shadow-lg hover:opacity-95 transition-all flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-body-base">add_circle</span>
+<span>+ New Reservation</span>
+</button>
+</div>
+</section>
+<!-- CORE 2-COLUMN OPERATIONAL BENTO -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-md">
+<!-- LEFT: TIMELINE & RESERVATION BOOK (60%) -->
+<div class="lg:col-span-7 xl:col-span-8 flex flex-col gap-space-md">
+<!-- Status Filter Tags -->
+<div class="flex items-center gap-space-xs overflow-x-auto pb-1">
+<button class="px-space-sm py-1 rounded-full font-label-badge text-label-badge bg-surface-container-high text-secondary whitespace-nowrap">
+            All (38)
+          </button>
+<button class="px-space-sm py-1 rounded-full font-label-badge text-label-badge bg-surface-container text-text-secondary hover:text-text-primary whitespace-nowrap">
+            Seated (18)
+          </button>
+<button class="px-space-sm py-1 rounded-full font-label-badge text-label-badge bg-surface-container text-text-secondary hover:text-text-primary whitespace-nowrap">
+            Confirmed (12)
+          </button>
+<button class="px-space-sm py-1 rounded-full font-label-badge text-label-badge bg-surface-container text-text-secondary hover:text-text-primary whitespace-nowrap flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-status-caution"></span>
+            Waitlist (7)
+          </button>
+<button class="px-space-sm py-1 rounded-full font-label-badge text-label-badge bg-surface-container text-accent-lime hover:text-text-primary whitespace-nowrap flex items-center gap-1">
+<span class="material-symbols-outlined text-label-badge">star</span>
+            VIP / Special (5)
+          </button>
+<button class="px-space-sm py-1 rounded-full font-label-badge text-label-badge bg-surface-container text-accent-purple-glow hover:text-text-primary whitespace-nowrap flex items-center gap-1">
+<span class="material-symbols-outlined text-label-badge">auto_awesome</span>
+            AI Booked (14)
+          </button>
+</div>
+<!-- Reservation Timeline Grid -->
+<div class="flex flex-col gap-space-sm">
+<!-- Time Bucket: 19:00 -->
+<div class="flex items-center gap-space-sm mt-space-xs">
+<span class="font-mono-metric-md text-mono-metric-md text-secondary">19:00</span>
+<span class="font-label-eyebrow text-label-eyebrow text-text-muted">PEAK ARRIVALS • 14 COVERS</span>
+<div class="flex-1 h-px bg-surface-container-high"></div>
+</div>
+<!-- Card 1: SELECTED VIP (Marcus Sterling) -->
+<div class="group relative bg-surface-container-low hover:bg-surface-container p-space-md rounded-xl shadow-md transition-all cursor-pointer bg-gradient-to-r from-accent-purple-glow/10 via-transparent to-transparent">
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-space-sm">
+<div class="flex items-start gap-space-md">
+<div class="w-12 h-12 rounded-xl bg-surface-container-high flex items-center justify-center text-accent-purple-glow font-bold font-mono-metric-md shadow-inner">
+                  MS
+                </div>
+<div class="flex flex-col">
+<div class="flex items-center gap-space-xs flex-wrap">
+<span class="font-headline-md text-headline-md text-text-primary font-bold">Marcus Sterling</span>
+<span class="px-space-xs py-0.5 rounded bg-accent-lime/20 text-accent-lime font-label-badge text-label-badge font-bold flex items-center gap-0.5">
+<span class="material-symbols-outlined text-label-badge">verified</span>
+                      VIP TIER 1
+                    </span>
+<span class="px-space-xs py-0.5 rounded bg-surface-container-highest text-secondary font-label-badge text-label-badge">
+                      Table 03 (Booth)
+                    </span>
+</div>
+<div class="flex items-center gap-space-md mt-1 text-text-secondary font-body-sm text-body-sm">
+<span class="flex items-center gap-1 text-text-primary">
+<span class="material-symbols-outlined text-body-sm text-secondary">group</span>
+                      Party of 4
+                    </span>
+<span>•</span>
+<span class="text-text-muted">Arrival 19:00 (Est. stay 1h 45m)</span>
+<span>•</span>
+<span class="text-accent-purple-glow flex items-center gap-1">
+<span class="material-symbols-outlined text-body-sm">neurology</span>
+                      Voice AI Booked
+                    </span>
+</div>
+</div>
+</div>
+<!-- Badges & State -->
+<div class="flex items-center gap-space-sm justify-between md:justify-end">
+<div class="flex flex-col items-end gap-1">
+<div class="flex items-center gap-space-xs">
+<span class="px-2 py-0.5 rounded bg-status-urgent/20 text-status-urgent font-label-badge text-label-badge font-bold">
+                      Peanut Allergy
+                    </span>
+<span class="px-2 py-0.5 rounded bg-accent-purple-glow/20 text-accent-purple-glow font-label-badge text-label-badge">
+                      Anniversary
+                    </span>
+</div>
+<span class="font-label-eyebrow text-label-eyebrow text-status-ready flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-status-ready"></span>
+                    SMS Confirmed 18:20
+                  </span>
+</div>
+<button class="px-space-md py-2 rounded-lg bg-status-ready hover:bg-emerald-600 text-text-primary font-body-sm text-body-sm font-bold shadow-md transition-all whitespace-nowrap">
+                  Seat Table 03
+                </button>
+</div>
+</div>
+</div>
+<!-- Card 2: Seated Guest (Elena Rostova) -->
+<div class="bg-surface-container-low hover:bg-surface-container p-space-md rounded-xl shadow-md transition-all">
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-space-sm">
+<div class="flex items-start gap-space-md">
+<div class="w-12 h-12 rounded-xl bg-surface-container-high flex items-center justify-center text-secondary font-bold font-mono-metric-md">
+                  ER
+                </div>
+<div class="flex flex-col">
+<div class="flex items-center gap-space-xs flex-wrap">
+<span class="font-headline-md text-headline-md text-text-primary">Elena Rostova</span>
+<span class="px-space-xs py-0.5 rounded bg-status-caution/20 text-status-caution font-label-badge text-label-badge">
+                      Food Critic / Press
+                    </span>
+<span class="px-space-xs py-0.5 rounded bg-surface-container-highest text-text-secondary font-label-badge text-label-badge">
+                      Table 12 (Main Dining)
+                    </span>
+</div>
+<div class="flex items-center gap-space-md mt-1 text-text-secondary font-body-sm text-body-sm">
+<span class="flex items-center gap-1 text-text-primary">
+<span class="material-symbols-outlined text-body-sm text-secondary">group</span>
+                      Party of 2
+                    </span>
+<span>•</span>
+<span class="text-status-ready">Seated 18:55 (Elapsed 25m)</span>
+<span>•</span>
+<span class="text-text-muted">SevenRooms API</span>
+</div>
+</div>
+</div>
+<!-- Actions & Status -->
+<div class="flex items-center gap-space-sm justify-between md:justify-end">
+<div class="flex flex-col items-end gap-1">
+<span class="px-2 py-0.5 rounded bg-status-info/20 text-status-info font-label-badge text-label-badge font-bold">
+                    Entrées Firing
+                  </span>
+<span class="font-mono-metric-sm text-mono-metric-sm text-text-secondary">Server: Claire P.</span>
+</div>
+<button class="px-space-md py-2 rounded-lg bg-surface-container-high hover:bg-surface-bright text-text-primary font-body-sm text-body-sm font-semibold transition-all">
+                  View Check ($194)
+                </button>
+</div>
+</div>
+</div>
+<!-- Time Bucket: 19:30 -->
+<div class="flex items-center gap-space-sm mt-space-sm">
+<span class="font-mono-metric-md text-mono-metric-md text-secondary">19:30</span>
+<span class="font-label-eyebrow text-label-eyebrow text-text-muted">HIGH-DENSITY SHIFT CHANGE • 22 COVERS</span>
+<div class="flex-1 h-px bg-surface-container-high"></div>
+</div>
+<!-- Card 3: Sarah Jenkins (AI Voice Agent 6pax) -->
+<div class="bg-surface-container-low hover:bg-surface-container p-space-md rounded-xl shadow-md transition-all">
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-space-sm">
+<div class="flex items-start gap-space-md">
+<div class="w-12 h-12 rounded-xl bg-surface-container-high flex items-center justify-center text-accent-cyan-bright font-bold font-mono-metric-md">
+                  SJ
+                </div>
+<div class="flex flex-col">
+<div class="flex items-center gap-space-xs flex-wrap">
+<span class="font-headline-md text-headline-md text-text-primary">Sarah Jenkins</span>
+<span class="px-space-xs py-0.5 rounded bg-accent-purple-glow/20 text-accent-purple-glow font-label-badge text-label-badge">
+                      Voice AI 1-Call Book
+                    </span>
+<span class="px-space-xs py-0.5 rounded bg-surface-container-highest text-text-secondary font-label-badge text-label-badge">
+                      Table 22 (Banquet)
+                    </span>
+</div>
+<div class="flex items-center gap-space-md mt-1 text-text-secondary font-body-sm text-body-sm">
+<span class="flex items-center gap-1 text-text-primary">
+<span class="material-symbols-outlined text-body-sm text-secondary">group</span>
+                      Party of 6
+                    </span>
+<span>•</span>
+<span class="text-text-muted">Deposit: $150 Paid</span>
+<span>•</span>
+<span class="text-text-secondary">High-Chair Requested (x1)</span>
+</div>
+</div>
+</div>
+<!-- Status & Bump -->
+<div class="flex items-center gap-space-sm justify-between md:justify-end">
+<div class="flex flex-col items-end gap-1">
+<span class="px-2 py-0.5 rounded bg-status-caution/20 text-status-caution font-label-badge text-label-badge">
+                    Late Grace 10m
+                  </span>
+<span class="font-label-eyebrow text-label-eyebrow text-text-muted">Table Prepped</span>
+</div>
+<button class="px-space-md py-2 rounded-lg bg-surface-container-high hover:bg-surface-bright text-text-primary font-body-sm text-body-sm font-semibold transition-all">
+                  Notify Table
+                </button>
+</div>
+</div>
+</div>
+<!-- Card 4: David Vance (Regular) -->
+<div class="bg-surface-container-low hover:bg-surface-container p-space-md rounded-xl shadow-md transition-all">
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-space-sm">
+<div class="flex items-start gap-space-md">
+<div class="w-12 h-12 rounded-xl bg-surface-container-high flex items-center justify-center text-text-secondary font-bold font-mono-metric-md">
+                  DV
+                </div>
+<div class="flex flex-col">
+<div class="flex items-center gap-space-xs flex-wrap">
+<span class="font-headline-md text-headline-md text-text-primary">David Vance</span>
+<span class="px-space-xs py-0.5 rounded bg-surface-container-highest text-secondary font-label-badge text-label-badge">
+                      Regular (18 visits)
+                    </span>
+<span class="px-space-xs py-0.5 rounded bg-surface-container-highest text-text-secondary font-label-badge text-label-badge">
+                      Patio Bar High-Top 12
+                    </span>
+</div>
+<div class="flex items-center gap-space-md mt-1 text-text-secondary font-body-sm text-body-sm">
+<span class="flex items-center gap-1 text-text-primary">
+<span class="material-symbols-outlined text-body-sm text-secondary">group</span>
+                      Party of 2
+                    </span>
+<span>•</span>
+<span class="text-text-muted">Phone Walk-in Reserved</span>
+<span>•</span>
+<span class="text-secondary">Likes Bar Staff Quick Chat</span>
+</div>
+</div>
+</div>
+<!-- Status & Check -->
+<div class="flex items-center gap-space-sm justify-between md:justify-end">
+<div class="flex flex-col items-end gap-1">
+<span class="font-mono-metric-sm text-mono-metric-sm text-status-ready">Confirmed SMS</span>
+<span class="font-label-eyebrow text-label-eyebrow text-text-muted">19:30 Sharp</span>
+</div>
+<button class="px-space-md py-2 rounded-lg bg-surface-container-high hover:bg-surface-bright text-text-primary font-body-sm text-body-sm font-semibold transition-all">
+                  Check-In
+                </button>
+</div>
+</div>
+</div>
+<!-- Time Bucket: 20:00 -->
+<div class="flex items-center gap-space-sm mt-space-sm">
+<span class="font-mono-metric-md text-mono-metric-md text-secondary">20:00</span>
+<span class="font-label-eyebrow text-label-eyebrow text-text-muted">SECONDARY TURN RESERVATIONS • 18 COVERS</span>
+<div class="flex-1 h-px bg-surface-container-high"></div>
+</div>
+<!-- Card 5: Jessica Thorne -->
+<div class="bg-surface-container-low hover:bg-surface-container p-space-md rounded-xl shadow-md transition-all">
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-space-sm">
+<div class="flex items-start gap-space-md">
+<div class="w-12 h-12 rounded-xl bg-surface-container-high flex items-center justify-center text-primary font-bold font-mono-metric-md">
+                  JT
+                </div>
+<div class="flex flex-col">
+<div class="flex items-center gap-space-xs flex-wrap">
+<span class="font-headline-md text-headline-md text-text-primary">Jessica Thorne</span>
+<span class="px-space-xs py-0.5 rounded bg-surface-container-highest text-text-muted font-label-badge text-label-badge">
+                      Online Direct
+                    </span>
+<span class="px-space-xs py-0.5 rounded bg-surface-container-highest text-text-secondary font-label-badge text-label-badge">
+                      Table 08 (Window)
+                    </span>
+</div>
+<div class="flex items-center gap-space-md mt-1 text-text-secondary font-body-sm text-body-sm">
+<span class="flex items-center gap-1 text-text-primary">
+<span class="material-symbols-outlined text-body-sm text-secondary">group</span>
+                      Party of 3
+                    </span>
+<span>•</span>
+<span class="text-text-muted">Vegetarian Options Requested</span>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-space-sm justify-between md:justify-end">
+<span class="px-2 py-0.5 rounded bg-surface-container-highest text-text-secondary font-label-badge text-label-badge">
+                  Unconfirmed (Pending Reminder)
+                </span>
+<button class="px-space-md py-2 rounded-lg bg-surface-container-high hover:bg-surface-bright text-text-primary font-body-sm text-body-sm font-semibold transition-all">
+                  Send Ping
+                </button>
+</div>
+</div>
+</div>
+</div>
+<!-- Waitlist Live Runway Bar -->
+<div class="bg-surface-container-low p-space-md rounded-xl shadow-md mt-space-xs">
+<div class="flex items-center justify-between mb-space-sm">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-status-caution">hourglass_empty</span>
+<span class="font-headline-md text-headline-md text-text-primary font-bold">Live Walk-In Waitlist</span>
+<span class="px-2 py-0.5 rounded-full bg-status-caution/20 text-status-caution font-label-badge text-label-badge">7 Parties Paged</span>
+</div>
+<span class="font-label-eyebrow text-label-eyebrow text-text-muted">Auto-sort by Quoted Time</span>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-space-sm">
+<div class="bg-surface-container p-space-sm rounded-lg flex items-center justify-between">
+<div class="flex flex-col">
+<span class="font-body-base text-body-base font-bold text-text-primary">Kovacs Party (3p)</span>
+<span class="font-mono-metric-sm text-mono-metric-sm text-status-urgent">Waiting 28m • Overdue</span>
+</div>
+<button class="px-space-sm py-1 rounded bg-status-ready text-surface-container-lowest font-label-badge text-label-badge font-bold">
+                PAGE NOW
+              </button>
+</div>
+<div class="bg-surface-container p-space-sm rounded-lg flex items-center justify-between">
+<div class="flex flex-col">
+<span class="font-body-base text-body-base font-bold text-text-primary">Zhang Party (2p)</span>
+<span class="font-mono-metric-sm text-mono-metric-sm text-status-caution">Waiting 14m / 20m</span>
+</div>
+<button class="px-space-sm py-1 rounded bg-surface-container-high text-secondary font-label-badge text-label-badge font-bold">
+                BAR HOLD
+              </button>
+</div>
+<div class="bg-surface-container p-space-sm rounded-lg flex items-center justify-between">
+<div class="flex flex-col">
+<span class="font-body-base text-body-base font-bold text-text-primary">Alvarez Party (5p)</span>
+<span class="font-mono-metric-sm text-mono-metric-sm text-text-secondary">Waiting 6m / 25m</span>
+</div>
+<button class="px-space-sm py-1 rounded bg-surface-container-high text-text-muted font-label-badge text-label-badge">
+                SMS SENT
+              </button>
+</div>
+</div>
+</div>
+</div>
+<!-- RIGHT: 360° GUEST PROFILE & CRM DEEP DIVE (40%) -->
+<div class="lg:col-span-5 xl:col-span-4 flex flex-col gap-space-md">
+<!-- Selected Guest Master Card -->
+<div class="bg-surface-container-low rounded-xl shadow-xl overflow-hidden flex flex-col">
+<!-- Card Header & Identity Scrim -->
+<div class="p-space-lg bg-gradient-to-b from-surface-container-high to-surface-container-low flex flex-col gap-space-md">
+<div class="flex items-start justify-between">
+<div class="flex items-center gap-space-md">
+<div class="relative">
+<img class="w-16 h-16 rounded-2xl object-cover shadow-lg" data-alt="High-contrast, moody close-up portrait of Marcus Sterling, a distinguished executive dining patron in elegant dark tailored attire, illuminated by ambient indigo and soft violet restaurant backlight." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA7dlAm6HsqqV9qVAhcze36-74YexalRBaB-fcpgWSNKk9VQ4TGXaD8DrQ4ohvOipZP7zBhtsos-70ysS1tnYt8_SvbG-3s2cDHUSYr16jZPAA_VEeEKim_8Led7Y9-iL9P38UUe5kmEHOMEJ8Iitt8lRJL4OepqwocBGrgMQzo-rORPmExC0XcYoAI_ccIiXgd66acyqncbBpmohL8mKEtybf6vz-NAep9ePCA_0o"/>
+<span class="absolute -bottom-1 -right-1 bg-accent-lime text-surface-container-lowest p-1 rounded-full shadow flex items-center justify-center">
+<span class="material-symbols-outlined text-body-sm font-bold">crown</span>
+</span>
+</div>
+<div class="flex flex-col">
+<div class="flex items-center gap-space-xs">
+<span class="font-headline-lg text-headline-lg text-text-primary font-bold">Marcus Sterling</span>
+</div>
+<span class="font-label-eyebrow text-label-eyebrow text-accent-lime uppercase tracking-wider">VIP Tier 1 • Private Equity</span>
+<span class="font-mono-metric-sm text-mono-metric-sm text-text-muted">+1 (415) 882-9014</span>
+</div>
+</div>
+<button class="p-2 rounded-lg bg-surface-container text-text-secondary hover:text-text-primary transition-colors">
+<span class="material-symbols-outlined text-body-base">edit</span>
+</button>
+</div>
+<!-- Loyalty Telemetry Strip -->
+<div class="grid grid-cols-2 gap-space-sm bg-surface-container p-space-sm rounded-xl">
+<div class="flex flex-col">
+<span class="font-label-eyebrow text-label-eyebrow text-text-muted uppercase">Loyalty Bank</span>
+<span class="font-mono-metric-md text-mono-metric-md text-secondary">1,450 pts</span>
+<span class="font-label-badge text-label-badge text-text-secondary">($145 comp balance)</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-eyebrow text-label-eyebrow text-text-muted uppercase">Lifetime Check</span>
+<span class="font-mono-metric-md text-mono-metric-md text-text-primary">$12,480.00</span>
+<span class="font-label-badge text-label-badge text-status-ready">34 visits (Avg $367)</span>
+</div>
+</div>
+</div>
+<!-- CRM Attributes & Behavioral Intelligence -->
+<div class="p-space-lg flex flex-col gap-space-md">
+<!-- Critical Medical & Preference Flags -->
+<div class="flex flex-col gap-space-xs">
+<span class="font-label-eyebrow text-label-eyebrow text-text-muted uppercase tracking-wider">Kitchen &amp; Service Directives</span>
+<div class="bg-status-urgent/15 p-space-sm rounded-lg flex items-start gap-space-sm">
+<span class="material-symbols-outlined text-status-urgent text-body-base">warning</span>
+<div class="flex flex-col">
+<span class="font-body-base text-body-base font-bold text-status-urgent">Severe Peanut Allergy</span>
+<span class="font-body-sm text-body-sm text-text-secondary">Strict red alert for prep line 2. Alert Sous Chef prior to app courses.</span>
+</div>
+</div>
+</div>
+<!-- Dining DNA Profile -->
+<div class="flex flex-col gap-space-xs">
+<span class="font-label-eyebrow text-label-eyebrow text-text-muted uppercase tracking-wider">Guest Affinities</span>
+<div class="grid grid-cols-2 gap-space-sm font-body-sm text-body-sm">
+<div class="bg-surface-container p-space-sm rounded-lg">
+<span class="font-label-badge text-label-badge text-text-muted block uppercase">Fav Server</span>
+<span class="font-body-base text-body-base font-semibold text-text-primary">Jerry K.</span>
+<span class="font-label-badge text-label-badge text-secondary block">94% Request Rate</span>
+</div>
+<div class="bg-surface-container p-space-sm rounded-lg">
+<span class="font-label-badge text-label-badge text-text-muted block uppercase">Preferred Seat</span>
+<span class="font-body-base text-body-base font-semibold text-text-primary">Table 03 (Booth)</span>
+<span class="font-label-badge text-label-badge text-text-secondary block">Corner low-noise</span>
+</div>
+<div class="bg-surface-container p-space-sm rounded-lg col-span-2">
+<span class="font-label-badge text-label-badge text-text-muted block uppercase">Signature Pour</span>
+<span class="font-body-base text-body-base font-semibold text-text-primary">2019 Caymus Cabernet Sauvignon</span>
+<span class="font-label-badge text-label-badge text-accent-purple-glow block">Cellar: 4 bottles reserved in bin 14</span>
+</div>
+</div>
+</div>
+<!-- Automated Hostess Automation Trigger -->
+<div class="bg-gradient-to-r from-accent-purple-glow/15 to-transparent p-space-sm rounded-lg flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-accent-purple-glow">local_bar</span>
+<div class="flex flex-col">
+<span class="font-body-base text-body-base font-bold text-text-primary">Complimentary Pour</span>
+<span class="font-body-sm text-body-sm text-text-secondary">Trigger Dom Pérignon flutes on greeting</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-secondary">check_circle</span>
+</div>
+<!-- Connected POS History -->
+<div class="flex flex-col gap-space-xs">
+<div class="flex items-center justify-between">
+<span class="font-label-eyebrow text-label-eyebrow text-text-muted uppercase tracking-wider">POS Transaction Log</span>
+<span class="font-label-badge text-label-badge text-secondary cursor-pointer hover:underline">Full 34 Visits</span>
+</div>
+<!-- History Row 1 -->
+<div class="bg-surface-container p-space-sm rounded-lg flex items-center justify-between">
+<div class="flex flex-col">
+<span class="font-body-base text-body-base font-medium text-text-primary">Nov 08, 2026 • Dinner (4p)</span>
+<span class="font-body-sm text-body-sm text-text-muted">Dry-aged Tomahawk, Osetra Caviar, Caymus</span>
+</div>
+<div class="flex flex-col items-end">
+<span class="font-mono-metric-sm text-mono-metric-sm text-text-primary font-bold">$520.00</span>
+<span class="font-label-badge text-label-badge text-status-ready">25% Tip ($130)</span>
+</div>
+</div>
+<!-- History Row 2 -->
+<div class="bg-surface-container p-space-sm rounded-lg flex items-center justify-between">
+<div class="flex flex-col">
+<span class="font-body-base text-body-base font-medium text-text-primary">Oct 21, 2026 • Dinner (2p)</span>
+<span class="font-body-sm text-body-sm text-text-muted">A5 Wagyu Strip, Truffle Gnocchi, Negroni (x3)</span>
+</div>
+<div class="flex flex-col items-end">
+<span class="font-mono-metric-sm text-mono-metric-sm text-text-primary font-bold">$380.00</span>
+<span class="font-label-badge text-label-badge text-status-ready">22% Tip ($83)</span>
+</div>
+</div>
+</div>
+<!-- Operational Communications Trigger -->
+<div class="flex items-center gap-space-sm pt-space-xs">
+<button class="flex-1 py-2.5 rounded-lg bg-surface-container hover:bg-surface-bright font-body-base text-body-base font-semibold text-text-primary transition-all flex items-center justify-center gap-1">
+<span class="material-symbols-outlined text-body-base">chat</span>
+<span>Send SMS</span>
+</button>
+<button class="flex-1 py-2.5 rounded-lg bg-surface-container hover:bg-surface-bright font-body-base text-body-base font-semibold text-text-primary transition-all flex items-center justify-center gap-1">
+<span class="material-symbols-outlined text-body-base">card_giftcard</span>
+<span>Issue Comp</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Voice AI Autonomous Engine Activity Module -->
+<div class="bg-surface-container-low p-space-md rounded-xl shadow-md flex flex-col gap-space-sm">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-accent-purple-glow">graphic_eq</span>
+<span class="font-headline-md text-headline-md text-text-primary font-bold">Voice AI Transcripts</span>
+</div>
+<span class="font-label-badge text-label-badge text-secondary font-mono">LIVE LISTEN</span>
+</div>
+<div class="bg-surface-container p-space-sm rounded-lg flex flex-col gap-1">
+<div class="flex items-center justify-between text-text-muted font-body-sm text-body-sm">
+<span>Incoming Call: +1 (415) 555-0199</span>
+<span class="text-status-ready">Resolved • 48s</span>
+</div>
+<p class="font-body-sm text-body-sm text-text-secondary italic">
+              "Hi, I need a booth for 4 at 8:30 tonight if Marcus's regular slot is clear." → AI confirmed Table 04, tagged note for Champagne opener.
+            </p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div></main></div></body></html>

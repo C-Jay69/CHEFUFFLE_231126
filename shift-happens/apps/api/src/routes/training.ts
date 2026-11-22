@@ -1,3 +1,29 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:a63a8f67e2b35ae463738c297f8dd1ff4ea0e276c50eb97d66bb60d652e3ab34
-size 845
+import type { FastifyPluginAsync } from 'fastify';
+import { z } from 'zod';
+import {
+  trainingEnrollSchema,
+  trainingProgressSchema,
+} from '@shift-happens/shared';
+import { parse } from '../lib/validate.js';
+import {
+  enrollTrainee,
+  listTraining,
+  updateTrainingProgress,
+} from '../services/training-engine.js';
+
+const trainingRoutes: FastifyPluginAsync = async (app) => {
+  app.get('/training', async () => listTraining());
+
+  app.post('/training/enroll', async (request, reply) => {
+    const body = parse(trainingEnrollSchema, request.body);
+    const result = await enrollTrainee(body);
+    return reply.code(201).send(result);
+  });
+
+  app.post('/training/progress', async (request) => {
+    const body = parse(trainingProgressSchema, request.body);
+    return updateTrainingProgress(body);
+  });
+};
+
+export default trainingRoutes;

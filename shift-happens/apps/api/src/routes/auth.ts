@@ -1,3 +1,34 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:be765a2e4631c0f21fb781b54c787cefb262f43586ff56b9b1f88eb79f5c10c7
-size 943
+import type { FastifyPluginAsync } from 'fastify';
+import { z } from 'zod';
+import { parse } from '../lib/validate.js';
+import { clockStaff, listStaff, pinLogin } from '../services/auth-engine.js';
+
+const authRoutes: FastifyPluginAsync = async (app) => {
+  app.get('/auth/staff', async () => ({ staff: await listStaff() }));
+
+  app.post('/auth/pin', async (request) => {
+    const { pin } = parse(
+      z.object({ pin: z.string().min(3).max(6) }),
+      request.body,
+    );
+    return pinLogin(pin);
+  });
+
+  app.post('/auth/clock-in', async (request) => {
+    const { staffId } = parse(
+      z.object({ staffId: z.string().uuid() }),
+      request.body,
+    );
+    return clockStaff(staffId, 'in');
+  });
+
+  app.post('/auth/clock-out', async (request) => {
+    const { staffId } = parse(
+      z.object({ staffId: z.string().uuid() }),
+      request.body,
+    );
+    return clockStaff(staffId, 'out');
+  });
+};
+
+export default authRoutes;

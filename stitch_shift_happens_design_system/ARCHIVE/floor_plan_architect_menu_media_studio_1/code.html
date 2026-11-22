@@ -1,3 +1,1169 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:c474f23ac7d81f9a9984e2247ff205cfeb985c0458fd585bfcbf5b67912ac34b
-size 84474
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_dashboard" name="shell-type"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@500;700&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        "colors": {
+          "bg-surface": "#111827",
+          "on-surface-variant": "#cfc2d6",
+          "secondary-container": "#03b5d3",
+          "text-subtle": "#4b5563",
+          "accent-lime": "#bef754",
+          "bg-canvas": "#000000",
+          "outline": "#988d9f",
+          "on-primary-container": "#400071",
+          "status-caution": "#f59e0b",
+          "on-tertiary-container": "#002a51",
+          "primary-container": "#b76dff",
+          "border-subtle": "#1f2937",
+          "text-secondary": "#d1d5db",
+          "surface-bright": "#323949",
+          "surface-container": "#191f2f",
+          "inverse-primary": "#842bd2",
+          "status-info": "#3b82f6",
+          "tertiary-container": "#4c93e7",
+          "surface-container-low": "#141b2b",
+          "surface": "#0c1322",
+          "on-error": "#690005",
+          "surface-dim": "#0c1322",
+          "surface-container-highest": "#2e3545",
+          "on-primary-fixed": "#2c0051",
+          "tertiary-fixed-dim": "#a4c9ff",
+          "on-tertiary-fixed-variant": "#004883",
+          "primary": "#ddb7ff",
+          "bg-card": "#2a2a2a",
+          "on-primary-fixed-variant": "#6900b3",
+          "status-ready": "#22c55e",
+          "inverse-on-surface": "#293040",
+          "text-primary": "#ffffff",
+          "text-tertiary": "#9ca3af",
+          "secondary-fixed": "#acedff",
+          "accent-cyan-bright": "#22d3ee",
+          "text-muted": "#6b7280",
+          "on-background": "#dce2f7",
+          "primary-fixed": "#f0dbff",
+          "primary-fixed-dim": "#ddb7ff",
+          "status-urgent": "#ef4444",
+          "outline-variant": "#4d4354",
+          "on-secondary-fixed-variant": "#004e5c",
+          "tertiary": "#a4c9ff",
+          "on-error-container": "#ffdad6",
+          "surface-variant": "#2e3545",
+          "border-emphasis": "#ffffff",
+          "secondary-fixed-dim": "#4cd7f6",
+          "on-secondary-fixed": "#001f26",
+          "surface-container-high": "#232a3a",
+          "on-surface": "#dce2f7",
+          "on-tertiary": "#00315d",
+          "on-primary": "#490080",
+          "bg-chrome": "#0a0a0a",
+          "bg-card-subtle": "#1e1e1e",
+          "on-tertiary-fixed": "#001c39",
+          "secondary": "#4cd7f6",
+          "inverse-surface": "#dce2f7",
+          "on-secondary": "#003640",
+          "on-secondary-container": "#00424e",
+          "surface-tint": "#ddb7ff",
+          "accent-shift-blue": "#0000ff",
+          "bg-sidebar": "#1a1a1a",
+          "surface-container-lowest": "#070e1d",
+          "error-container": "#93000a",
+          "accent-purple-glow": "#c084fc",
+          "tertiary-fixed": "#d4e3ff",
+          "error": "#ffb4ab",
+          "background": "#0c1322"
+        },
+        "borderRadius": {
+          "DEFAULT": "0.25rem",
+          "lg": "0.5rem",
+          "xl": "0.75rem",
+          "full": "9999px"
+        },
+        "spacing": {
+          "space-xs": "0.25rem",
+          "gutter": "1rem",
+          "space-md": "1rem",
+          "margin": "1rem",
+          "space-lg": "1.5rem",
+          "margin-lg": "2rem",
+          "gutter-lg": "1.5rem",
+          "margin-md": "1.5rem",
+          "space-sm": "0.5rem",
+          "space-xl": "2rem"
+        },
+        "fontFamily": {
+          "body-lg": [
+            "Inter"
+          ],
+          "headline-xl": [
+            "Inter"
+          ],
+          "label-badge": [
+            "JetBrains Mono"
+          ],
+          "mono-metric-lg": [
+            "JetBrains Mono"
+          ],
+          "headline-lg": [
+            "Inter"
+          ],
+          "body-sm": [
+            "Inter"
+          ],
+          "mono-metric-md": [
+            "JetBrains Mono"
+          ],
+          "label-eyebrow": [
+            "JetBrains Mono"
+          ],
+          "headline-md": [
+            "Inter"
+          ],
+          "headline-hero": [
+            "Inter"
+          ],
+          "mono-metric-sm": [
+            "JetBrains Mono"
+          ],
+          "headline-hero-mobile": [
+            "Inter"
+          ],
+          "body-base": [
+            "Inter"
+          ]
+        },
+        "fontSize": {
+          "body-lg": [
+            "16px",
+            {
+              "lineHeight": "24px",
+              "fontWeight": "500"
+            }
+          ],
+          "headline-xl": [
+            "30px",
+            {
+              "lineHeight": "38px",
+              "letterSpacing": "-0.02em",
+              "fontWeight": "700"
+            }
+          ],
+          "label-badge": [
+            "10px",
+            {
+              "lineHeight": "12px",
+              "letterSpacing": "0.05em",
+              "fontWeight": "700"
+            }
+          ],
+          "mono-metric-lg": [
+            "24px",
+            {
+              "lineHeight": "30px",
+              "fontWeight": "700"
+            }
+          ],
+          "headline-lg": [
+            "24px",
+            {
+              "lineHeight": "32px",
+              "letterSpacing": "-0.01em",
+              "fontWeight": "700"
+            }
+          ],
+          "body-sm": [
+            "12px",
+            {
+              "lineHeight": "18px",
+              "fontWeight": "400"
+            }
+          ],
+          "mono-metric-md": [
+            "16px",
+            {
+              "lineHeight": "24px",
+              "fontWeight": "700"
+            }
+          ],
+          "label-eyebrow": [
+            "11px",
+            {
+              "lineHeight": "14px",
+              "letterSpacing": "0.08em",
+              "fontWeight": "700"
+            }
+          ],
+          "headline-md": [
+            "18px",
+            {
+              "lineHeight": "26px",
+              "letterSpacing": "-0.01em",
+              "fontWeight": "700"
+            }
+          ],
+          "headline-hero": [
+            "72px",
+            {
+              "lineHeight": "76px",
+              "letterSpacing": "-0.03em",
+              "fontWeight": "800"
+            }
+          ],
+          "mono-metric-sm": [
+            "13px",
+            {
+              "lineHeight": "18px",
+              "fontWeight": "500"
+            }
+          ],
+          "headline-hero-mobile": [
+            "36px",
+            {
+              "lineHeight": "42px",
+              "letterSpacing": "-0.02em",
+              "fontWeight": "800"
+            }
+          ],
+          "body-base": [
+            "14px",
+            {
+              "lineHeight": "22px",
+              "fontWeight": "400"
+            }
+          ]
+        }
+      },
+    },
+  }</script></head><body class="bg-bg-canvas font-body-base text-body-base text-on-surface antialiased selection:bg-primary selection:text-on-primary-fixed" data-gr-ext-installed="" data-new-gr-c-s-check-loaded="14.1348.0"><aside class="fixed left-0 top-0 h-full w-64 bg-bg-chrome z-50 flex flex-col justify-between shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="flex flex-col"><div class="h-16 flex items-center gap-space-sm px-space-md bg-surface-container-lowest"><img alt="SHIFT HAPPENS Logo" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/ALJJyrA7z54LxK-mWn3_cEFcaVA841lrwYa-RjeCLO4ZUOoe7YWMCYym99OJOQCt7-30bh_prcMk_kWor80Wvn_d-pXhdvE9XiVSlxPeT9t3N0xccj-12_OMWLACQQJ6d0ObGpm3vl-00hoX6CyGL9l5lAoQusfoaGGriVVjN2DkJCudf-yUgaQsbO7SxBUkwHn9V5ga-eGd4K9RKVG0lgbR00C8we-WGlnqxEBhl9XFkQD9"/><div class="flex flex-col min-w-0"><span class="font-headline-md text-headline-md tracking-tight text-text-primary uppercase truncate">SHIFT HAPPENS!</span><span class="font-label-badge text-label-badge text-secondary font-bold tracking-widest uppercase truncate">HYDRAFORGE AI</span></div></div><div class="px-space-md py-space-sm"><div class="p-space-sm rounded-lg bg-surface-container-low flex items-center justify-between"><div class="flex items-center gap-space-xs"><span class="relative flex h-2 w-2"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-status-ready opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-status-ready"></span></span><span class="font-label-badge text-label-badge text-text-secondary uppercase">PWA Live</span></div><span class="font-label-badge text-label-badge text-secondary">99.98% SYNC</span></div></div><nav class="flex flex-col gap-space-xs px-space-sm mt-space-xs" data-active-classes="bg-gradient-to-r from-accent-purple-glow/20 to-secondary/20 text-text-primary font-bold shadow-[inset_2px_0_0_0_#4cd7f6]"><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors" data-path="pos-&amp;-orders" href="#"><span class="material-symbols-outlined text-secondary">point_of_sale</span><span class="font-body-base text-body-base font-semibold">POS &amp; Orders</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors" data-path="floor-plan-&amp;-seating" href="#"><span class="material-symbols-outlined text-secondary">table_restaurant</span><span class="font-body-base text-body-base font-semibold">Floor Plan &amp; Seating</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors" data-path="kitchen-kds" href="#"><span class="material-symbols-outlined text-status-caution">skillet</span><span class="font-body-base text-body-base font-semibold">Kitchen KDS</span><span class="ml-auto px-space-xs py-0.5 rounded bg-status-urgent/20 text-status-urgent font-mono-metric-sm text-mono-metric-sm">4</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors" data-path="reservations-&amp;-crm" href="#"><span class="material-symbols-outlined text-secondary">book_online</span><span class="font-body-base text-body-base font-semibold">Reservations &amp; CRM</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors" data-path="inventory-management" href="#"><span class="material-symbols-outlined text-secondary">inventory_2</span><span class="font-body-base text-body-base font-semibold">Inventory Management</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors" data-path="voice-ai-agent" href="#"><span class="material-symbols-outlined text-accent-purple-glow">neurology</span><span class="font-body-base text-body-base font-semibold">Voice AI Agent</span><span class="ml-auto h-2 w-2 rounded-full bg-accent-purple-glow animate-pulse"></span></a></nav></div><div class="p-space-md flex flex-col gap-space-sm bg-surface-container-lowest"><div class="flex items-center justify-between text-text-subtle font-mono-metric-sm text-mono-metric-sm"><span>HOTKEYS</span><span class="px-space-xs py-0.5 rounded bg-surface-variant text-text-secondary">⌘ + K</span></div><div class="flex items-center gap-space-sm p-space-sm rounded-lg bg-surface-container-low"><div class="flex flex-col"><span class="font-label-eyebrow text-label-eyebrow text-secondary uppercase">Active Grid</span><span class="font-body-sm text-body-sm text-text-secondary truncate">Downtown Flagship</span></div></div></div></aside><div class="pl-64"><header class="fixed top-0 left-64 right-0 h-16 bg-bg-chrome/90 backdrop-blur-xl z-40 flex items-center justify-between px-space-lg shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="flex items-center gap-space-md"><div class="flex items-center gap-space-xs px-space-md py-space-xs rounded-full bg-surface-container-high"><span class="relative flex h-2.5 w-2.5"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-status-ready opacity-75"></span><span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-status-ready"></span></span><span class="font-label-badge text-label-badge text-text-primary uppercase tracking-wider">Dinner Rush • 84% Occupancy • Online</span></div><div class="hidden xl:flex items-center gap-space-xs text-text-secondary font-body-sm text-body-sm px-space-sm py-space-xs rounded bg-surface-container-low"><span class="material-symbols-outlined text-body-base text-text-subtle">store</span><span>Main Dining &amp; Bar — Downtown Flagship</span><span class="material-symbols-outlined text-body-base text-text-subtle">unfold_more</span></div></div><div class="flex items-center gap-space-md"><div class="flex items-center gap-space-xs px-space-sm py-space-xs rounded-full bg-surface-container-high"><span class="material-symbols-outlined text-accent-purple-glow text-body-base animate-pulse">graphic_eq</span><span class="font-label-badge text-label-badge text-accent-purple-glow font-bold">VOICE AI ACTIVE</span></div><button class="relative p-space-xs rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors"><span class="material-symbols-outlined text-status-caution">notifications</span><span class="absolute top-1 right-1 h-2 w-2 rounded-full bg-status-urgent"></span></button><div class="flex items-center gap-space-sm pl-space-sm"><div class="text-right hidden sm:flex flex-col"><span class="font-body-base text-body-base font-bold text-text-primary leading-tight">Chef Marco Vance</span><span class="font-label-eyebrow text-label-eyebrow text-secondary uppercase">GM &amp; Head of Ops</span></div><img alt="Profile" class="w-8 h-8 rounded-full object-cover ring-2 ring-primary/40" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDy9ZhtpNDXaG86Ys-0Q1j4OyrTEO-l2Q6rHSk5sbNKIy3_rAMsoV5LbPeVUZG92h1-x4C-c6cJNmPbKaFCGNrUOJIuE6wsbqRqH3KxaNwKL9aVLphQ_bqcAwsR1UW006mNBYrsfewRyzDJo27GYvuKAOBdOAVf7GTWqNZAJMhDXajzqoPDsNxZQhVoNTs7RZp8Sm5QF-D2X2GsLV4r51fpUfWj41xLLFIKS8MxEVY"/></div></div></header><main class="w-full pt-16 bg-bg-canvas min-h-screen"><div class="flex flex-col w-full">
+<!-- Sub-Header Studio Control Deck -->
+<div class="sticky top-16 z-30 flex flex-wrap items-center justify-between gap-space-md px-space-lg py-space-sm bg-surface-container-lowest/95 backdrop-blur-md shadow-md">
+<div class="flex items-center gap-space-md">
+<!-- Mode Switcher Segmented Control -->
+<div class="inline-flex p-1 rounded-xl bg-surface-container-low shadow-inner">
+<button class="flex items-center gap-space-xs px-space-md py-space-xs rounded-lg bg-gradient-to-r from-accent-purple-glow/25 to-secondary/20 text-text-primary font-headline-md text-body-sm shadow-[inset_2px_0_0_0_#4cd7f6] transition-all" id="tab-floorplan" onclick="switchStudioTab('floorplan')">
+<span class="material-symbols-outlined text-secondary text-body-base">architecture</span>
+<span class="font-bold tracking-tight">Floor Plan Architect</span>
+<span class="px-1.5 py-0.5 rounded-full bg-secondary/20 text-secondary font-label-badge text-label-badge">CAD 1:50</span>
+</button>
+<button class="flex items-center gap-space-xs px-space-md py-space-xs rounded-lg text-on-surface-variant hover:text-text-primary hover:bg-surface-container transition-all" id="tab-media" onclick="switchStudioTab('media')">
+<span class="material-symbols-outlined text-primary text-body-base">add_photo_alternate</span>
+<span class="font-headline-md text-body-sm font-semibold">Menu Media Studio</span>
+<span class="px-1.5 py-0.5 rounded-full bg-status-caution/20 text-status-caution font-label-badge text-label-badge">1 Unmapped</span>
+</button>
+<button class="flex items-center gap-space-xs px-space-md py-space-xs rounded-lg text-on-surface-variant hover:text-text-primary hover:bg-surface-container transition-all" id="tab-zones" onclick="switchStudioTab('zones')">
+<span class="material-symbols-outlined text-secondary-fixed text-body-base">badge</span>
+<span class="font-headline-md text-body-sm font-semibold">Service Station Matrix</span>
+</button>
+</div>
+<!-- Store / Floor Selectors -->
+<div class="hidden xl:flex items-center gap-space-xs p-1 rounded-lg bg-surface-container-low">
+<div class="flex items-center gap-1.5 px-space-sm py-1 rounded bg-surface-container text-text-primary font-body-sm text-body-sm">
+<span class="material-symbols-outlined text-secondary text-body-base">apartment</span>
+<span class="font-semibold">Downtown Flagship</span>
+</div>
+<select class="bg-surface-container-highest/80 text-text-secondary font-body-sm text-body-sm px-space-sm py-1 rounded outline-none cursor-pointer hover:text-text-primary">
+<option selected="">Ground Floor: Main Dining &amp; Patio</option>
+<option>Mezzanine &amp; Private Wine Cellar</option>
+<option>Rooftop Terrace &amp; Speakeasy</option>
+</select>
+</div>
+</div>
+<!-- Right Quick Actions -->
+<div class="flex items-center gap-space-xs">
+<div class="hidden md:flex items-center gap-1 px-space-xs py-1 rounded-lg bg-surface-container-low text-text-tertiary font-label-badge text-label-badge">
+<button class="p-1 hover:text-text-primary hover:bg-surface-container rounded" title="Undo (Ctrl+Z)"><span class="material-symbols-outlined text-body-base">undo</span></button>
+<button class="p-1 hover:text-text-primary hover:bg-surface-container rounded" title="Redo (Ctrl+Y)"><span class="material-symbols-outlined text-body-base">redo</span></button>
+<div class="w-px h-4 bg-surface-container-highest"></div>
+<button class="px-2 py-1 bg-surface-container text-secondary rounded flex items-center gap-1" title="Snap to 0.5m Matrix">
+<span class="material-symbols-outlined text-body-sm">grid_4x4</span>
+<span>SNAP 0.5m</span>
+</button>
+<button class="px-2 py-1 hover:text-text-primary hover:bg-surface-container rounded flex items-center gap-1" title="Import Architectural CAD / PDF">
+<span class="material-symbols-outlined text-body-sm">upload_file</span>
+<span>CAD/PDF</span>
+</button>
+</div>
+<button class="flex items-center gap-space-xs px-space-md py-space-xs rounded-lg bg-gradient-to-r from-primary-container to-secondary-container text-text-primary font-body-sm text-body-sm font-bold shadow-lg shadow-primary-container/20 hover:opacity-95 active:scale-95 transition-all" onclick="simulatePublish()">
+<span class="material-symbols-outlined text-body-base">cloud_sync</span>
+<span>Publish to POS &amp; KDS</span>
+</button>
+</div>
+</div>
+<!-- SECTION 1: ARCHITECTURAL FLOOR PLAN BUILDER -->
+<div class="flex flex-col lg:flex-row w-full h-[calc(100vh-8rem)] overflow-hidden" id="view-floorplan">
+<!-- LEFT COMPONENT PALETTES (Toolbar) -->
+<div class="w-full lg:w-72 bg-surface-container-lowest flex flex-col justify-between shrink-0 shadow-xl overflow-y-auto">
+<div class="p-space-md flex flex-col gap-space-md">
+<!-- Palette Header -->
+<div class="flex items-center justify-between">
+<div class="flex flex-col">
+<span class="font-label-eyebrow text-label-eyebrow text-secondary uppercase tracking-widest">Architectural Library</span>
+<span class="font-headline-md text-headline-md text-text-primary">Elements &amp; Nodes</span>
+</div>
+<span class="material-symbols-outlined text-text-subtle text-body-lg">drag_pan</span>
+</div>
+<!-- Group 1: Architectural Boundaries -->
+<div class="flex flex-col gap-space-xs">
+<span class="font-label-eyebrow text-label-eyebrow text-text-muted uppercase">Structural Partitions</span>
+<div class="grid grid-cols-2 gap-space-xs">
+<div class="flex items-center gap-2 p-2 rounded-lg bg-surface-container-low hover:bg-surface-container cursor-grab active:cursor-grabbing hover:shadow-sm transition-all group">
+<span class="material-symbols-outlined text-text-secondary group-hover:text-secondary text-body-base">polyline</span>
+<div class="flex flex-col min-w-0">
+<span class="font-body-sm text-body-sm font-semibold text-text-primary truncate">Perimeter Wall</span>
+<span class="font-label-badge text-label-badge text-text-subtle">Masonry</span>
+</div>
+</div>
+<div class="flex items-center gap-2 p-2 rounded-lg bg-surface-container-low hover:bg-surface-container cursor-grab active:cursor-grabbing hover:shadow-sm transition-all group">
+<span class="material-symbols-outlined text-accent-cyan-bright group-hover:text-text-primary text-body-base">crop_landscape</span>
+<div class="flex flex-col min-w-0">
+<span class="font-body-sm text-body-sm font-semibold text-text-primary truncate">Glass Partition</span>
+<span class="font-label-badge text-label-badge text-text-subtle">Acoustic</span>
+</div>
+</div>
+<div class="flex items-center gap-2 p-2 rounded-lg bg-surface-container-low hover:bg-surface-container cursor-grab active:cursor-grabbing hover:shadow-sm transition-all group">
+<span class="material-symbols-outlined text-text-secondary group-hover:text-secondary text-body-base">view_column</span>
+<div class="flex flex-col min-w-0">
+<span class="font-body-sm text-body-sm font-semibold text-text-primary truncate">Pillar Column</span>
+<span class="font-label-badge text-label-badge text-text-subtle">0.6m² Round</span>
+</div>
+</div>
+<div class="flex items-center gap-2 p-2 rounded-lg bg-surface-container-low hover:bg-surface-container cursor-grab active:cursor-grabbing hover:shadow-sm transition-all group">
+<span class="material-symbols-outlined text-status-caution group-hover:text-text-primary text-body-base">door_front</span>
+<div class="flex flex-col min-w-0">
+<span class="font-body-sm text-body-sm font-semibold text-text-primary truncate">Host Vestibule</span>
+<span class="font-label-badge text-label-badge text-text-subtle">Entry Gate</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Group 2: Service & Operations Fixtures -->
+<div class="flex flex-col gap-space-xs">
+<span class="font-label-eyebrow text-label-eyebrow text-text-muted uppercase">Operational Zones</span>
+<div class="flex flex-col gap-space-xs">
+<div class="flex items-center justify-between p-2 rounded-lg bg-surface-container-low hover:bg-surface-container cursor-pointer transition-colors">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-accent-purple-glow">local_bar</span>
+<span class="font-body-sm text-body-sm font-medium text-text-primary">Curved Bar Island (12-Top)</span>
+</div>
+<span class="font-label-badge text-label-badge text-secondary font-mono-metric-sm">6.4m</span>
+</div>
+<div class="flex items-center justify-between p-2 rounded-lg bg-surface-container-low hover:bg-surface-container cursor-pointer transition-colors">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-status-urgent">countertops</span>
+<span class="font-body-sm text-body-sm font-medium text-text-primary">Chef Expo Pass-Through</span>
+</div>
+<span class="font-label-badge text-label-badge text-status-urgent font-mono-metric-sm">KDS HOT</span>
+</div>
+<div class="flex items-center justify-between p-2 rounded-lg bg-surface-container-low hover:bg-surface-container cursor-pointer transition-colors">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-tertiary">room_service</span>
+<span class="font-body-sm text-body-sm font-medium text-text-primary">POS / Cutlery Service Pantry</span>
+</div>
+<span class="font-label-badge text-label-badge text-text-subtle font-mono-metric-sm">Station B</span>
+</div>
+</div>
+</div>
+<!-- Group 3: Table & Seating Geometry -->
+<div class="flex flex-col gap-space-xs">
+<div class="flex items-center justify-between">
+<span class="font-label-eyebrow text-label-eyebrow text-text-muted uppercase">Table Templates</span>
+<span class="font-label-badge text-label-badge text-secondary">METRIC ISO</span>
+</div>
+<div class="grid grid-cols-2 gap-space-xs">
+<!-- 2-Top Round -->
+<button class="flex flex-col items-center justify-center p-3 rounded-xl bg-surface-container hover:bg-surface-bright active:scale-95 transition-all text-center" onclick="addTable('2-Round')">
+<div class="w-10 h-10 rounded-full bg-status-ready/20 flex items-center justify-center text-status-ready shadow-inner mb-1">
+<span class="font-mono-metric-sm text-mono-metric-sm font-bold">2R</span>
+</div>
+<span class="font-body-sm text-body-sm font-semibold text-text-primary">2-Top Bistro</span>
+<span class="font-label-badge text-label-badge text-text-tertiary">Ø 75cm Round</span>
+</button>
+<!-- 4-Top Square -->
+<button class="flex flex-col items-center justify-center p-3 rounded-xl bg-surface-container hover:bg-surface-bright active:scale-95 transition-all text-center" onclick="addTable('4-Square')">
+<div class="w-10 h-10 rounded-lg bg-secondary/20 flex items-center justify-center text-secondary shadow-inner mb-1">
+<span class="font-mono-metric-sm text-mono-metric-sm font-bold">4S</span>
+</div>
+<span class="font-body-sm text-body-sm font-semibold text-text-primary">4-Top Square</span>
+<span class="font-label-badge text-label-badge text-text-tertiary">90x90cm</span>
+</button>
+<!-- 6-Top Rectangle -->
+<button class="flex flex-col items-center justify-center p-3 rounded-xl bg-surface-container hover:bg-surface-bright active:scale-95 transition-all text-center" onclick="addTable('6-Rect')">
+<div class="w-12 h-8 rounded-md bg-accent-purple-glow/20 flex items-center justify-center text-accent-purple-glow shadow-inner mb-1">
+<span class="font-mono-metric-sm text-mono-metric-sm font-bold">6R</span>
+</div>
+<span class="font-body-sm text-body-sm font-semibold text-text-primary">6-Top Dining</span>
+<span class="font-label-badge text-label-badge text-text-tertiary">180x90cm</span>
+</button>
+<!-- Booth Banquette -->
+<button class="flex flex-col items-center justify-center p-3 rounded-xl bg-surface-container hover:bg-surface-bright active:scale-95 transition-all text-center" onclick="addTable('Booth')">
+<div class="w-12 h-8 rounded-tl-xl rounded-tr-xl bg-status-caution/20 flex items-center justify-center text-status-caution shadow-inner mb-1">
+<span class="font-mono-metric-sm text-mono-metric-sm font-bold">BB</span>
+</div>
+<span class="font-body-sm text-body-sm font-semibold text-text-primary">Corner Booth</span>
+<span class="font-label-badge text-label-badge text-text-tertiary">Banquette 4-6p</span>
+</button>
+</div>
+</div>
+<!-- Auto Numbering Rules -->
+<div class="p-space-sm rounded-xl bg-surface-container-low flex flex-col gap-2">
+<span class="font-label-eyebrow text-label-eyebrow text-secondary uppercase">Auto-Numbering Matrix</span>
+<div class="flex items-center gap-2">
+<span class="font-body-sm text-body-sm text-text-secondary">Prefix:</span>
+<span class="px-2 py-0.5 rounded bg-surface-container-highest text-text-primary font-mono-metric-sm text-mono-metric-sm">T-</span>
+<span class="font-body-sm text-body-sm text-text-secondary ml-auto">Next:</span>
+<span class="px-2 py-0.5 rounded bg-secondary/20 text-secondary font-mono-metric-sm text-mono-metric-sm font-bold">T-14</span>
+</div>
+</div>
+</div>
+<!-- Quick Canvas Metrics -->
+<div class="p-space-md bg-surface-container-low flex items-center justify-between">
+<div class="flex flex-col">
+<span class="font-label-eyebrow text-label-eyebrow text-text-muted">TOTAL FLOOR CAPACITY</span>
+<span class="font-mono-metric-lg text-mono-metric-lg text-text-primary">128 <span class="text-body-sm text-text-tertiary font-body-base">PAX SEATS</span></span>
+</div>
+<div class="flex flex-col text-right">
+<span class="font-label-eyebrow text-label-eyebrow text-status-ready">LIVE OCCUPANCY</span>
+<span class="font-mono-metric-md text-mono-metric-md text-status-ready">84.2%</span>
+</div>
+</div>
+</div>
+<!-- CENTER BLUEPRINT GRID CANVAS -->
+<div class="relative flex-1 bg-surface-container-lowest overflow-hidden select-none flex flex-col">
+<!-- Top Blueprint HUD Status Overlay -->
+<div class="absolute top-4 left-4 right-4 z-20 flex items-center justify-between pointer-events-none">
+<div class="flex items-center gap-2 bg-surface-container-highest/90 backdrop-blur-md px-3 py-1.5 rounded-lg pointer-events-auto shadow-md">
+<span class="inline-block w-2 h-2 rounded-full bg-secondary animate-ping"></span>
+<span class="font-label-badge text-label-badge text-secondary font-bold tracking-wider">LIVE ARCHITECTURAL VIEWPORT</span>
+<span class="text-text-subtle font-mono-metric-sm">|</span>
+<span class="font-mono-metric-sm text-mono-metric-sm text-text-secondary">X: 18.42m  Y: 12.10m</span>
+</div>
+<div class="flex items-center gap-2 bg-surface-container-highest/90 backdrop-blur-md p-1 rounded-lg pointer-events-auto shadow-md">
+<button class="p-1 text-text-secondary hover:text-text-primary rounded" title="Zoom Out"><span class="material-symbols-outlined text-body-base">zoom_out</span></button>
+<span class="font-mono-metric-sm text-mono-metric-sm text-text-primary px-2">100%</span>
+<button class="p-1 text-text-secondary hover:text-text-primary rounded" title="Zoom In"><span class="material-symbols-outlined text-body-base">zoom_in</span></button>
+<div class="w-px h-4 bg-surface-container"></div>
+<button class="p-1 text-text-secondary hover:text-text-primary rounded" title="Fit to Screen"><span class="material-symbols-outlined text-body-base">fit_screen</span></button>
+</div>
+</div>
+<!-- Blueprint SVG & Interactive Floor Canvas -->
+<div class="relative w-full h-full flex items-center justify-center p-space-lg overflow-auto">
+<!-- SVG Interactive CAD Grid -->
+<svg class="w-[960px] h-[580px] bg-surface-container-lowest/80 rounded-2xl shadow-2xl relative" viewbox="0 0 960 580">
+<defs>
+<!-- Fine Architectural Grid -->
+<pattern height="20" id="cad-grid-fine" patternunits="userSpaceOnUse" width="20">
+<path d="M 20 0 L 0 0 0 20" fill="none" stroke="#1f2937" stroke-width="0.75"></path>
+</pattern>
+<!-- Major Metric Grid (1 Meter = 60px) -->
+<pattern height="60" id="cad-grid-major" patternunits="userSpaceOnUse" width="60">
+<rect fill="url(#cad-grid-fine)" height="60" width="60"></rect>
+<path d="M 60 0 L 0 0 0 60" fill="none" stroke="#2e3545" stroke-width="1.25"></path>
+</pattern>
+<!-- Linear Gradients for Bar & Pass -->
+<lineargradient id="barGradient" x1="0%" x2="100%" y1="0%" y2="100%">
+<stop offset="0%" stop-color="#4c93e7" stop-opacity="0.3"></stop>
+<stop offset="100%" stop-color="#ddb7ff" stop-opacity="0.15"></stop>
+</lineargradient>
+<lineargradient id="expoGradient" x1="0%" x2="100%" y1="0%" y2="0%">
+<stop offset="0%" stop-color="#ef4444" stop-opacity="0.3"></stop>
+<stop offset="100%" stop-color="#f59e0b" stop-opacity="0.2"></stop>
+</lineargradient>
+</defs>
+<!-- Outer Architectural Masonry Walls -->
+<rect fill="url(#cad-grid-major)" height="580" width="960"></rect>
+<!-- Outer Structural Perimeter Polygon -->
+<path d="M 30 30 L 930 30 L 930 550 L 30 550 Z" fill="none" stroke="#4d4354" stroke-linejoin="round" stroke-width="6"></path>
+<!-- Entry Vestibule & Glass Air-Lock at West -->
+<path d="M 30 220 L 100 220 L 100 360 L 30 360" fill="rgba(34, 211, 238, 0.05)" stroke="#22d3ee" stroke-dasharray="4,4" stroke-width="2"></path>
+<text class="font-label-badge text-[10px]" fill="#22d3ee" transform="rotate(-90 45,295)" x="45" y="295">MAIN ENTRANCE</text>
+<!-- North Architectural Zone: Kitchen Hot Line & Expo Pass -->
+<rect fill="url(#expoGradient)" height="54" rx="4" stroke="#ef4444" stroke-width="2" width="520" x="220" y="36"></rect>
+<text class="font-label-eyebrow text-xs tracking-widest uppercase" fill="#ffb4ab" font-weight="700" text-anchor="middle" x="480" y="68">KITCHEN EXPO WINDOW &amp; ORDER PASS (PASS-1)</text>
+<!-- Heat lamps & runner pickup arrows -->
+<circle cx="280" cy="63" fill="#ef4444" opacity="0.6" r="6"></circle>
+<circle cx="340" cy="63" fill="#ef4444" opacity="0.6" r="6"></circle>
+<circle cx="400" cy="63" fill="#ef4444" opacity="0.6" r="6"></circle>
+<circle cx="560" cy="63" fill="#ef4444" opacity="0.6" r="6"></circle>
+<circle cx="620" cy="63" fill="#ef4444" opacity="0.6" r="6"></circle>
+<circle cx="680" cy="63" fill="#ef4444" opacity="0.6" r="6"></circle>
+<!-- Dimension Callout - Total Room Width -->
+<line stroke="#9ca3af" stroke-width="1" x1="30" x2="930" y1="18" y2="18"></line>
+<line stroke="#9ca3af" stroke-width="1" x1="30" x2="30" y1="12" y2="24"></line>
+<line stroke="#9ca3af" stroke-width="1" x1="930" x2="930" y1="12" y2="24"></line>
+<text class="font-mono-metric-sm text-[11px]" fill="#9ca3af" text-anchor="middle" x="480" y="16">16.0 METERS (WEST TO EAST EXPEDITION)</text>
+<!-- Host Podium Stand -->
+<rect fill="#232a3a" height="40" rx="6" stroke="#4cd7f6" stroke-width="1.5" width="36" x="120" y="270"></rect>
+<text class="font-label-badge text-[9px] font-bold" fill="#acedff" text-anchor="middle" x="138" y="295">HOST</text>
+<!-- Central Island Bar Fixture with Bar Stools -->
+<g class="cursor-pointer" id="island-bar">
+<rect fill="url(#barGradient)" height="90" rx="45" stroke="#03b5d3" stroke-width="2.5" width="280" x="340" y="160"></rect>
+<!-- Internal Bartender Prep Trench -->
+<rect fill="#0c1322" height="50" rx="10" stroke="#4cd7f6" stroke-dasharray="3,3" width="190" x="385" y="180"></rect>
+<text class="font-label-eyebrow text-xs font-bold uppercase tracking-wider" fill="#4cd7f6" text-anchor="middle" x="480" y="210">ISLAND COCKTAIL BAR (BAR-01)</text>
+<!-- 10 Stools Around Perimeter -->
+<circle cx="360" cy="140" fill="#141b2b" r="10" stroke="#4cd7f6" stroke-width="1.5"></circle>
+<circle cx="410" cy="140" fill="#141b2b" r="10" stroke="#4cd7f6" stroke-width="1.5"></circle>
+<circle cx="460" cy="140" fill="#141b2b" r="10" stroke="#4cd7f6" stroke-width="1.5"></circle>
+<circle cx="510" cy="140" fill="#141b2b" r="10" stroke="#4cd7f6" stroke-width="1.5"></circle>
+<circle cx="560" cy="140" fill="#141b2b" r="10" stroke="#4cd7f6" stroke-width="1.5"></circle>
+<circle cx="360" cy="270" fill="#141b2b" r="10" stroke="#4cd7f6" stroke-width="1.5"></circle>
+<circle cx="410" cy="270" fill="#141b2b" r="10" stroke="#4cd7f6" stroke-width="1.5"></circle>
+<circle cx="460" cy="270" fill="#141b2b" r="10" stroke="#4cd7f6" stroke-width="1.5"></circle>
+<circle cx="510" cy="270" fill="#141b2b" r="10" stroke="#4cd7f6" stroke-width="1.5"></circle>
+<circle cx="560" cy="270" fill="#141b2b" r="10" stroke="#4cd7f6" stroke-width="1.5"></circle>
+</g>
+<!-- Structural Pillars (Load-Bearing Architectural Anchors) -->
+<g>
+<circle cx="240" cy="200" fill="#2e3545" r="12" stroke="#988d9f" stroke-width="2"></circle>
+<line stroke="#988d9f" stroke-width="1.5" x1="230" x2="250" y1="190" y2="210"></line>
+<line stroke="#988d9f" stroke-width="1.5" x1="230" x2="250" y1="210" y2="190"></line>
+<circle cx="720" cy="200" fill="#2e3545" r="12" stroke="#988d9f" stroke-width="2"></circle>
+<line stroke="#988d9f" stroke-width="1.5" x1="710" x2="730" y1="190" y2="210"></line>
+<line stroke="#988d9f" stroke-width="1.5" x1="710" x2="730" y1="210" y2="190"></line>
+</g>
+<!-- WEST WALL BANQUETTE ROW (Booth Suites) -->
+<!-- Booth B-01 -->
+<g class="cursor-pointer group" onclick="selectBlueprintTable('B-01', 'Booth Banquette', 6, 'West Wall Banquette')">
+<path d="M 40 70 L 105 70 L 105 135 L 40 135 Z" fill="#232a3a" stroke="#f59e0b" stroke-width="1.5"></path>
+<rect fill="#141b2b" height="45" rx="4" stroke="#f59e0b" stroke-width="1.5" width="42" x="52" y="80"></rect>
+<text class="font-mono-metric-sm text-xs font-bold" fill="#ffffff" text-anchor="middle" x="73" y="107">B-01</text>
+<text class="font-label-badge text-[8px]" fill="#f59e0b" text-anchor="middle" x="73" y="120">6 PAX</text>
+</g>
+<!-- Booth B-02 -->
+<g class="cursor-pointer group" onclick="selectBlueprintTable('B-02', 'Booth Banquette', 6, 'West Wall Banquette')">
+<path d="M 40 145 L 105 145 L 105 210 L 40 210 Z" fill="#232a3a" stroke="#f59e0b" stroke-width="1.5"></path>
+<rect fill="#141b2b" height="45" rx="4" stroke="#f59e0b" stroke-width="1.5" width="42" x="52" y="155"></rect>
+<text class="font-mono-metric-sm text-xs font-bold" fill="#ffffff" text-anchor="middle" x="73" y="182">B-02</text>
+<text class="font-label-badge text-[8px]" fill="#f59e0b" text-anchor="middle" x="73" y="195">6 PAX</text>
+</g>
+<!-- Booth B-03 -->
+<g class="cursor-pointer group" onclick="selectBlueprintTable('B-03', 'Booth Banquette', 6, 'West Wall Banquette')">
+<path d="M 40 375 L 105 375 L 105 440 L 40 440 Z" fill="#232a3a" stroke="#f59e0b" stroke-width="1.5"></path>
+<rect fill="#141b2b" height="45" rx="4" stroke="#f59e0b" stroke-width="1.5" width="42" x="52" y="385"></rect>
+<text class="font-mono-metric-sm text-xs font-bold" fill="#ffffff" text-anchor="middle" x="73" y="412">B-03</text>
+<text class="font-label-badge text-[8px]" fill="#f59e0b" text-anchor="middle" x="73" y="425">6 PAX</text>
+</g>
+<!-- Booth B-04 -->
+<g class="cursor-pointer group" onclick="selectBlueprintTable('B-04', 'Booth Banquette', 6, 'West Wall Banquette')">
+<path d="M 40 450 L 105 450 L 105 515 L 40 515 Z" fill="#232a3a" stroke="#f59e0b" stroke-width="1.5"></path>
+<rect fill="#141b2b" height="45" rx="4" stroke="#f59e0b" stroke-width="1.5" width="42" x="52" y="460"></rect>
+<text class="font-mono-metric-sm text-xs font-bold" fill="#ffffff" text-anchor="middle" x="73" y="487">B-04</text>
+<text class="font-label-badge text-[8px]" fill="#f59e0b" text-anchor="middle" x="73" y="500">6 PAX</text>
+</g>
+<!-- MAIN DINING ROOM FLOOR TABLES -->
+<!-- Table 01 - 4-Top Square (OCCUPIED / LIVE) -->
+<g class="cursor-pointer" onclick="selectBlueprintTable('T-01', '4-Top Square', 4, 'Main Dining Hall')">
+<rect fill="rgba(239, 68, 68, 0.18)" height="60" rx="6" stroke="#ef4444" stroke-width="2" width="60" x="180" y="340"></rect>
+<text class="font-mono-metric-sm text-xs font-bold" fill="#ffffff" text-anchor="middle" x="210" y="372">T-01</text>
+<text class="font-label-badge text-[9px]" fill="#ffb4ab" text-anchor="middle" x="210" y="388">4P • $184</text>
+</g>
+<!-- Table 02 - 4-Top Square (READY / AVAILABLE) -->
+<g class="cursor-pointer" onclick="selectBlueprintTable('T-02', '4-Top Square', 4, 'Main Dining Hall')">
+<rect fill="rgba(34, 197, 94, 0.12)" height="60" rx="6" stroke="#22c55e" stroke-width="2" width="60" x="270" y="340"></rect>
+<text class="font-mono-metric-sm text-xs font-bold" fill="#22c55e" text-anchor="middle" x="300" y="372">T-02</text>
+<text class="font-label-badge text-[9px]" fill="#bef754" text-anchor="middle" x="300" y="388">VACANT</text>
+</g>
+<!-- SELECTED ACTIVE TABLE: TABLE 03 with Gizmo & CAD Handles -->
+<g class="cursor-pointer" id="selected-table-node" onclick="selectBlueprintTable('T-03', '4-Top Square', 4, 'Main Dining Hall')">
+<!-- Outer CAD Selection Guideline Bounding Box -->
+<rect fill="none" height="80" stroke="#ddb7ff" stroke-dasharray="3,3" stroke-width="1.5" width="80" x="360" y="330"></rect>
+<!-- CAD Dimensions Tooltip -->
+<text class="font-mono-metric-sm text-[10px] font-bold" fill="#ddb7ff" text-anchor="middle" x="400" y="324">90cm x 90cm [ROT: 0°]</text>
+<!-- Corner Handles -->
+<rect fill="#4cd7f6" height="6" width="6" x="357" y="327"></rect>
+<rect fill="#4cd7f6" height="6" width="6" x="437" y="327"></rect>
+<rect fill="#4cd7f6" height="6" width="6" x="357" y="407"></rect>
+<rect fill="#4cd7f6" height="6" width="6" x="437" y="407"></rect>
+<!-- Rotation Gizmo -->
+<line stroke="#ddb7ff" stroke-width="1.5" x1="400" x2="400" y1="330" y2="310"></line>
+<circle cx="400" cy="308" fill="#ddb7ff" r="4.5" stroke="#111827" stroke-width="1"></circle>
+<!-- Table Surface -->
+<rect fill="#2a2a2a" height="60" rx="8" stroke="#ddb7ff" stroke-width="2.5" width="60" x="370" y="340"></rect>
+<text class="font-mono-metric-md text-sm font-bold" fill="#ffffff" text-anchor="middle" x="400" y="372">T-03</text>
+<text class="font-label-badge text-[9px] font-bold" fill="#ddb7ff" text-anchor="middle" x="400" y="388">SELECTED</text>
+</g>
+<!-- Table 04 - 4-Top Square -->
+<g class="cursor-pointer" onclick="selectBlueprintTable('T-04', '4-Top Square', 4, 'Main Dining Hall')">
+<rect fill="rgba(34, 197, 94, 0.12)" height="60" rx="6" stroke="#22c55e" stroke-width="2" width="60" x="470" y="340"></rect>
+<text class="font-mono-metric-sm text-xs font-bold" fill="#22c55e" text-anchor="middle" x="500" y="372">T-04</text>
+<text class="font-label-badge text-[9px]" fill="#bef754" text-anchor="middle" x="500" y="388">VACANT</text>
+</g>
+<!-- Table 05 - 6-Top Long Rectangle (Large Party / Reserved) -->
+<g class="cursor-pointer" onclick="selectBlueprintTable('T-05', '6-Top Rectangle', 6, 'Center Gallery')">
+<rect fill="rgba(245, 158, 11, 0.15)" height="70" rx="8" stroke="#f59e0b" stroke-width="2" width="110" x="560" y="335"></rect>
+<text class="font-mono-metric-sm text-sm font-bold" fill="#f59e0b" text-anchor="middle" x="615" y="372">T-05</text>
+<text class="font-label-badge text-[9px]" fill="#f59e0b" text-anchor="middle" x="615" y="388">RESV • 19:30</text>
+</g>
+<!-- Table 06 & 07: Round Bistros for 2 -->
+<g class="cursor-pointer" onclick="selectBlueprintTable('T-06', '2-Top Round', 2, 'Solarium Edge')">
+<circle cx="210" cy="460" fill="rgba(239, 68, 68, 0.18)" r="28" stroke="#ef4444" stroke-width="2"></circle>
+<text class="font-mono-metric-sm text-xs font-bold" fill="#ffffff" text-anchor="middle" x="210" y="464">T-06</text>
+<text class="font-label-badge text-[8px]" fill="#ffb4ab" text-anchor="middle" x="210" y="476">2P (42m)</text>
+</g>
+<g class="cursor-pointer" onclick="selectBlueprintTable('T-07', '2-Top Round', 2, 'Solarium Edge')">
+<circle cx="300" cy="460" fill="rgba(34, 197, 94, 0.12)" r="28" stroke="#22c55e" stroke-width="2"></circle>
+<text class="font-mono-metric-sm text-xs font-bold" fill="#22c55e" text-anchor="middle" x="300" y="464">T-07</text>
+<text class="font-label-badge text-[8px]" fill="#bef754" text-anchor="middle" x="300" y="476">2 PAX</text>
+</g>
+<g class="cursor-pointer" onclick="selectBlueprintTable('T-08', '2-Top Round', 2, 'Solarium Edge')">
+<circle cx="390" cy="460" fill="rgba(34, 197, 94, 0.12)" r="28" stroke="#22c55e" stroke-width="2"></circle>
+<text class="font-mono-metric-sm text-xs font-bold" fill="#22c55e" text-anchor="middle" x="390" y="464">T-08</text>
+<text class="font-label-badge text-[8px]" fill="#bef754" text-anchor="middle" x="390" y="476">2 PAX</text>
+</g>
+<g class="cursor-pointer" onclick="selectBlueprintTable('T-09', '2-Top Round', 2, 'Solarium Edge')">
+<circle cx="480" cy="460" fill="rgba(107, 114, 128, 0.15)" r="28" stroke="#6b7280" stroke-width="2"></circle>
+<text class="font-mono-metric-sm text-xs font-bold" fill="#9ca3af" text-anchor="middle" x="480" y="464">T-09</text>
+<text class="font-label-badge text-[8px]" fill="#9ca3af" text-anchor="middle" x="480" y="476">BUS/DIRTY</text>
+</g>
+<!-- EAST PATIO GARDEN (Outdoor Pergola Section) -->
+<g>
+<path d="M 720 70 L 910 70 L 910 520 L 720 520" fill="none" stroke="#4cd7f6" stroke-dasharray="6,4" stroke-width="2"></path>
+<text class="font-label-eyebrow text-xs uppercase font-bold tracking-widest" fill="#4cd7f6" text-anchor="middle" x="815" y="95">OUTDOOR GARDEN PATIO</text>
+<!-- Patio Tables P-01 to P-04 -->
+<rect fill="rgba(34, 197, 94, 0.12)" height="55" rx="8" stroke="#22c55e" stroke-width="1.5" width="55" x="745" y="130"></rect>
+<text class="font-mono-metric-sm text-xs" fill="#22c55e" text-anchor="middle" x="772" y="162">P-01</text>
+<rect fill="rgba(34, 197, 94, 0.12)" height="55" rx="8" stroke="#22c55e" stroke-width="1.5" width="55" x="830" y="130"></rect>
+<text class="font-mono-metric-sm text-xs" fill="#22c55e" text-anchor="middle" x="857" y="162">P-02</text>
+<rect fill="rgba(239, 68, 68, 0.18)" height="55" rx="8" stroke="#ef4444" stroke-width="1.5" width="55" x="745" y="220"></rect>
+<text class="font-mono-metric-sm text-xs" fill="#ffffff" text-anchor="middle" x="772" y="252">P-03</text>
+<rect fill="rgba(34, 197, 94, 0.12)" height="55" rx="8" stroke="#22c55e" stroke-width="1.5" width="55" x="830" y="220"></rect>
+<text class="font-mono-metric-sm text-xs" fill="#22c55e" text-anchor="middle" x="857" y="252">P-04</text>
+<!-- Firepit Lounge Corner in Patio -->
+<circle cx="815" cy="400" fill="rgba(245, 158, 11, 0.1)" r="44" stroke="#f59e0b" stroke-dasharray="4,4" stroke-width="2"></circle>
+<text class="font-mono-metric-sm text-xs font-bold" fill="#f59e0b" text-anchor="middle" x="815" y="395">FIREPIT 01</text>
+<text class="font-label-badge text-[9px]" fill="#d1d5db" text-anchor="middle" x="815" y="412">LOUNGE 8-10P</text>
+</g>
+</svg>
+</div>
+<!-- Bottom Blueprint Floating Status Legend -->
+<div class="px-space-md py-space-sm bg-surface-container-lowest/90 border-t border-surface-container-high/40 flex items-center justify-between text-body-sm text-text-secondary">
+<div class="flex items-center gap-space-md">
+<div class="flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-status-ready/20 border border-status-ready"></span><span class="font-label-badge text-label-badge">Available</span></div>
+<div class="flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-status-urgent/20 border border-status-urgent"></span><span class="font-label-badge text-label-badge">Occupied (Seated)</span></div>
+<div class="flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-status-caution/20 border border-status-caution"></span><span class="font-label-badge text-label-badge">Reserved</span></div>
+<div class="flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-surface-variant border border-text-muted"></span><span class="font-label-badge text-label-badge">Dirty / Reset</span></div>
+</div>
+<div class="flex items-center gap-space-sm font-label-badge text-label-badge text-text-subtle">
+<span>COORDINATES: SNAP 500MM</span>
+<span>•</span>
+<span class="text-secondary">VOICE AI SPATIAL ENGINE ACTIVE</span>
+</div>
+</div>
+</div>
+<!-- RIGHT PROPERTIES & CALIBRATION INSPECTOR -->
+<div class="w-full lg:w-80 bg-surface-container-lowest flex flex-col justify-between shrink-0 shadow-xl overflow-y-auto">
+<div class="p-space-md flex flex-col gap-space-md">
+<!-- Inspector Title Header -->
+<div class="flex items-center justify-between">
+<div class="flex flex-col">
+<span class="font-label-eyebrow text-label-eyebrow text-secondary uppercase tracking-widest">Node Calibration</span>
+<span class="font-headline-md text-headline-md text-text-primary" id="inspector-title">Table T-03 Inspector</span>
+</div>
+<span class="px-2 py-0.5 rounded bg-primary/20 text-primary font-label-badge text-label-badge font-bold">ONLINE</span>
+</div>
+<!-- Node Attributes Form -->
+<div class="flex flex-col gap-space-sm">
+<div>
+<label class="block font-label-eyebrow text-label-eyebrow text-text-tertiary mb-1 uppercase">Table ID / POS Key</label>
+<input class="w-full h-11 px-space-sm rounded-lg bg-surface-container-low text-text-primary font-mono-metric-md text-mono-metric-md border border-surface-container-high focus:border-accent-purple-glow outline-none transition-colors" id="input-table-id" type="text" value="T-03"/>
+</div>
+<div>
+<label class="block font-label-eyebrow text-label-eyebrow text-text-tertiary mb-1 uppercase">Zone Assignment</label>
+<select class="w-full h-11 px-space-sm rounded-lg bg-surface-container-low text-text-primary font-body-sm text-body-sm border border-surface-container-high focus:border-accent-purple-glow outline-none" id="select-table-section">
+<option selected="">Main Dining Hall</option>
+<option>West Wall Banquette</option>
+<option>Island Bar Perimeter</option>
+<option>Outdoor Garden Patio</option>
+<option>Private Dining Cellar</option>
+</select>
+</div>
+<!-- Capacity & Min/Max Party -->
+<div class="grid grid-cols-2 gap-space-xs">
+<div>
+<label class="block font-label-eyebrow text-label-eyebrow text-text-tertiary mb-1 uppercase">Standard PAX</label>
+<div class="flex items-center bg-surface-container-low rounded-lg border border-surface-container-high h-11 px-2">
+<button class="p-1 hover:text-secondary" onclick="decrementPax()"><span class="material-symbols-outlined text-body-base">remove</span></button>
+<input class="w-full text-center bg-transparent text-text-primary font-mono-metric-md text-mono-metric-md outline-none" id="input-table-pax" type="text" value="4"/>
+<button class="p-1 hover:text-secondary" onclick="incrementPax()"><span class="material-symbols-outlined text-body-base">add</span></button>
+</div>
+</div>
+<div>
+<label class="block font-label-eyebrow text-label-eyebrow text-text-tertiary mb-1 uppercase">Max Overbook</label>
+<input class="w-full h-11 px-space-sm rounded-lg bg-surface-container-low text-text-primary font-mono-metric-md text-mono-metric-md border border-surface-container-high outline-none text-center" type="text" value="6 PAX"/>
+</div>
+</div>
+<!-- Shape & Rotation Controls -->
+<div>
+<label class="block font-label-eyebrow text-label-eyebrow text-text-tertiary mb-1 uppercase">Geometry &amp; Rotation</label>
+<div class="grid grid-cols-3 gap-space-xs">
+<button class="h-10 rounded-lg bg-surface-container text-text-primary font-body-sm text-body-sm font-semibold flex items-center justify-center gap-1 hover:bg-surface-bright">
+<span class="material-symbols-outlined text-body-sm">square</span> Square
+              </button>
+<button class="h-10 rounded-lg bg-surface-container-low text-text-secondary font-body-sm text-body-sm flex items-center justify-center gap-1 hover:bg-surface-bright">
+<span class="material-symbols-outlined text-body-sm">rotate_left</span> 45°
+              </button>
+<button class="h-10 rounded-lg bg-surface-container-low text-text-secondary font-body-sm text-body-sm flex items-center justify-center gap-1 hover:bg-surface-bright">
+<span class="material-symbols-outlined text-body-sm">rotate_right</span> 90°
+              </button>
+</div>
+</div>
+<!-- Server Staff Station Linkage -->
+<div class="p-space-sm rounded-xl bg-surface-container-low flex flex-col gap-2 mt-2">
+<span class="font-label-eyebrow text-label-eyebrow text-secondary uppercase">Server Station Link</span>
+<div class="flex items-center gap-space-sm">
+<div class="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold font-mono-metric-sm">
+                JK
+              </div>
+<div class="flex flex-col min-w-0">
+<span class="font-body-sm text-body-sm font-bold text-text-primary">Jerry K. (Station 1)</span>
+<span class="font-label-badge text-label-badge text-text-tertiary truncate">Downtown Flagship Front House</span>
+</div>
+<span class="material-symbols-outlined text-text-subtle ml-auto text-body-base">tune</span>
+</div>
+</div>
+<!-- Course Stage Pipeline Rules -->
+<div class="flex items-center justify-between py-2 px-1">
+<span class="font-body-sm text-body-sm text-text-secondary">Push Status to KDS Expediter</span>
+<input checked="" class="w-4 h-4 accent-secondary rounded cursor-pointer" type="checkbox"/>
+</div>
+<div class="flex items-center justify-between py-2 px-1">
+<span class="font-body-sm text-body-sm text-text-secondary">Allow Online Voice AI Auto-Seating</span>
+<input checked="" class="w-4 h-4 accent-primary rounded cursor-pointer" type="checkbox"/>
+</div>
+</div>
+<!-- Node Operations & Actions -->
+<div class="flex flex-col gap-space-xs mt-2">
+<div class="grid grid-cols-2 gap-space-xs">
+<button class="h-10 rounded-lg bg-surface-container hover:bg-surface-bright text-text-primary font-body-sm text-body-sm font-semibold flex items-center justify-center gap-1" onclick="cloneTable()">
+<span class="material-symbols-outlined text-body-base">content_copy</span> Duplicate
+            </button>
+<button class="h-10 rounded-lg bg-surface-container hover:bg-surface-bright text-secondary font-body-sm text-body-sm font-semibold flex items-center justify-center gap-1" onclick="groupTables()">
+<span class="material-symbols-outlined text-body-base">link</span> Merge (03+04)
+            </button>
+</div>
+<button class="h-10 rounded-lg bg-status-urgent/10 hover:bg-status-urgent/20 text-status-urgent font-body-sm text-body-sm font-semibold flex items-center justify-center gap-1" onclick="deleteTablePrompt()">
+<span class="material-symbols-outlined text-body-base">delete</span> Remove From Layout
+          </button>
+</div>
+</div>
+<!-- Sync Status Footer -->
+<div class="p-space-md bg-surface-container-low flex items-center justify-between">
+<span class="font-label-badge text-label-badge text-text-tertiary">STATION SYNC: OK</span>
+<span class="font-mono-metric-sm text-mono-metric-sm text-accent-cyan-bright">REV 4.19</span>
+</div>
+</div>
+</div>
+<!-- SECTION 2: MENU MEDIA & FOOD ITEM IMAGE MAPPING STUDIO (Split-view or Drawer) -->
+<div class="hidden flex-col w-full p-space-lg gap-space-lg bg-surface-container-lowest min-h-[calc(100vh-8rem)]" id="view-media">
+<!-- Studio Header & Telemetry -->
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-space-md p-space-md rounded-2xl bg-surface-container-low">
+<div class="flex flex-col">
+<div class="flex items-center gap-space-xs">
+<span class="font-label-eyebrow text-label-eyebrow text-secondary uppercase tracking-widest">HYDRAFORGE MEDIA ENGINE</span>
+<span class="px-2 py-0.5 rounded-full bg-accent-purple-glow/20 text-accent-purple-glow font-label-badge text-label-badge font-bold">AI ENHANCED DARK-MODE CALIBRATION</span>
+</div>
+<h2 class="font-headline-lg text-headline-lg text-text-primary font-bold">Food Photography &amp; POS Tile Asset Studio</h2>
+<p class="font-body-base text-body-base text-text-secondary mt-1">Upload high-resolution dish photography. Assets automatically generate optimized thumbnails for terminal server touchscreens, customer QR order sheets, and Voice AI ingredient summaries.</p>
+</div>
+<!-- Quick Upload Floating CTA -->
+<label class="cursor-pointer shrink-0 flex items-center gap-space-sm px-space-lg py-space-md rounded-xl bg-gradient-to-r from-accent-purple-glow to-secondary text-bg-canvas font-body-lg text-body-lg font-bold shadow-xl shadow-secondary/20 hover:opacity-95 active:scale-95 transition-all">
+<span class="material-symbols-outlined text-headline-md">cloud_upload</span>
+<span>Upload High-Res Food Asset</span>
+<input accept="image/*" class="hidden" onchange="handleFileUpload(event)" type="file"/>
+</label>
+</div>
+<!-- Drag & Drop Asset Upload Zone -->
+<div class="w-full p-space-xl rounded-2xl bg-surface-container-low/60 border-2 border-dashed border-surface-container-highest flex flex-col items-center justify-center text-center cursor-pointer transition-colors" id="drop-zone" ondragleave="this.classList.remove('bg-surface-container');" ondragover="event.preventDefault(); this.classList.add('bg-surface-container');" ondrop="event.preventDefault(); this.classList.remove('bg-surface-container'); alert('Image received! AI optimizer preparing POS and KDS variants.');">
+<div class="w-16 h-16 rounded-full bg-accent-purple-glow/10 text-accent-purple-glow flex items-center justify-center mb-space-sm">
+<span class="material-symbols-outlined text-headline-hero-mobile">add_photo_alternate</span>
+</div>
+<span class="font-headline-md text-headline-md text-text-primary font-bold">Drag &amp; Drop Food Photography Here</span>
+<span class="font-body-sm text-body-sm text-text-secondary max-w-md mt-1">Supports PNG, JPG, WebP, RAW up to 25MB. System performs real-time edge isolation, specular glare reduction, and dark-scrim calibration for kitchen glare.</span>
+<div class="flex items-center gap-space-md mt-space-md">
+<span class="px-3 py-1 rounded-full bg-surface-container text-text-tertiary font-label-badge text-label-badge font-semibold">1:1 POS Square (400x400)</span>
+<span class="px-3 py-1 rounded-full bg-surface-container text-text-tertiary font-label-badge text-label-badge font-semibold">16:9 Terminal Banner</span>
+<span class="px-3 py-1 rounded-full bg-surface-container text-text-tertiary font-label-badge text-label-badge font-semibold">Lossless WebP Output</span>
+</div>
+</div>
+<!-- Menu Media Visual Grid -->
+<div class="flex flex-col gap-space-md">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-sm">
+<span class="font-headline-md text-headline-md text-text-primary font-bold">Configured Menu Items</span>
+<span class="px-2 py-0.5 rounded-full bg-surface-container text-secondary font-mono-metric-sm text-mono-metric-sm">24 Dishes Total</span>
+</div>
+<!-- Filter Tabs -->
+<div class="flex items-center gap-1 bg-surface-container-low p-1 rounded-lg">
+<button class="px-space-sm py-1 rounded bg-surface-container text-text-primary font-body-sm text-body-sm font-semibold">All Items</button>
+<button class="px-space-sm py-1 rounded text-text-tertiary hover:text-text-primary font-body-sm text-body-sm">Mains &amp; Grill</button>
+<button class="px-space-sm py-1 rounded text-text-tertiary hover:text-text-primary font-body-sm text-body-sm">Starters</button>
+<button class="px-space-sm py-1 rounded text-text-tertiary hover:text-text-primary font-body-sm text-body-sm">Cocktails</button>
+<button class="px-space-sm py-1 rounded text-status-caution font-body-sm text-body-sm font-bold">Missing Photo (1)</button>
+</div>
+</div>
+<!-- Item Cards Responsive Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-5 gap-space-md">
+<!-- Item Card 1: 28-Day Dry Aged Ribeye -->
+<div class="flex flex-col rounded-2xl bg-surface-container-low overflow-hidden shadow-lg group hover:shadow-2xl transition-all">
+<div class="relative h-48 w-full bg-surface-container overflow-hidden">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Gourmet thick-cut dry-aged ribeye steak, seared with deep crosshatch char marks, topped with herb compound butter melting over rosemary sprigs, served on dark slate with smoke, dramatic restaurant lighting in obsidian and magenta hues." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDLGuzEeySx_lTI8WBEhuIC9BcUxlYWDfCYca7jwqhSTeKbecgxp2pdTUljweJUj0wZEoPODxYAwAeCwOCYlAzSNO8t40DLSAZG52DblLpd5GsXO4UKaqgvgv1kpI-5i3vjOEvMzrG_Fck0NTyAMt3SP8RMdmv8Bxxg_QmSDH0Qm88U55oTBsDBJDtvoj24d-zV9ZT1cx2Wdrv2_w5UkZ0PippcqcMv36xmkhaDAik"/>
+<div class="absolute inset-0 bg-gradient-to-t from-bg-canvas via-transparent to-transparent"></div>
+<span class="absolute top-3 left-3 px-2 py-1 rounded bg-bg-chrome/80 backdrop-blur-md text-secondary font-label-badge text-label-badge font-bold uppercase tracking-wider">MAINS / GRILL</span>
+<span class="absolute bottom-3 right-3 px-2 py-0.5 rounded bg-status-ready/20 text-status-ready font-mono-metric-sm text-mono-metric-sm font-bold">$68.00</span>
+</div>
+<div class="p-space-md flex flex-col gap-space-xs flex-1 justify-between">
+<div>
+<div class="flex items-center justify-between">
+<h3 class="font-headline-md text-headline-md text-text-primary font-bold">28-Day Dry Aged Ribeye</h3>
+<span class="material-symbols-outlined text-status-ready text-body-base" title="Synced to All POS Terminals">verified</span>
+</div>
+<p class="font-body-sm text-body-sm text-text-secondary mt-1">16oz Prime bone-in cut, roasted marrow jus, smoked Maldon sea salt crystals.</p>
+</div>
+<div class="pt-space-sm border-t border-surface-container-highest flex items-center justify-between">
+<span class="font-label-badge text-label-badge text-secondary font-mono-metric-sm">TERMINAL 1, 2, KDS</span>
+<div class="flex items-center gap-1">
+<button class="p-1.5 rounded-lg bg-surface-container hover:bg-surface-bright text-text-primary" onclick="previewItem('28-Day Dry Aged Ribeye', '$68.00', 'Mains / Grill')" title="Live Preview"><span class="material-symbols-outlined text-body-base">visibility</span></button>
+<button class="p-1.5 rounded-lg bg-surface-container hover:bg-surface-bright text-secondary" title="Crop &amp; Adjust"><span class="material-symbols-outlined text-body-base">crop</span></button>
+</div>
+</div>
+</div>
+</div>
+<!-- Item Card 2: Pan-Seared Chilean Seabass -->
+<div class="flex flex-col rounded-2xl bg-surface-container-low overflow-hidden shadow-lg group hover:shadow-2xl transition-all">
+<div class="relative h-48 w-full bg-surface-container overflow-hidden">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Pan-seared Chilean seabass fillet with golden crispy skin, served atop saffron risotto and delicate baby leeks, drizzled with citrus yuzu emulsion, high-end fine dining photography on black porcelain plate with moody ambient neon accents." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDxvyg3WoeiWp2t932vKSCTaLFg_XYuvg83Qm4G9IRiDTiCiX0i7w38jmDz-sCYbA9o7TtFQQqAMtYGzp1hRaYMwCVeGhc25nu5UkwJb66AbNfKxhOyVP98Gblp5ByRAUL_xCyBthWLaLl8NwxwPzCuqKDc2R71k3RxyOIj9HLUeUaWYrarzks3rN1073KVd75sgJ6nkQfpNYSjlFXld0uY39szc99XEz6cFzVFX8M"/>
+<div class="absolute inset-0 bg-gradient-to-t from-bg-canvas via-transparent to-transparent"></div>
+<span class="absolute top-3 left-3 px-2 py-1 rounded bg-bg-chrome/80 backdrop-blur-md text-secondary font-label-badge text-label-badge font-bold uppercase tracking-wider">SEAFOOD</span>
+<span class="absolute bottom-3 right-3 px-2 py-0.5 rounded bg-status-ready/20 text-status-ready font-mono-metric-sm text-mono-metric-sm font-bold">$54.00</span>
+</div>
+<div class="p-space-md flex flex-col gap-space-xs flex-1 justify-between">
+<div>
+<div class="flex items-center justify-between">
+<h3 class="font-headline-md text-headline-md text-text-primary font-bold">Chilean Seabass</h3>
+<span class="material-symbols-outlined text-status-ready text-body-base" title="Synced">verified</span>
+</div>
+<p class="font-body-sm text-body-sm text-text-secondary mt-1">Saffron pearl risotto, baby leeks, citrus yuzu beurre blanc reduction.</p>
+</div>
+<div class="pt-space-sm border-t border-surface-container-highest flex items-center justify-between">
+<span class="font-label-badge text-label-badge text-secondary font-mono-metric-sm">TERMINAL 1, 2, KDS</span>
+<div class="flex items-center gap-1">
+<button class="p-1.5 rounded-lg bg-surface-container hover:bg-surface-bright text-text-primary" onclick="previewItem('Chilean Seabass', '$54.00', 'Seafood')"><span class="material-symbols-outlined text-body-base">visibility</span></button>
+<button class="p-1.5 rounded-lg bg-surface-container hover:bg-surface-bright text-secondary"><span class="material-symbols-outlined text-body-base">crop</span></button>
+</div>
+</div>
+</div>
+</div>
+<!-- Item Card 3: Artisan Burrata D.O.P. -->
+<div class="flex flex-col rounded-2xl bg-surface-container-low overflow-hidden shadow-lg group hover:shadow-2xl transition-all">
+<div class="relative h-48 w-full bg-surface-container overflow-hidden">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Plated fresh Italian burrata cheese ball torn open showing creamy stracciatella center, surrounded by heirloom tomatoes in crimson and yellow, fresh basil, aged balsamic glaze drizzle on artisanal ceramic dish, dark luxury styling." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAkPL2lkTM_NPLRCIrJZWEUF7oPgCrh-s0TnprLqZ2RQz1GAtsZQzh_VORMD757nCxE9CVfjpbAkiYCXyG1pYSpD_r55D9Cnql-fJ_C9vzU7SpsASjdBygKx5_59rdSJmYCdRiwc8Us_h9Bv6YSCeNFUpmNk52qz8Q3Zfor5AQuIsEw6R67ljRzc0HopQaTlERYhouk89QzvlFbN5Ki5uwc6re00eFPXpdK07OF9_Q"/>
+<div class="absolute inset-0 bg-gradient-to-t from-bg-canvas via-transparent to-transparent"></div>
+<span class="absolute top-3 left-3 px-2 py-1 rounded bg-bg-chrome/80 backdrop-blur-md text-primary font-label-badge text-label-badge font-bold uppercase tracking-wider">STARTERS</span>
+<span class="absolute bottom-3 right-3 px-2 py-0.5 rounded bg-status-ready/20 text-status-ready font-mono-metric-sm text-mono-metric-sm font-bold">$22.00</span>
+</div>
+<div class="p-space-md flex flex-col gap-space-xs flex-1 justify-between">
+<div>
+<div class="flex items-center justify-between">
+<h3 class="font-headline-md text-headline-md text-text-primary font-bold">Artisan Burrata D.O.P.</h3>
+<span class="material-symbols-outlined text-status-ready text-body-base">verified</span>
+</div>
+<p class="font-body-sm text-body-sm text-text-secondary mt-1">Pugliese burrata, marinated heirloom tomatoes, 15yr Modena balsamico.</p>
+</div>
+<div class="pt-space-sm border-t border-surface-container-highest flex items-center justify-between">
+<span class="font-label-badge text-label-badge text-secondary font-mono-metric-sm">TERMINAL 1, 2, KDS</span>
+<div class="flex items-center gap-1">
+<button class="p-1.5 rounded-lg bg-surface-container hover:bg-surface-bright text-text-primary" onclick="previewItem('Artisan Burrata D.O.P.', '$22.00', 'Starters')"><span class="material-symbols-outlined text-body-base">visibility</span></button>
+<button class="p-1.5 rounded-lg bg-surface-container hover:bg-surface-bright text-secondary"><span class="material-symbols-outlined text-body-base">crop</span></button>
+</div>
+</div>
+</div>
+</div>
+<!-- Item Card 4: Wagyu Carpaccio -->
+<div class="flex flex-col rounded-2xl bg-surface-container-low overflow-hidden shadow-lg group hover:shadow-2xl transition-all">
+<div class="relative h-48 w-full bg-surface-container overflow-hidden">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Paper-thin A5 Miyazaki wagyu beef carpaccio arranged in radial circles, garnished with black truffle shavings, caperberries, micro-arugula, and olive oil pearls, ultra-detailed restaurant culinary photograph with dramatic backlighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC8L_1iQaEVGyTZpc8u_3UpYuMUo-2B92FeylM9_iA2roAi-0TBvtAR2sh6p-iNtI0W-xlwt4wI3o03q0JoeYKw5L5Af4Y2w_nQZBIf_h4oU4Em_mHLeWdb5pFW7hTeFKadBtmm60vaethrru_TQZOvK1AT9kPfB8NRHu4CrFnxa6Zl2cZHK_Jk5P-DhUtQpnOHvxHFh_MzYS2gfN6W00iHu0G8AhCUrxMcIonCVKs"/>
+<div class="absolute inset-0 bg-gradient-to-t from-bg-canvas via-transparent to-transparent"></div>
+<span class="absolute top-3 left-3 px-2 py-1 rounded bg-bg-chrome/80 backdrop-blur-md text-accent-purple-glow font-label-badge text-label-badge font-bold uppercase tracking-wider">RAW &amp; CRUDO</span>
+<span class="absolute bottom-3 right-3 px-2 py-0.5 rounded bg-status-ready/20 text-status-ready font-mono-metric-sm text-mono-metric-sm font-bold">$32.00</span>
+</div>
+<div class="p-space-md flex flex-col gap-space-xs flex-1 justify-between">
+<div>
+<div class="flex items-center justify-between">
+<h3 class="font-headline-md text-headline-md text-text-primary font-bold">A5 Wagyu Carpaccio</h3>
+<span class="material-symbols-outlined text-status-ready text-body-base">verified</span>
+</div>
+<p class="font-body-sm text-body-sm text-text-secondary mt-1">Miyazaki A5 beef, black summer truffle, fried capers, cured yolk.</p>
+</div>
+<div class="pt-space-sm border-t border-surface-container-highest flex items-center justify-between">
+<span class="font-label-badge text-label-badge text-secondary font-mono-metric-sm">TERMINAL 1, 2, KDS</span>
+<div class="flex items-center gap-1">
+<button class="p-1.5 rounded-lg bg-surface-container hover:bg-surface-bright text-text-primary" onclick="previewItem('A5 Wagyu Carpaccio', '$32.00', 'Raw &amp; Crudo')"><span class="material-symbols-outlined text-body-base">visibility</span></button>
+<button class="p-1.5 rounded-lg bg-surface-container hover:bg-surface-bright text-secondary"><span class="material-symbols-outlined text-body-base">crop</span></button>
+</div>
+</div>
+</div>
+</div>
+<!-- Item Card 5: Missing Image (Call to Action Card) -->
+<div class="flex flex-col rounded-2xl bg-surface-container-low border-2 border-dashed border-status-caution/60 overflow-hidden shadow-lg">
+<div class="relative h-48 w-full bg-surface-container-highest flex flex-col items-center justify-center text-center p-4">
+<span class="material-symbols-outlined text-status-caution text-headline-hero-mobile animate-pulse">image_not_supported</span>
+<span class="font-label-badge text-label-badge text-status-caution font-bold mt-2 uppercase tracking-wider">MISSING HIGH-RES ASSET</span>
+<span class="font-body-sm text-body-sm text-text-secondary">Shows generic icon on POS</span>
+</div>
+<div class="p-space-md flex flex-col gap-space-xs flex-1 justify-between">
+<div>
+<div class="flex items-center justify-between">
+<h3 class="font-headline-md text-headline-md text-text-primary font-bold">Truffle Cacio e Pepe</h3>
+<span class="material-symbols-outlined text-status-caution text-body-base">warning</span>
+</div>
+<p class="font-body-sm text-body-sm text-text-secondary mt-1">House-made tonnarelli pasta, 24-month pecorino romano, cracked tellicherry pepper.</p>
+</div>
+<button class="mt-space-sm w-full py-2.5 rounded-lg bg-gradient-to-r from-status-caution to-secondary text-bg-canvas font-body-sm text-body-sm font-bold flex items-center justify-center gap-1 hover:opacity-90" onclick="document.querySelector('input[type=file]').click()">
+<span class="material-symbols-outlined text-body-base">upload</span> Upload Food Photo
+            </button>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- SECTION 3: SERVICE STATION MATRIX VIEW (ZONE ALLOCATION) -->
+<div class="hidden flex-col w-full p-space-lg gap-space-lg bg-surface-container-lowest min-h-[calc(100vh-8rem)]" id="view-zones">
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-space-md p-space-md rounded-2xl bg-surface-container-low">
+<div>
+<span class="font-label-eyebrow text-label-eyebrow text-secondary uppercase tracking-widest">FLOOR SECTIONS &amp; STAFF MATRIX</span>
+<h2 class="font-headline-lg text-headline-lg text-text-primary font-bold">Server Stations &amp; Section Polygons</h2>
+<p class="font-body-base text-body-base text-text-secondary mt-1">Map server coverage zones, set target covers per waiter, and calibrate automated Voice AI table turn estimates.</p>
+</div>
+<button class="px-space-md py-space-sm rounded-lg bg-surface-container hover:bg-surface-bright text-text-primary font-body-sm text-body-sm font-semibold flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary">add_circle</span> Add Service Zone
+      </button>
+</div>
+<!-- Zones Matrix Cards -->
+<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-space-md">
+<!-- Zone 1 -->
+<div class="p-space-md rounded-2xl bg-surface-container-low border-l-4 border-l-secondary flex flex-col gap-space-sm">
+<div class="flex items-center justify-between">
+<span class="font-headline-md text-headline-md text-text-primary font-bold">Station 1: Front Hall</span>
+<span class="px-2 py-0.5 rounded bg-secondary/20 text-secondary font-mono-metric-sm text-mono-metric-sm font-bold">T-01 to T-05</span>
+</div>
+<div class="flex items-center gap-space-sm">
+<div class="w-10 h-10 rounded-full bg-secondary/20 flex items-center justify-center text-secondary font-bold">JK</div>
+<div class="flex flex-col">
+<span class="font-body-sm text-body-sm font-bold text-text-primary">Jerry Kowalski</span>
+<span class="font-label-badge text-label-badge text-text-tertiary">Senior Floor Captain</span>
+</div>
+</div>
+<div class="flex items-center justify-between text-body-sm text-text-secondary pt-2 border-t border-surface-container-highest">
+<span>Active Covers: 18 / 24</span>
+<span class="text-status-ready font-bold font-mono-metric-sm">75% Load</span>
+</div>
+</div>
+<!-- Zone 2 -->
+<div class="p-space-md rounded-2xl bg-surface-container-low border-l-4 border-l-accent-purple-glow flex flex-col gap-space-sm">
+<div class="flex items-center justify-between">
+<span class="font-headline-md text-headline-md text-text-primary font-bold">Station 2: Banquettes</span>
+<span class="px-2 py-0.5 rounded bg-accent-purple-glow/20 text-accent-purple-glow font-mono-metric-sm text-mono-metric-sm font-bold">B-01 to B-04</span>
+</div>
+<div class="flex items-center gap-space-sm">
+<div class="w-10 h-10 rounded-full bg-accent-purple-glow/20 flex items-center justify-center text-accent-purple-glow font-bold">EL</div>
+<div class="flex flex-col">
+<span class="font-body-sm text-body-sm font-bold text-text-primary">Elena Rostova</span>
+<span class="font-label-badge text-label-badge text-text-tertiary">Floor Specialist</span>
+</div>
+</div>
+<div class="flex items-center justify-between text-body-sm text-text-secondary pt-2 border-t border-surface-container-highest">
+<span>Active Covers: 24 / 24</span>
+<span class="text-status-urgent font-bold font-mono-metric-sm">100% (BUSY)</span>
+</div>
+</div>
+<!-- Zone 3 -->
+<div class="p-space-md rounded-2xl bg-surface-container-low border-l-4 border-l-accent-cyan-bright flex flex-col gap-space-sm">
+<div class="flex items-center justify-between">
+<span class="font-headline-md text-headline-md text-text-primary font-bold">Station 3: Island Bar</span>
+<span class="px-2 py-0.5 rounded bg-accent-cyan-bright/20 text-accent-cyan-bright font-mono-metric-sm text-mono-metric-sm font-bold">Bar 01-10</span>
+</div>
+<div class="flex items-center gap-space-sm">
+<div class="w-10 h-10 rounded-full bg-accent-cyan-bright/20 flex items-center justify-center text-accent-cyan-bright font-bold">MA</div>
+<div class="flex flex-col">
+<span class="font-body-sm text-body-sm font-bold text-text-primary">Marcus Sterling</span>
+<span class="font-label-badge text-label-badge text-text-tertiary">Head Mixologist</span>
+</div>
+</div>
+<div class="flex items-center justify-between text-body-sm text-text-secondary pt-2 border-t border-surface-container-highest">
+<span>Active Stools: 10 / 10</span>
+<span class="text-status-ready font-bold font-mono-metric-sm">PEAK RUSH</span>
+</div>
+</div>
+<!-- Zone 4 -->
+<div class="p-space-md rounded-2xl bg-surface-container-low border-l-4 border-l-status-caution flex flex-col gap-space-sm">
+<div class="flex items-center justify-between">
+<span class="font-headline-md text-headline-md text-text-primary font-bold">Station 4: Patio Lounge</span>
+<span class="px-2 py-0.5 rounded bg-status-caution/20 text-status-caution font-mono-metric-sm text-mono-metric-sm font-bold">P-01 to P-04</span>
+</div>
+<div class="flex items-center gap-space-sm">
+<div class="w-10 h-10 rounded-full bg-status-caution/20 flex items-center justify-center text-status-caution font-bold">SC</div>
+<div class="flex flex-col">
+<span class="font-body-sm text-body-sm font-bold text-text-primary">Sophia Chen</span>
+<span class="font-label-badge text-label-badge text-text-tertiary">Patio Lead</span>
+</div>
+</div>
+<div class="flex items-center justify-between text-body-sm text-text-secondary pt-2 border-t border-surface-container-highest">
+<span>Active Covers: 12 / 16</span>
+<span class="text-status-caution font-bold font-mono-metric-sm">75% Load</span>
+</div>
+</div>
+</div>
+</div>
+<!-- MODAL: LIVE TERMINAL TILE & VOICE AI PREVIEW -->
+<div class="fixed inset-0 z-50 hidden items-center justify-center bg-bg-canvas/80 backdrop-blur-md p-space-md" id="preview-modal">
+<div class="relative w-full max-w-2xl bg-surface-container-lowest rounded-3xl border border-surface-container-high shadow-2xl overflow-hidden flex flex-col">
+<!-- Modal Header -->
+<div class="p-space-md bg-surface-container-low flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary">desktop_windows</span>
+<span class="font-headline-md text-headline-md text-text-primary font-bold">Live POS Terminal &amp; Voice AI Preview</span>
+</div>
+<button class="p-1 rounded-lg text-text-secondary hover:text-text-primary hover:bg-surface-container" onclick="closePreviewModal()">
+<span class="material-symbols-outlined text-body-base">close</span>
+</button>
+</div>
+<!-- Preview Split Content -->
+<div class="p-space-lg flex flex-col md:flex-row gap-space-lg items-center justify-center">
+<!-- Preview 1: Server POS Tile Rendering -->
+<div class="flex flex-col items-center gap-2">
+<span class="font-label-eyebrow text-label-eyebrow text-secondary uppercase">Server POS Touch Tile</span>
+<div class="w-56 h-48 rounded-xl bg-surface-container relative overflow-hidden shadow-xl border border-surface-container-highest flex flex-col justify-end p-3 cursor-pointer">
+<div class="absolute inset-0 bg-cover bg-center" data-alt="Close-up restaurant menu item steak dish with savory glaze and aromatic herbs in dramatic mood lighting" id="modal-tile-bg" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAjv_-g0d0xrvxkwuZD75pw4loP83YavsX2KC6gLNugfz1mMCSHzBr-Guc6PUyli9q3pMhj_xJ5Z4J4LMQg5vccGB_kOs6QqrUFuUaaQi0Fq76Rfnz-4DMoGGUUnBKeU4ig4GsvjSMkpyENvC0yErjFuN89548uqsldmOU4XGyvT27q0NMC5VIL7rN_85lEAQItKemivpjzINPqscrn2YH4DNqzFD5P5ZLjHktQCh0')"></div>
+<div class="absolute inset-0 bg-gradient-to-t from-bg-canvas via-bg-canvas/40 to-transparent"></div>
+<span class="font-body-base text-body-base font-bold text-text-primary relative z-10" id="modal-tile-title">28-Day Dry Aged Ribeye</span>
+<div class="flex items-center justify-between relative z-10 mt-1">
+<span class="font-label-badge text-label-badge text-text-tertiary" id="modal-tile-cat">Mains / Grill</span>
+<span class="font-mono-metric-sm text-mono-metric-sm font-bold text-secondary" id="modal-tile-price">$68.00</span>
+</div>
+</div>
+<span class="font-body-sm text-body-sm text-text-tertiary">Touch-Optimized (120 DPI)</span>
+</div>
+<!-- Preview 2: Voice AI Assistant Guest Card -->
+<div class="flex flex-col items-center gap-2">
+<span class="font-label-eyebrow text-label-eyebrow text-accent-purple-glow uppercase">Voice AI Assistant Card</span>
+<div class="w-64 p-space-md rounded-2xl bg-surface-container-low border border-accent-purple-glow/30 shadow-xl flex flex-col gap-2">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-accent-purple-glow text-body-base animate-pulse">neurology</span>
+<span class="font-label-badge text-label-badge text-accent-purple-glow font-bold">HYDRA-VOICE RECOMMENDATION</span>
+</div>
+<span class="font-body-sm text-body-sm text-text-primary" id="modal-voice-text">"The Ribeye is USDA Prime, aged 28 days in-house. Chef recommends Medium-Rare paired with our Napa Cabernet."</span>
+<div class="flex items-center gap-1 text-label-badge text-label-badge text-status-ready">
+<span class="material-symbols-outlined text-body-sm">check_circle</span>
+<span>Allergy Verified (Dairy Alert: Butter)</span>
+</div>
+</div>
+<span class="font-body-sm text-body-sm text-text-tertiary">Real-time Audio Knowledge Base</span>
+</div>
+</div>
+<!-- Modal Footer -->
+<div class="p-space-md bg-surface-container-low flex items-center justify-end gap-space-sm">
+<button class="px-space-md py-2 rounded-lg bg-surface-container hover:bg-surface-bright text-text-primary font-body-sm text-body-sm font-semibold" onclick="closePreviewModal()">Dismiss</button>
+<button class="px-space-md py-2 rounded-lg bg-gradient-to-r from-accent-purple-glow to-secondary text-bg-canvas font-body-sm text-body-sm font-bold" onclick="closePreviewModal(); alert('Image mapping approved for Terminal Fleet.');">Approve &amp; Push to Floor</button>
+</div>
+</div>
+</div>
+<!-- Client-side Interactive Logic -->
+<script>
+    function switchStudioTab(tab) {
+      document.getElementById('view-floorplan').classList.add('hidden');
+      document.getElementById('view-media').classList.add('hidden');
+      document.getElementById('view-zones').classList.add('hidden');
+
+      document.getElementById('tab-floorplan').className = 'flex items-center gap-space-xs px-space-md py-space-xs rounded-lg text-on-surface-variant hover:text-text-primary hover:bg-surface-container transition-all';
+      document.getElementById('tab-media').className = 'flex items-center gap-space-xs px-space-md py-space-xs rounded-lg text-on-surface-variant hover:text-text-primary hover:bg-surface-container transition-all';
+      document.getElementById('tab-zones').className = 'flex items-center gap-space-xs px-space-md py-space-xs rounded-lg text-on-surface-variant hover:text-text-primary hover:bg-surface-container transition-all';
+
+      if (tab === 'floorplan') {
+        document.getElementById('view-floorplan').classList.remove('hidden');
+        document.getElementById('tab-floorplan').className = 'flex items-center gap-space-xs px-space-md py-space-xs rounded-lg bg-gradient-to-r from-accent-purple-glow/25 to-secondary/20 text-text-primary font-headline-md text-body-sm shadow-[inset_2px_0_0_0_#4cd7f6] transition-all';
+      } else if (tab === 'media') {
+        document.getElementById('view-media').classList.remove('hidden');
+        document.getElementById('tab-media').className = 'flex items-center gap-space-xs px-space-md py-space-xs rounded-lg bg-gradient-to-r from-accent-purple-glow/25 to-secondary/20 text-text-primary font-headline-md text-body-sm shadow-[inset_2px_0_0_0_#4cd7f6] transition-all';
+      } else if (tab === 'zones') {
+        document.getElementById('view-zones').classList.remove('hidden');
+        document.getElementById('tab-zones').className = 'flex items-center gap-space-xs px-space-md py-space-xs rounded-lg bg-gradient-to-r from-accent-purple-glow/25 to-secondary/20 text-text-primary font-headline-md text-body-sm shadow-[inset_2px_0_0_0_#4cd7f6] transition-all';
+      }
+    }
+
+    function selectBlueprintTable(id, shape, pax, section) {
+      document.getElementById('inspector-title').innerText = 'Table ' + id + ' Inspector';
+      document.getElementById('input-table-id').value = id;
+      document.getElementById('input-table-pax').value = pax;
+      const select = document.getElementById('select-table-section');
+      for (let i = 0; i < select.options.length; i++) {
+        if (select.options[i].text.includes(section)) {
+          select.selectedIndex = i;
+          break;
+        }
+      }
+    }
+
+    function incrementPax() {
+      const el = document.getElementById('input-table-pax');
+      let val = parseInt(el.value) || 2;
+      el.value = Math.min(12, val + 1);
+    }
+
+    function decrementPax() {
+      const el = document.getElementById('input-table-pax');
+      let val = parseInt(el.value) || 2;
+      el.value = Math.max(1, val - 1);
+    }
+
+    function addTable(type) {
+      alert('Adding new ' + type + ' node to center viewport. Snap coordinates initialized.');
+    }
+
+    function cloneTable() {
+      const curId = document.getElementById('input-table-id').value;
+      alert('Duplicated ' + curId + ' as next sequential node. Position snapped +1.0m on X axis.');
+    }
+
+    function groupTables() {
+      alert('Tables grouped! Combined party capacity set to 10 PAX for banquet reservation.');
+    }
+
+    function deleteTablePrompt() {
+      const curId = document.getElementById('input-table-id').value;
+      if (confirm('Remove ' + curId + ' from Ground Floor layout? Active orders must be reconciled first.')) {
+        alert(curId + ' unmapped.');
+      }
+    }
+
+    function simulatePublish() {
+      alert('Architectural Layout & Menu Asset Bundle published successfully to 8 POS Terminals and Kitchen KDS displays.');
+    }
+
+    function previewItem(title, price, category) {
+      document.getElementById('modal-tile-title').innerText = title;
+      document.getElementById('modal-tile-price').innerText = price;
+      document.getElementById('modal-tile-cat').innerText = category;
+      document.getElementById('modal-voice-text').innerText = '"' + title + ' is currently prepared fresh to order. Pair with recommended vintage wine selection."';
+      const modal = document.getElementById('preview-modal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function closePreviewModal() {
+      const modal = document.getElementById('preview-modal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    function handleFileUpload(event) {
+      if (event.target.files && event.target.files[0]) {
+        const file = event.target.files[0];
+        alert('File "' + file.name + '" received. HYDRAFORGE AI processing: Specular reduction & Dark-mode crop applied.');
+      }
+    }
+  </script>
+</div></main></div>
+</body></html>

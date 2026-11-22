@@ -1,3 +1,742 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:2e511c250e1c4e3141f9d4bef7ff5b2932a3aaf718ba78205ce7b8d343fd07eb
-size 51677
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_dashboard" name="shell-type"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@500;700&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        "colors": {
+          "bg-surface": "#111827",
+          "on-surface-variant": "#cfc2d6",
+          "secondary-container": "#03b5d3",
+          "text-subtle": "#4b5563",
+          "accent-lime": "#bef754",
+          "bg-canvas": "#000000",
+          "outline": "#988d9f",
+          "on-primary-container": "#400071",
+          "status-caution": "#f59e0b",
+          "on-tertiary-container": "#002a51",
+          "primary-container": "#b76dff",
+          "border-subtle": "#1f2937",
+          "text-secondary": "#d1d5db",
+          "surface-bright": "#323949",
+          "surface-container": "#191f2f",
+          "inverse-primary": "#842bd2",
+          "status-info": "#3b82f6",
+          "tertiary-container": "#4c93e7",
+          "surface-container-low": "#141b2b",
+          "surface": "#0c1322",
+          "on-error": "#690005",
+          "surface-dim": "#0c1322",
+          "surface-container-highest": "#2e3545",
+          "on-primary-fixed": "#2c0051",
+          "tertiary-fixed-dim": "#a4c9ff",
+          "on-tertiary-fixed-variant": "#004883",
+          "primary": "#ddb7ff",
+          "bg-card": "#2a2a2a",
+          "on-primary-fixed-variant": "#6900b3",
+          "status-ready": "#22c55e",
+          "inverse-on-surface": "#293040",
+          "text-primary": "#ffffff",
+          "text-tertiary": "#9ca3af",
+          "secondary-fixed": "#acedff",
+          "accent-cyan-bright": "#22d3ee",
+          "text-muted": "#6b7280",
+          "on-background": "#dce2f7",
+          "primary-fixed": "#f0dbff",
+          "primary-fixed-dim": "#ddb7ff",
+          "status-urgent": "#ef4444",
+          "outline-variant": "#4d4354",
+          "on-secondary-fixed-variant": "#004e5c",
+          "tertiary": "#a4c9ff",
+          "on-error-container": "#ffdad6",
+          "surface-variant": "#2e3545",
+          "border-emphasis": "#ffffff",
+          "secondary-fixed-dim": "#4cd7f6",
+          "on-secondary-fixed": "#001f26",
+          "surface-container-high": "#232a3a",
+          "on-surface": "#dce2f7",
+          "on-tertiary": "#00315d",
+          "on-primary": "#490080",
+          "bg-chrome": "#0a0a0a",
+          "bg-card-subtle": "#1e1e1e",
+          "on-tertiary-fixed": "#001c39",
+          "secondary": "#4cd7f6",
+          "inverse-surface": "#dce2f7",
+          "on-secondary": "#003640",
+          "on-secondary-container": "#00424e",
+          "surface-tint": "#ddb7ff",
+          "accent-shift-blue": "#0000ff",
+          "bg-sidebar": "#1a1a1a",
+          "surface-container-lowest": "#070e1d",
+          "error-container": "#93000a",
+          "accent-purple-glow": "#c084fc",
+          "tertiary-fixed": "#d4e3ff",
+          "error": "#ffb4ab",
+          "background": "#0c1322"
+        },
+        "borderRadius": {
+          "DEFAULT": "0.25rem",
+          "lg": "0.5rem",
+          "xl": "0.75rem",
+          "full": "9999px"
+        },
+        "spacing": {
+          "space-xs": "0.25rem",
+          "gutter": "1rem",
+          "space-md": "1rem",
+          "margin": "1rem",
+          "space-lg": "1.5rem",
+          "margin-lg": "2rem",
+          "gutter-lg": "1.5rem",
+          "margin-md": "1.5rem",
+          "space-sm": "0.5rem",
+          "space-xl": "2rem"
+        },
+        "fontFamily": {
+          "body-lg": [
+            "Inter"
+          ],
+          "headline-xl": [
+            "Inter"
+          ],
+          "label-badge": [
+            "JetBrains Mono"
+          ],
+          "mono-metric-lg": [
+            "JetBrains Mono"
+          ],
+          "headline-lg": [
+            "Inter"
+          ],
+          "body-sm": [
+            "Inter"
+          ],
+          "mono-metric-md": [
+            "JetBrains Mono"
+          ],
+          "label-eyebrow": [
+            "JetBrains Mono"
+          ],
+          "headline-md": [
+            "Inter"
+          ],
+          "headline-hero": [
+            "Inter"
+          ],
+          "mono-metric-sm": [
+            "JetBrains Mono"
+          ],
+          "headline-hero-mobile": [
+            "Inter"
+          ],
+          "body-base": [
+            "Inter"
+          ]
+        },
+        "fontSize": {
+          "body-lg": [
+            "16px",
+            {
+              "lineHeight": "24px",
+              "fontWeight": "500"
+            }
+          ],
+          "headline-xl": [
+            "30px",
+            {
+              "lineHeight": "38px",
+              "letterSpacing": "-0.02em",
+              "fontWeight": "700"
+            }
+          ],
+          "label-badge": [
+            "10px",
+            {
+              "lineHeight": "12px",
+              "letterSpacing": "0.05em",
+              "fontWeight": "700"
+            }
+          ],
+          "mono-metric-lg": [
+            "24px",
+            {
+              "lineHeight": "30px",
+              "fontWeight": "700"
+            }
+          ],
+          "headline-lg": [
+            "24px",
+            {
+              "lineHeight": "32px",
+              "letterSpacing": "-0.01em",
+              "fontWeight": "700"
+            }
+          ],
+          "body-sm": [
+            "12px",
+            {
+              "lineHeight": "18px",
+              "fontWeight": "400"
+            }
+          ],
+          "mono-metric-md": [
+            "16px",
+            {
+              "lineHeight": "24px",
+              "fontWeight": "700"
+            }
+          ],
+          "label-eyebrow": [
+            "11px",
+            {
+              "lineHeight": "14px",
+              "letterSpacing": "0.08em",
+              "fontWeight": "700"
+            }
+          ],
+          "headline-md": [
+            "18px",
+            {
+              "lineHeight": "26px",
+              "letterSpacing": "-0.01em",
+              "fontWeight": "700"
+            }
+          ],
+          "headline-hero": [
+            "72px",
+            {
+              "lineHeight": "76px",
+              "letterSpacing": "-0.03em",
+              "fontWeight": "800"
+            }
+          ],
+          "mono-metric-sm": [
+            "13px",
+            {
+              "lineHeight": "18px",
+              "fontWeight": "500"
+            }
+          ],
+          "headline-hero-mobile": [
+            "36px",
+            {
+              "lineHeight": "42px",
+              "letterSpacing": "-0.02em",
+              "fontWeight": "800"
+            }
+          ],
+          "body-base": [
+            "14px",
+            {
+              "lineHeight": "22px",
+              "fontWeight": "400"
+            }
+          ]
+        }
+      },
+    },
+  }</script></head><body class="bg-bg-canvas font-body-base text-body-base text-on-surface antialiased selection:bg-primary selection:text-on-primary-fixed" data-gr-ext-installed="" data-new-gr-c-s-check-loaded="14.1348.0"><aside class="fixed left-0 top-0 h-full w-64 bg-bg-chrome z-50 flex flex-col justify-between shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="flex flex-col"><div class="h-16 flex items-center gap-space-sm px-space-md bg-surface-container-lowest"><img alt="SHIFT HAPPENS Logo" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/ALJJyrA7z54LxK-mWn3_cEFcaVA841lrwYa-RjeCLO4ZUOoe7YWMCYym99OJOQCt7-30bh_prcMk_kWor80Wvn_d-pXhdvE9XiVSlxPeT9t3N0xccj-12_OMWLACQQJ6d0ObGpm3vl-00hoX6CyGL9l5lAoQusfoaGGriVVjN2DkJCudf-yUgaQsbO7SxBUkwHn9V5ga-eGd4K9RKVG0lgbR00C8we-WGlnqxEBhl9XFkQD9"/><div class="flex flex-col min-w-0"><span class="font-headline-md text-headline-md tracking-tight text-text-primary uppercase truncate">SHIFT HAPPENS!</span><span class="font-label-badge text-label-badge text-secondary font-bold tracking-widest uppercase truncate">HYDRAFORGE AI</span></div></div><div class="px-space-md py-space-sm"><div class="p-space-sm rounded-lg bg-surface-container-low flex items-center justify-between"><div class="flex items-center gap-space-xs"><span class="relative flex h-2 w-2"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-status-ready opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-status-ready"></span></span><span class="font-label-badge text-label-badge text-text-secondary uppercase">PWA Live</span></div><span class="font-label-badge text-label-badge text-secondary">99.98% SYNC</span></div></div><nav class="flex flex-col gap-space-xs px-space-sm mt-space-xs" data-active-classes="bg-gradient-to-r from-accent-purple-glow/20 to-secondary/20 text-text-primary font-bold shadow-[inset_2px_0_0_0_#4cd7f6]"><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors" data-path="pos-&amp;-orders" href="#"><span class="material-symbols-outlined text-secondary">point_of_sale</span><span class="font-body-base text-body-base font-semibold">POS &amp; Orders</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors" data-path="floor-plan-&amp;-seating" href="#"><span class="material-symbols-outlined text-secondary">table_restaurant</span><span class="font-body-base text-body-base font-semibold">Floor Plan &amp; Seating</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors" data-path="kitchen-kds" href="#"><span class="material-symbols-outlined text-status-caution">skillet</span><span class="font-body-base text-body-base font-semibold">Kitchen KDS</span><span class="ml-auto px-space-xs py-0.5 rounded bg-status-urgent/20 text-status-urgent font-mono-metric-sm text-mono-metric-sm">4</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors" data-path="reservations-&amp;-crm" href="#"><span class="material-symbols-outlined text-secondary">book_online</span><span class="font-body-base text-body-base font-semibold">Reservations &amp; CRM</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors" data-path="inventory-management" href="#"><span class="material-symbols-outlined text-secondary">inventory_2</span><span class="font-body-base text-body-base font-semibold">Inventory Management</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors" data-path="voice-ai-agent" href="#"><span class="material-symbols-outlined text-accent-purple-glow">neurology</span><span class="font-body-base text-body-base font-semibold">Voice AI Agent</span><span class="ml-auto h-2 w-2 rounded-full bg-accent-purple-glow animate-pulse"></span></a></nav></div><div class="p-space-md flex flex-col gap-space-sm bg-surface-container-lowest"><div class="flex items-center justify-between text-text-subtle font-mono-metric-sm text-mono-metric-sm"><span>HOTKEYS</span><span class="px-space-xs py-0.5 rounded bg-surface-variant text-text-secondary">⌘ + K</span></div><div class="flex items-center gap-space-sm p-space-sm rounded-lg bg-surface-container-low"><div class="flex flex-col"><span class="font-label-eyebrow text-label-eyebrow text-secondary uppercase">Active Grid</span><span class="font-body-sm text-body-sm text-text-secondary truncate">Downtown Flagship</span></div></div></div></aside><div class="pl-64"><header class="fixed top-0 left-64 right-0 h-16 bg-bg-chrome/90 backdrop-blur-xl z-40 flex items-center justify-between px-space-lg shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="flex items-center gap-space-md"><div class="flex items-center gap-space-xs px-space-md py-space-xs rounded-full bg-surface-container-high"><span class="relative flex h-2.5 w-2.5"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-status-ready opacity-75"></span><span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-status-ready"></span></span><span class="font-label-badge text-label-badge text-text-primary uppercase tracking-wider">Dinner Rush • 84% Occupancy • Online</span></div><div class="hidden xl:flex items-center gap-space-xs text-text-secondary font-body-sm text-body-sm px-space-sm py-space-xs rounded bg-surface-container-low"><span class="material-symbols-outlined text-body-base text-text-subtle">store</span><span>Main Dining &amp; Bar — Downtown Flagship</span><span class="material-symbols-outlined text-body-base text-text-subtle">unfold_more</span></div></div><div class="flex items-center gap-space-md"><div class="flex items-center gap-space-xs px-space-sm py-space-xs rounded-full bg-surface-container-high"><span class="material-symbols-outlined text-accent-purple-glow text-body-base animate-pulse">graphic_eq</span><span class="font-label-badge text-label-badge text-accent-purple-glow font-bold">VOICE AI ACTIVE</span></div><button class="relative p-space-xs rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors"><span class="material-symbols-outlined text-status-caution">notifications</span><span class="absolute top-1 right-1 h-2 w-2 rounded-full bg-status-urgent"></span></button><div class="flex items-center gap-space-sm pl-space-sm"><div class="text-right hidden sm:flex flex-col"><span class="font-body-base text-body-base font-bold text-text-primary leading-tight">Chef Marco Vance</span><span class="font-label-eyebrow text-label-eyebrow text-secondary uppercase">GM &amp; Head of Ops</span></div><img alt="Profile" class="w-8 h-8 rounded-full object-cover ring-2 ring-primary/40" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDy9ZhtpNDXaG86Ys-0Q1j4OyrTEO-l2Q6rHSk5sbNKIy3_rAMsoV5LbPeVUZG92h1-x4C-c6cJNmPbKaFCGNrUOJIuE6wsbqRqH3KxaNwKL9aVLphQ_bqcAwsR1UW006mNBYrsfewRyzDJo27GYvuKAOBdOAVf7GTWqNZAJMhDXajzqoPDsNxZQhVoNTs7RZp8Sm5QF-D2X2GsLV4r51fpUfWj41xLLFIKS8MxEVY"/></div></div></header><main class="w-full pt-16 bg-bg-canvas min-h-screen"><div class="flex flex-col w-full text-on-surface">
+<!-- SUB-NAV / CONTEXT BAR -->
+<div class="w-full bg-surface-container-lowest px-space-lg py-space-sm flex flex-wrap items-center justify-between gap-space-md shadow-md">
+<!-- Studio View Tabs -->
+<div class="flex items-center gap-space-xs p-1 rounded-lg bg-surface-container-low">
+<button class="flex items-center gap-space-xs px-space-md py-space-xs rounded-lg text-text-muted hover:text-on-surface transition-colors">
+<span class="material-symbols-outlined text-body-base">architecture</span>
+<span class="font-body-base text-body-base font-medium">Floor Plan Architect (CAD 1:50)</span>
+</button>
+<button class="flex items-center gap-space-xs px-space-md py-space-xs rounded-lg bg-surface-container-high text-text-primary shadow-sm">
+<span class="material-symbols-outlined text-accent-cyan-bright">photo_library</span>
+<span class="font-body-base text-body-base font-bold tracking-tight">Menu Media Studio</span>
+<span class="ml-space-xs px-space-xs py-0.5 rounded-full bg-status-caution/20 text-status-caution font-label-badge text-label-badge font-bold uppercase tracking-wider">
+          1 Unmapped Dish
+        </span>
+</button>
+<button class="flex items-center gap-space-xs px-space-md py-space-xs rounded-lg text-text-muted hover:text-on-surface transition-colors">
+<span class="material-symbols-outlined text-body-base">grid_view</span>
+<span class="font-body-base text-body-base font-medium">Service Station Matrix</span>
+</button>
+</div>
+<!-- Right Controls: Venue Switcher & Publish Action -->
+<div class="flex items-center gap-space-md">
+<div class="flex items-center gap-space-xs px-space-md py-space-xs rounded-lg bg-surface-container-high text-text-secondary cursor-pointer hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined text-secondary text-body-base">location_on</span>
+<span class="font-body-base text-body-base font-medium">Downtown Flagship — Main Dining &amp; Bar</span>
+<span class="material-symbols-outlined text-body-base text-text-muted">expand_more</span>
+</div>
+<div class="flex items-center gap-space-sm">
+<div class="hidden sm:flex items-center gap-space-xs px-space-sm py-space-xs rounded bg-surface-container-low text-status-ready font-label-badge text-label-badge font-bold uppercase">
+<span class="h-2 w-2 rounded-full bg-status-ready animate-pulse"></span>
+<span>32 Assets Live in Sync</span>
+</div>
+<button class="flex items-center gap-space-xs px-space-md py-2.5 rounded-lg bg-gradient-to-r from-accent-purple-glow to-secondary text-bg-canvas font-body-base text-body-base font-bold tracking-tight shadow-lg hover:opacity-95 active:scale-95 transition-all">
+<span class="material-symbols-outlined text-body-base">cloud_sync</span>
+<span>Publish Media to POS</span>
+</button>
+</div>
+</div>
+</div>
+<!-- MAIN 3-COLUMN STUDIO WORKBENCH -->
+<div class="w-full grid grid-cols-1 xl:grid-cols-12 gap-space-md p-space-md lg:p-space-lg">
+<!-- ========================================================
+         COLUMN 1: MENU CATEGORIES & CATALOG STREAM (col-span-3)
+         ======================================================== -->
+<div class="xl:col-span-3 flex flex-col gap-space-md">
+<!-- Catalog Search Card -->
+<div class="p-space-md rounded-xl bg-surface-container-low shadow-sm flex flex-col gap-space-sm">
+<div class="flex items-center justify-between">
+<span class="font-label-eyebrow text-label-eyebrow text-secondary uppercase tracking-widest">Master Menu Catalog</span>
+<span class="font-mono-metric-sm text-mono-metric-sm text-text-muted">v4.82-PROD</span>
+</div>
+<div class="relative w-full">
+<span class="material-symbols-outlined absolute left-3 top-2.5 text-text-muted text-body-base">search</span>
+<input class="w-full pl-9 pr-3 py-2 bg-surface-container-high rounded-lg text-text-primary placeholder:text-text-muted font-body-sm text-body-sm focus:outline-none focus:ring-1 focus:ring-secondary" placeholder="Search dishes, SKU, tags..." type="text"/>
+</div>
+<!-- Category Horizontal Filter / Chips -->
+<div class="flex flex-wrap gap-space-xs pt-space-xs">
+<button class="px-2.5 py-1 rounded bg-surface-container text-text-secondary text-body-sm hover:bg-surface-bright font-medium">All (48)</button>
+<button class="px-2.5 py-1 rounded bg-primary-container text-on-primary-container text-body-sm font-bold shadow-sm">Mains &amp; Steaks (14)</button>
+<button class="px-2.5 py-1 rounded bg-surface-container text-text-secondary text-body-sm hover:bg-surface-bright font-medium">Starters (12)</button>
+<button class="px-2.5 py-1 rounded bg-surface-container text-text-secondary text-body-sm hover:bg-surface-bright font-medium">Handhelds (8)</button>
+<button class="px-2.5 py-1 rounded bg-surface-container text-text-secondary text-body-sm hover:bg-surface-bright font-medium">Cocktails (8)</button>
+<button class="px-2.5 py-1 rounded bg-surface-container text-text-secondary text-body-sm hover:bg-surface-bright font-medium">Desserts (6)</button>
+</div>
+</div>
+<!-- Dish List Stream -->
+<div class="flex flex-col gap-space-xs p-space-xs rounded-xl bg-surface-container-low max-h-[720px] overflow-y-auto">
+<div class="px-space-sm py-space-xs flex items-center justify-between">
+<span class="font-label-eyebrow text-label-eyebrow text-text-muted uppercase">Catalog Items</span>
+<span class="font-label-badge text-label-badge text-text-muted">SORT: KITCHEN STATION</span>
+</div>
+<!-- Item 1: Selected Ribeye -->
+<div class="relative p-space-sm rounded-lg bg-surface-container-high shadow-md flex items-center gap-space-sm cursor-pointer border-l-4 border-secondary">
+<div class="relative w-14 h-14 rounded-lg overflow-hidden flex-shrink-0 bg-surface-container-highest">
+<img class="w-full h-full object-cover" data-alt="Gourmet prime bone-in dry-aged ribeye steak grilled to medium-rare perfection resting on an artisanal dark slate platter, garnished with browned garlic herb butter, flaked Maldon salt, and fresh thyme sprigs against a cinematic moody restaurant lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB72MFU9BBEl5Xa4AMHsQLTserDpxL1ocWp46bpKBJ7D94708meQd1WYG4WmHhiMGbODDyWcMtdXfjUg4FrrHA81BkjduRYeARw7nTddnZ-EzCAx-pm8DhrAL-prrqcuLcSeagw8kZQ4EPBIR_qf2d-Sxz3hOIIQgcSwJtAIfS8gjSC-92zQsseAY77ZHg834I4o9oCfwrc8USMB4lKu7-RYZza5RkJ9NaiE--PPdk"/>
+<span class="absolute bottom-0 right-0 px-1 rounded-tl bg-bg-canvas/80 text-secondary font-label-badge text-label-badge font-bold">RAW</span>
+</div>
+<div class="flex flex-col min-w-0 flex-1">
+<div class="flex items-center justify-between gap-1">
+<span class="font-body-base text-body-base font-bold text-text-primary truncate">Dry-Aged Ribeye 28-Day</span>
+<span class="font-mono-metric-sm text-mono-metric-sm text-secondary font-bold flex-shrink-0">$64.00</span>
+</div>
+<span class="font-body-sm text-body-sm text-text-muted truncate">#MN-1082 • Grill 1 Station</span>
+<div class="flex items-center gap-space-xs mt-1">
+<span class="px-1.5 py-0.5 rounded bg-status-caution/20 text-status-caution font-label-badge text-label-badge font-bold">NEEDS POS CROP</span>
+<span class="font-label-badge text-label-badge text-accent-cyan-bright">STAGED</span>
+</div>
+</div>
+</div>
+<!-- Item 2: Truffle Fries -->
+<div class="p-space-sm rounded-lg bg-surface-container/50 hover:bg-surface-container transition-colors flex items-center gap-space-sm cursor-pointer">
+<div class="relative w-14 h-14 rounded-lg overflow-hidden flex-shrink-0 bg-surface-container-highest">
+<img class="w-full h-full object-cover" data-alt="Golden crisp shoestring truffle fries tossed with freshly grated aged Parmigiano Reggiano, chopped Italian flat-leaf parsley in an elevated dark ceramic bowl with creamy black garlic aioli ramekin in dim upscale bistro environment." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB7yoNXgrAXMrF5ZpFbzAjesCZzf100KcDxw50c8d9Iy5LDmyVCyskEShcGuKdXE-uwu2Fehil4yAD6QHAb5AswXP_3946R47hpfFqh-5MdBNW0YsUZF_K5_rPY9b-j7M1uTYJ8mLX-miUWIdYJzdZ2P7Bwo4MueQIUMvagULtcBG7r_dApblzDxfdFburr6L9ZMnIIOHnbPp-7bwmPLUa6g8NqNi8av3liYbP8i6c"/>
+<span class="absolute bottom-0 right-0 px-1 rounded-tl bg-status-ready text-bg-canvas font-label-badge text-label-badge font-bold">4K</span>
+</div>
+<div class="flex flex-col min-w-0 flex-1">
+<div class="flex items-center justify-between gap-1">
+<span class="font-body-base text-body-base font-semibold text-text-primary truncate">Truffle Hand-Cut Fries</span>
+<span class="font-mono-metric-sm text-mono-metric-sm text-text-secondary font-bold flex-shrink-0">$16.00</span>
+</div>
+<span class="font-body-sm text-body-sm text-text-muted truncate">#ST-0412 • Fryer Station</span>
+<div class="flex items-center gap-space-xs mt-1">
+<span class="px-1.5 py-0.5 rounded bg-surface-bright text-text-secondary font-label-badge text-label-badge">POS LINKED</span>
+<span class="text-status-ready font-label-badge text-label-badge flex items-center gap-0.5"><span class="material-symbols-outlined text-xs">check_circle</span> ACTIVE</span>
+</div>
+</div>
+</div>
+<!-- Item 3: Calamari Fritti -->
+<div class="p-space-sm rounded-lg bg-surface-container/50 hover:bg-surface-container transition-colors flex items-center gap-space-sm cursor-pointer">
+<div class="relative w-14 h-14 rounded-lg overflow-hidden flex-shrink-0 bg-surface-container-highest">
+<img class="w-full h-full object-cover" data-alt="Crispy golden tender salt and pepper calamari fritti tossed with grilled lemon rings, fried caper berries, micro cilantro on deep matte black ceramic dish with spicy smoked paprika dip." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDv2udUbrsnZr4MBXXbBhRFiXifkURYahE3DilpYZXb_RxefN129YuMAS16p-yG4Xg6SPLxPqhXEWvtS5g1GZwEZ_p3e4AS5tVrcJ7SxzaYh-sMxUSVAgWqQ1UrTqnvMS4kLcy8X2yGUIIQN9XYxHsvrBg8xnPZ2aRZPUuUDXWpmQk2acLY_-7v8eXhvblMgYNjuD5PfqFlt6wPbr5yuzVt3aSg-FaLDwrLygg7BLo"/>
+<span class="absolute bottom-0 right-0 px-1 rounded-tl bg-status-ready text-bg-canvas font-label-badge text-label-badge font-bold">4K</span>
+</div>
+<div class="flex flex-col min-w-0 flex-1">
+<div class="flex items-center justify-between gap-1">
+<span class="font-body-base text-body-base font-semibold text-text-primary truncate">Crispy Calamari Fritti</span>
+<span class="font-mono-metric-sm text-mono-metric-sm text-text-secondary font-bold flex-shrink-0">$19.50</span>
+</div>
+<span class="font-body-sm text-body-sm text-text-muted truncate">#ST-0819 • Saute &amp; Fryer</span>
+<div class="flex items-center gap-space-xs mt-1">
+<span class="px-1.5 py-0.5 rounded bg-surface-bright text-text-secondary font-label-badge text-label-badge">POS LINKED</span>
+<span class="text-status-ready font-label-badge text-label-badge flex items-center gap-0.5"><span class="material-symbols-outlined text-xs">check_circle</span> ACTIVE</span>
+</div>
+</div>
+</div>
+<!-- Item 4: Wagyu Striploin (Unmapped Alert) -->
+<div class="p-space-sm rounded-lg bg-error-container/20 hover:bg-error-container/30 transition-colors flex items-center gap-space-sm cursor-pointer">
+<div class="relative w-14 h-14 rounded-lg overflow-hidden flex-shrink-0 bg-surface-container-highest flex flex-col items-center justify-center text-status-urgent">
+<span class="material-symbols-outlined text-headline-lg">broken_image</span>
+</div>
+<div class="flex flex-col min-w-0 flex-1">
+<div class="flex items-center justify-between gap-1">
+<span class="font-body-base text-body-base font-bold text-text-primary truncate">A5 Miyazaki Wagyu</span>
+<span class="font-mono-metric-sm text-mono-metric-sm text-status-caution font-bold flex-shrink-0">$115.00</span>
+</div>
+<span class="font-body-sm text-body-sm text-text-muted truncate">#MN-2901 • Grill 1 Station</span>
+<div class="flex items-center gap-space-xs mt-1">
+<span class="px-1.5 py-0.5 rounded bg-status-urgent/20 text-status-urgent font-label-badge text-label-badge font-bold uppercase">MISSING MEDIA</span>
+<span class="text-status-caution font-label-badge text-label-badge">TERMINAL BLANK</span>
+</div>
+</div>
+</div>
+<!-- Item 5: Pan-Seared Seabass -->
+<div class="p-space-sm rounded-lg bg-surface-container/50 hover:bg-surface-container transition-colors flex items-center gap-space-sm cursor-pointer">
+<div class="relative w-14 h-14 rounded-lg overflow-hidden flex-shrink-0 bg-surface-container-highest">
+<img class="w-full h-full object-cover" data-alt="Pan-seared Chilean sea bass fillet with glistening crispy skin resting atop ginger miso dashi broth, baby bok choy and lotus root chips in dark porcelain bowl under soft restaurant spotlights." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAKrEqgMx1b5Z-rP_GJDALg-uo_cB2Jm3gWJTMOWUhFZmK1tEWP1SWiqx4VAAprBmI5tjIxIrLV1wCi6TVmbo99bSx4FcjHuASafBZBntbr20mKhebKzNbJ7IRwQZzoGmw2Xgu3E57qAv-JPeZB5xRK65fqLSj6eiIalP3J44TVDASQhZ95NSJePHTYhwTCU-wq6p6KL7SS6IvR67Mb_VKGgCKlKCKvHEbvu59DyC4"/>
+<span class="absolute bottom-0 right-0 px-1 rounded-tl bg-status-ready text-bg-canvas font-label-badge text-label-badge font-bold">4K</span>
+</div>
+<div class="flex flex-col min-w-0 flex-1">
+<div class="flex items-center justify-between gap-1">
+<span class="font-body-base text-body-base font-semibold text-text-primary truncate">Pan-Seared Chilean Seabass</span>
+<span class="font-mono-metric-sm text-mono-metric-sm text-text-secondary font-bold flex-shrink-0">$48.00</span>
+</div>
+<span class="font-body-sm text-body-sm text-text-muted truncate">#MN-1440 • Fish Station</span>
+<div class="flex items-center gap-space-xs mt-1">
+<span class="px-1.5 py-0.5 rounded bg-surface-bright text-text-secondary font-label-badge text-label-badge">POS LINKED</span>
+<span class="text-status-ready font-label-badge text-label-badge flex items-center gap-0.5"><span class="material-symbols-outlined text-xs">check_circle</span> ACTIVE</span>
+</div>
+</div>
+</div>
+<!-- Item 6: Artisan Burrata -->
+<div class="p-space-sm rounded-lg bg-surface-container/50 hover:bg-surface-container transition-colors flex items-center gap-space-sm cursor-pointer">
+<div class="relative w-14 h-14 rounded-lg overflow-hidden flex-shrink-0 bg-surface-container-highest">
+<img class="w-full h-full object-cover" data-alt="Fresh creamy Italian Pugliese Burrata cheese sphere sliced open revealing stracciatella, surrounded by heirloom balsamic glazed roasted tomatoes, pistachio pesto and toasted rustic sourdough shards on dark stoneware." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBk_ErDdDtIKoYbxY2jY09BVQDotbx3zQIIXvO7Y_vmhW4Hd6-Derqpujo9E0jgpRtFL7ocH1_NTilulQyBV9yyMZPLFGN1x0psmh0aHQvNiR5APcDss0ZLigbxojcVunaspITZAmmxA8WcZ06OanzQunU-ImyOAOAUeiU2ubfFSjY3H-EHoY8ISYOMxv438DPwLyWBIzcwLIqBkq9IlDv7CcGH0jfhYFJcG0aBmrc"/>
+<span class="absolute bottom-0 right-0 px-1 rounded-tl bg-status-ready text-bg-canvas font-label-badge text-label-badge font-bold">4K</span>
+</div>
+<div class="flex flex-col min-w-0 flex-1">
+<div class="flex items-center justify-between gap-1">
+<span class="font-body-base text-body-base font-semibold text-text-primary truncate">Artisan Burrata D.O.P.</span>
+<span class="font-mono-metric-sm text-mono-metric-sm text-text-secondary font-bold flex-shrink-0">$22.00</span>
+</div>
+<span class="font-body-sm text-body-sm text-text-muted truncate">#ST-0199 • Cold Larder / Garde</span>
+<div class="flex items-center gap-space-xs mt-1">
+<span class="px-1.5 py-0.5 rounded bg-surface-bright text-text-secondary font-label-badge text-label-badge">POS LINKED</span>
+<span class="text-status-ready font-label-badge text-label-badge flex items-center gap-0.5"><span class="material-symbols-outlined text-xs">check_circle</span> ACTIVE</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Quick Media Health Stat Card -->
+<div class="p-space-md rounded-xl bg-surface-container-low shadow-sm flex flex-col gap-space-xs">
+<div class="flex items-center justify-between text-text-muted font-label-eyebrow text-label-eyebrow uppercase">
+<span>Terminal Asset Coverage</span>
+<span class="text-secondary font-mono-metric-sm text-mono-metric-sm">47 / 48 (98%)</span>
+</div>
+<div class="w-full h-2 rounded-full bg-surface-container-highest overflow-hidden">
+<div class="h-full bg-gradient-to-r from-accent-purple-glow to-secondary rounded-full" style="width: 98%;"></div>
+</div>
+<div class="flex items-center justify-between text-body-sm text-body-sm text-text-muted pt-1">
+<span>Target Resolution: 1080p Square WebP</span>
+<span class="text-status-ready">CDN Edge Warm</span>
+</div>
+</div>
+</div>
+<!-- ========================================================
+         COLUMN 2: MEDIA ASSET WORKBENCH & ENGINES (col-span-6)
+         ======================================================== -->
+<div class="xl:col-span-6 flex flex-col gap-space-md">
+<!-- Workbench Header Card -->
+<div class="p-space-md rounded-xl bg-surface-container-low shadow-sm flex flex-wrap items-center justify-between gap-space-sm">
+<div class="flex flex-col">
+<div class="flex items-center gap-space-xs">
+<span class="font-label-eyebrow text-label-eyebrow text-secondary uppercase tracking-widest">Active Canvas</span>
+<span class="text-text-muted">•</span>
+<span class="font-body-sm text-body-sm text-text-secondary">SKU: #MN-1082</span>
+</div>
+<span class="font-headline-lg text-headline-lg text-text-primary font-bold">Dry-Aged Ribeye 28-Day</span>
+<div class="flex items-center gap-space-md mt-1 font-body-sm text-body-sm text-text-muted">
+<span>Category: <strong class="text-text-secondary">Mains &amp; Steaks</strong></span>
+<span>Price: <strong class="text-secondary">$64.00</strong></span>
+<span>Prep Station: <strong class="text-text-secondary">Grill 1</strong></span>
+</div>
+</div>
+<div class="flex items-center gap-space-xs">
+<button class="px-space-md py-2 rounded-lg bg-surface-container-high hover:bg-surface-bright text-text-secondary hover:text-text-primary text-body-sm font-semibold transition-colors flex items-center gap-1.5">
+<span class="material-symbols-outlined text-body-base">upload_file</span>
+<span>Replace Photo</span>
+</button>
+<button class="p-2 rounded-lg bg-surface-container-high hover:bg-surface-bright text-text-secondary hover:text-text-primary transition-colors">
+<span class="material-symbols-outlined text-body-base">history</span>
+</button>
+</div>
+</div>
+<!-- Main Showcase Canvas with Interactive Crop Guides -->
+<div class="relative w-full rounded-2xl overflow-hidden bg-bg-canvas shadow-xl flex flex-col group min-h-[460px]">
+<!-- Live Image Canvas -->
+<div class="relative w-full h-[460px] flex items-center justify-center overflow-hidden bg-surface-container-lowest">
+<img class="w-full h-full object-cover scale-105 transition-transform duration-700 group-hover:scale-100" data-alt="Exquisite studio culinary shot of a thick cut prime 28-day dry-aged bone-in ribeye steak seared with diamond grill marks, bubbling seasoned herb compound butter melting over top, smoked sea salt crystals, micro rosemary greens, presented on heavy dark artisanal cast iron skillet in dark ambient restaurant studio lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDswx_8glwq7clAANYF6qIt8Tx4i_wrKgzGMn-1fU-mRWLsAE37vqMc2FCw7KgqClehQV58UCFZgSQmTJe7QdP--FgkTHP5Ul-lXaYmnOGV7DMgxcVAzc5ElhRPJIvHFhkNLYvx1DrwwKWxtv5EOnW3qIhyp7T0T4RQrtQoe60ThXj_vq9S7wMqDkhuvVaEwKTwigaNd5_aMehCH9ogHyB-HGV7Bwj1mXK1lpHIP0Y"/>
+<!-- Dark Vignette Overlay for Depth -->
+<div class="absolute inset-0 bg-gradient-to-t from-bg-canvas/90 via-transparent to-bg-canvas/30 pointer-events-none"></div>
+<!-- Top Metadata Pill in Canvas -->
+<div class="absolute top-4 left-4 z-10 flex items-center gap-space-xs px-space-sm py-1 rounded-full bg-bg-canvas/80 backdrop-blur-md">
+<span class="material-symbols-outlined text-status-ready text-sm">verified</span>
+<span class="font-mono-metric-sm text-mono-metric-sm text-text-primary font-bold">IMG_4920_Ribeye_Raw.RAW</span>
+<span class="font-label-badge text-label-badge text-secondary font-mono">WebP • 4.2MB → 142KB</span>
+</div>
+<!-- CROP GUIDE 1: POS Square Terminal Overlay (Solid Cyan) -->
+<div class="absolute w-[300px] h-[300px] pointer-events-none shadow-[0_0_0_9999px_rgba(0,0,0,0.55)] flex flex-col justify-between p-2 rounded-xl bg-secondary/5">
+<div class="flex items-center justify-between">
+<span class="px-2 py-0.5 rounded bg-secondary text-bg-canvas font-label-badge text-label-badge font-bold uppercase tracking-wider">
+                POS Tile (1:1 Active Crop)
+              </span>
+<span class="text-secondary font-mono-metric-sm text-mono-metric-sm font-bold">512 × 512</span>
+</div>
+<!-- Grid 3x3 Overlay Lines inside POS Crop -->
+<div class="absolute inset-0 grid grid-cols-3 grid-rows-3 pointer-events-none">
+<div class="border-b border-r border-secondary/20"></div>
+<div class="border-b border-r border-secondary/20"></div>
+<div class="border-b border-secondary/20"></div>
+<div class="border-b border-r border-secondary/20"></div>
+<div class="border-b border-r border-secondary/20"></div>
+<div class="border-b border-secondary/20"></div>
+<div class="border-r border-secondary/20"></div>
+<div class="border-r border-secondary/20"></div>
+<div></div>
+</div>
+<div class="flex items-center justify-between text-secondary font-label-badge text-label-badge font-mono z-10">
+<span>Anchor: Focus Sizzle</span>
+<span class="material-symbols-outlined text-sm">filter_center_focus</span>
+</div>
+</div>
+<!-- CROP GUIDE 2: Guest Mobile QR Overlay (Purple Dotted Boundary Marker) -->
+<div class="absolute w-[440px] h-[248px] pointer-events-none flex flex-col justify-end p-2 rounded-lg bg-accent-purple-glow/5">
+<div class="flex items-center justify-between z-10">
+<span class="px-2 py-0.5 rounded bg-accent-purple-glow text-bg-canvas font-label-badge text-label-badge font-bold uppercase tracking-wider">
+                QR Guest Menu (16:9 Landscape Aspect)
+              </span>
+<span class="text-accent-purple-glow font-mono-metric-sm text-mono-metric-sm font-bold">1920 × 1080</span>
+</div>
+</div>
+<!-- Overlay Quick Drag Notice -->
+<div class="absolute bottom-4 right-4 z-10 flex items-center gap-space-xs px-space-sm py-1 rounded bg-bg-canvas/80 backdrop-blur text-text-muted font-body-sm text-body-sm">
+<span class="material-symbols-outlined text-body-base text-secondary">drag_pan</span>
+<span>Drag inside frame to re-center focal point</span>
+</div>
+</div>
+<!-- Image Adjustment & AI Enhancement Controls Toolbar -->
+<div class="p-space-md bg-surface-container-high flex flex-col gap-space-md">
+<div class="flex items-center justify-between">
+<span class="font-label-eyebrow text-label-eyebrow text-secondary uppercase tracking-widest">
+              HydraForge Neural Image Tuner
+            </span>
+<div class="flex items-center gap-space-xs text-status-ready font-label-badge text-label-badge font-bold">
+<span class="material-symbols-outlined text-sm">bolt</span>
+<span>GPU ACCELERATED</span>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-space-md">
+<!-- Tool 1: AI Dark-Mode Boost -->
+<div class="flex flex-col gap-1.5 p-space-sm rounded-lg bg-surface-container-low">
+<div class="flex items-center justify-between">
+<span class="font-body-sm text-body-sm text-text-primary font-semibold">Dark-Mode Contrast</span>
+<span class="px-1.5 py-0.5 rounded bg-accent-purple-glow/20 text-accent-purple-glow font-label-badge text-label-badge font-bold">ON</span>
+</div>
+<p class="font-body-sm text-body-sm text-text-muted">Suppresses blown-out white plate reflections on low-glare kitchen displays.</p>
+</div>
+<!-- Tool 2: Steam & Glare Optimization -->
+<div class="flex flex-col gap-1.5 p-space-sm rounded-lg bg-surface-container-low">
+<div class="flex items-center justify-between">
+<span class="font-body-sm text-body-sm text-text-primary font-semibold">Steam Clarity</span>
+<span class="font-mono-metric-sm text-mono-metric-sm text-secondary font-bold">78%</span>
+</div>
+<div class="w-full h-1.5 rounded-full bg-surface-container-highest overflow-hidden">
+<div class="h-full bg-secondary rounded-full" style="width: 78%;"></div>
+</div>
+<span class="font-body-sm text-body-sm text-text-muted">Filters grease haze while retaining appetizing sizzle.</span>
+</div>
+<!-- Tool 3: Warmth & Sizzle -->
+<div class="flex flex-col gap-1.5 p-space-sm rounded-lg bg-surface-container-low">
+<div class="flex items-center justify-between">
+<span class="font-body-sm text-body-sm text-text-primary font-semibold">Color Saturation</span>
+<span class="font-mono-metric-sm text-mono-metric-sm text-accent-lime font-bold">+12%</span>
+</div>
+<div class="w-full h-1.5 rounded-full bg-surface-container-highest overflow-hidden">
+<div class="h-full bg-accent-lime rounded-full" style="width: 62%;"></div>
+</div>
+<span class="font-body-sm text-body-sm text-text-muted">Calibrated to 3000K amber warm dining room lighting.</span>
+</div>
+</div>
+<!-- Utility Action Strip -->
+<div class="flex flex-wrap items-center justify-between pt-space-xs gap-space-sm">
+<div class="flex items-center gap-space-xs">
+<button class="px-space-sm py-1.5 rounded bg-surface-container hover:bg-surface-bright text-text-secondary text-body-sm font-medium transition-colors flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">rotate_90_degrees_cw</span>
+<span>Rotate 90°</span>
+</button>
+<button class="px-space-sm py-1.5 rounded bg-surface-container hover:bg-surface-bright text-text-secondary text-body-sm font-medium transition-colors flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">center_focus_strong</span>
+<span>Auto-Center Crop</span>
+</button>
+<button class="px-space-sm py-1.5 rounded bg-surface-container hover:bg-surface-bright text-text-secondary text-body-sm font-medium transition-colors flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">restart_alt</span>
+<span>Reset Filters</span>
+</button>
+</div>
+<button class="px-space-md py-1.5 rounded-lg bg-secondary text-on-secondary font-body-base text-body-base font-bold shadow-md hover:brightness-110 active:scale-95 transition-all flex items-center gap-1">
+<span class="material-symbols-outlined text-body-base">check</span>
+<span>Confirm Active Crop</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Gemini Vision & Voice AI Ingestion Telemetry Box -->
+<div class="p-space-md rounded-xl bg-surface-container-low shadow-sm flex flex-col gap-space-sm">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-accent-purple-glow">neurology</span>
+<span class="font-label-eyebrow text-label-eyebrow text-accent-purple-glow uppercase tracking-widest">
+              Gemini Vision Sensory Ingestion
+            </span>
+</div>
+<span class="px-space-xs py-0.5 rounded bg-accent-purple-glow/20 text-accent-purple-glow font-label-badge text-label-badge font-bold uppercase">
+            Voice Agent Linked
+          </span>
+</div>
+<div class="p-space-sm rounded-lg bg-surface-container-highest/60 flex flex-col gap-space-xs">
+<div class="flex items-start gap-space-sm">
+<span class="material-symbols-outlined text-secondary text-body-base mt-0.5">smart_toy</span>
+<div class="flex flex-col text-body-sm text-body-sm text-text-secondary">
+<span class="font-bold text-text-primary">AI Visual Analysis Feedback:</span>
+<p class="mt-0.5 text-text-secondary">
+                "Wood-fired sear detected with charred bone profile, herbaceous rosemary sprig garnish, coarse flaked finishing salt, and high-degree interior marbling. Caloric estimation ~1,240 kcal."
+              </p>
+<div class="mt-space-xs p-space-xs rounded bg-surface-container-lowest text-text-muted font-mono-metric-sm text-mono-metric-sm flex items-center justify-between">
+<span>Auto-Prompt Injection: "Guest inquiry: 'What steaks are dry-aged and how are they finished?'"</span>
+<span class="text-status-ready font-bold">READY TO RECITE</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- ========================================================
+         COLUMN 3: REAL-TIME TERMINAL PREVIEW & EMULATOR (col-span-3)
+         ======================================================== -->
+<div class="xl:col-span-3 flex flex-col gap-space-md">
+<!-- Emulators Header & Mode Switcher -->
+<div class="p-space-md rounded-xl bg-surface-container-low shadow-sm flex flex-col gap-space-sm">
+<div class="flex items-center justify-between">
+<span class="font-label-eyebrow text-label-eyebrow text-secondary uppercase tracking-widest">Terminal Live Mirror</span>
+<span class="relative flex h-2 w-2">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-status-ready opacity-75"></span>
+<span class="relative inline-flex rounded-full h-2 w-2 bg-status-ready"></span>
+</span>
+</div>
+<!-- Emulator Tab Selector -->
+<div class="grid grid-cols-3 gap-1 p-1 bg-surface-container-high rounded-lg text-body-sm text-body-sm">
+<button class="py-1 px-1.5 rounded-md bg-secondary text-on-secondary font-bold text-center truncate shadow-sm">POS Tile</button>
+<button class="py-1 px-1.5 rounded-md text-text-muted hover:text-text-primary text-center truncate">Mobile QR</button>
+<button class="py-1 px-1.5 rounded-md text-text-muted hover:text-text-primary text-center truncate">KDS Pass</button>
+</div>
+</div>
+<!-- POS ITEM TILE EXACT REPLICA (matching live terminal UI) -->
+<div class="p-space-md rounded-xl bg-surface-container-low shadow-sm flex flex-col gap-space-sm">
+<div class="flex items-center justify-between">
+<span class="font-label-eyebrow text-label-eyebrow text-text-muted uppercase">Terminal Screen Render</span>
+<span class="font-label-badge text-label-badge text-secondary">RATIO 1:1</span>
+</div>
+<!-- Realistic Interactive POS Button Component -->
+<div class="relative w-full rounded-2xl bg-surface-container-high overflow-hidden shadow-2xl transition-all duration-200 cursor-pointer hover:shadow-cyan-500/20 active:scale-95 group" id="posPreviewCard" onclick="triggerPosHaptic()">
+<!-- Top Thumbnail Segment with Dark Bottom Gradient Scrim -->
+<div class="relative w-full h-44 overflow-hidden bg-bg-canvas">
+<img class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" data-alt="Close up gourmet presentation of 28-day bone-in dry-aged ribeye steak with glistening rosemary herb butter in moody restaurant lighting, cropped to square aspect ratio." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDQEDPrGs0Yd01EK20yFFWWr6LEYHxMKDE83Nc9_lHzVmUV28oQI2WqVfPGtJIPtOli3UAQb1tqZgfTeKRaNcNWvwCGG194O-Mw9Mi7iQEC3Xvb4gcP82zaqwLSYLbeckHSZrbjPK2uJwazrM41wFeXsBWmKA9YI5sPwXrfxyVsmWT9vDEik7wWA6CtBEaU-r3D4SREJjpE4KJ8hCl88HQ4LwvE3SnO0MFcdBJgOdg"/>
+<div class="absolute inset-0 bg-gradient-to-t from-surface-container-high via-transparent to-transparent"></div>
+<!-- Top Badges inside POS Tile -->
+<div class="absolute top-2 left-2 flex items-center gap-1">
+<span class="px-2 py-0.5 rounded bg-bg-canvas/80 backdrop-blur-md text-status-ready font-label-badge text-label-badge font-bold">
+                STOCK 42
+              </span>
+</div>
+<!-- Price Tag Anchored Bottom Right -->
+<div class="absolute bottom-2 right-2 px-2.5 py-1 rounded-lg bg-secondary text-bg-canvas font-mono-metric-md text-mono-metric-md font-bold shadow-lg">
+              $64.00
+            </div>
+</div>
+<!-- Bottom Metadata Segment -->
+<div class="p-space-md flex flex-col gap-1 bg-surface-container-high">
+<div class="flex items-center justify-between">
+<span class="font-headline-md text-headline-md font-bold text-text-primary group-hover:text-secondary transition-colors">
+                28-Day Dry-Aged Ribeye
+              </span>
+</div>
+<span class="font-body-sm text-body-sm text-text-muted">
+              Bone-In • 18oz • Rosemary Herb Compound
+            </span>
+<div class="flex items-center justify-between pt-space-xs mt-space-xs text-text-subtle font-mono-metric-sm text-mono-metric-sm">
+<span class="flex items-center gap-1 text-text-muted">
+<span class="material-symbols-outlined text-sm text-status-caution">outdoor_grill</span>
+<span>Grill 1 Station</span>
+</span>
+<span class="text-text-muted font-label-badge text-label-badge">SLOT #14</span>
+</div>
+</div>
+<!-- Ripple indicator for interaction test -->
+<div class="absolute inset-0 bg-secondary/20 pointer-events-none opacity-0 transition-opacity duration-300" id="tapRipple"></div>
+</div>
+<button class="w-full py-2.5 rounded-lg bg-surface-container-highest hover:bg-surface-bright text-secondary font-body-base text-body-base font-bold text-center flex items-center justify-center gap-space-xs transition-colors" onclick="triggerPosHaptic()">
+<span class="material-symbols-outlined text-body-base">touch_app</span>
+<span>Tap to Test POS Order Injection</span>
+</button>
+</div>
+<!-- Guest Mobile QR Mini Preview Card -->
+<div class="p-space-md rounded-xl bg-surface-container-low shadow-sm flex flex-col gap-space-sm">
+<div class="flex items-center justify-between">
+<span class="font-label-eyebrow text-label-eyebrow text-text-muted uppercase">Guest QR Mobile Card</span>
+<span class="font-label-badge text-label-badge text-accent-purple-glow">16:9 HERO</span>
+</div>
+<!-- Phone UI Mini-Card -->
+<div class="p-space-sm rounded-xl bg-surface-container-high flex flex-col gap-space-xs">
+<div class="relative w-full h-24 rounded-lg overflow-hidden bg-bg-canvas">
+<img class="w-full h-full object-cover" data-alt="Wide landscape format photo of gourmet ribeye steak meal with wine glass pairing and candle light ambiance in luxury restaurant setting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCKbBrdbEbdxy3pk8Dw2Ofn53nRv_bQGtdupQjpKh7th9cuFB97xwoz8DJOGJ3hV7TLuWarmsutt5PXIoNZjwtP0Lprl9fNEu70lqEDAxoTHL_nNcs1rSx5Fj9WG_G9uybDpxfykNpsA_Y09b4Il5ihyFGxnogfVe0hZ8PX1EZEv3MiVs_BjlMVyPTswPjMJz5tBD8nml954-1KKoLlULVoqvqo2Cyszh0_MT4QQbY"/>
+<div class="absolute bottom-1 right-2 px-2 py-0.5 rounded bg-bg-canvas/80 backdrop-blur text-primary font-mono-metric-sm text-mono-metric-sm font-bold">
+              $64.00
+            </div>
+</div>
+<div class="flex flex-col">
+<span class="font-body-base text-body-base font-bold text-text-primary">Prime 28-Day Dry-Aged Ribeye</span>
+<span class="font-body-sm text-body-sm text-text-muted line-clamp-1">Charred over Missouri white oak with roasted garlic butter.</span>
+<div class="flex items-center gap-1 mt-1 text-accent-purple-glow font-body-sm text-body-sm">
+<span class="material-symbols-outlined text-sm">wine_bar</span>
+<span class="font-medium text-xs">Pairing: 2019 Caymus Cabernet</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Sync & Terminal Fleet Deployment Card -->
+<div class="p-space-md rounded-xl bg-surface-container-low shadow-sm flex flex-col gap-space-sm">
+<span class="font-label-eyebrow text-label-eyebrow text-secondary uppercase tracking-widest">Fleet Synchronization</span>
+<button class="w-full py-3 rounded-lg bg-gradient-to-r from-accent-purple-glow to-secondary text-bg-canvas font-body-base text-body-base font-bold tracking-tight shadow-md hover:opacity-95 active:scale-95 transition-all flex items-center justify-center gap-space-xs">
+<span class="material-symbols-outlined text-body-base">send_to_mobile</span>
+<span>Push to 14 POS Terminals Now</span>
+</button>
+<button class="w-full py-2.5 rounded-lg bg-surface-container-high hover:bg-surface-bright text-text-secondary hover:text-text-primary font-body-base text-body-base font-semibold transition-colors flex items-center justify-center gap-space-xs">
+<span class="material-symbols-outlined text-accent-purple-glow text-body-base">mic</span>
+<span>Sync Voice AI Knowledge Base</span>
+</button>
+<!-- Audit & Staging Stamp -->
+<div class="flex items-center justify-between pt-space-xs text-text-muted font-body-sm text-body-sm">
+<span>Staged by: <strong class="text-text-secondary">Chef Marco Vance</strong></span>
+<span class="font-mono">17:14 EST</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Interactive Script for Micro-Interactions -->
+<script>
+    function triggerPosHaptic() {
+      const ripple = document.getElementById('tapRipple');
+      const card = document.getElementById('posPreviewCard');
+      if (ripple && card) {
+        ripple.classList.remove('opacity-0');
+        ripple.classList.add('opacity-100');
+        setTimeout(() => {
+          ripple.classList.remove('opacity-100');
+          ripple.classList.add('opacity-0');
+        }, 250);
+      }
+    }
+  </script>
+</div></main></div>
+</body></html>

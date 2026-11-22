@@ -1,3 +1,8 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:f385cd3cfc1cc273d1af982515f8e4a73a738a04cbef42e462f5be02cf2a0053
-size 180
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "types": ["node"]
+  },
+  "include": ["src/**/*.ts", "vitest.config.ts", "test/**/*.ts"]
+}

@@ -1,3 +1,779 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:40ddb520a6d12093c4215a6ca33147ca9b4877130b3fa77d3f5c6219dcbddeab
-size 52744
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_dashboard" name="shell-type"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@500;700&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        "colors": {
+          "bg-surface": "#111827",
+          "on-surface-variant": "#cfc2d6",
+          "secondary-container": "#03b5d3",
+          "text-subtle": "#4b5563",
+          "accent-lime": "#bef754",
+          "bg-canvas": "#000000",
+          "outline": "#988d9f",
+          "on-primary-container": "#400071",
+          "status-caution": "#f59e0b",
+          "on-tertiary-container": "#002a51",
+          "primary-container": "#b76dff",
+          "border-subtle": "#1f2937",
+          "text-secondary": "#d1d5db",
+          "surface-bright": "#323949",
+          "surface-container": "#191f2f",
+          "inverse-primary": "#842bd2",
+          "status-info": "#3b82f6",
+          "tertiary-container": "#4c93e7",
+          "surface-container-low": "#141b2b",
+          "surface": "#0c1322",
+          "on-error": "#690005",
+          "surface-dim": "#0c1322",
+          "surface-container-highest": "#2e3545",
+          "on-primary-fixed": "#2c0051",
+          "tertiary-fixed-dim": "#a4c9ff",
+          "on-tertiary-fixed-variant": "#004883",
+          "primary": "#ddb7ff",
+          "bg-card": "#2a2a2a",
+          "on-primary-fixed-variant": "#6900b3",
+          "status-ready": "#22c55e",
+          "inverse-on-surface": "#293040",
+          "text-primary": "#ffffff",
+          "text-tertiary": "#9ca3af",
+          "secondary-fixed": "#acedff",
+          "accent-cyan-bright": "#22d3ee",
+          "text-muted": "#6b7280",
+          "on-background": "#dce2f7",
+          "primary-fixed": "#f0dbff",
+          "primary-fixed-dim": "#ddb7ff",
+          "status-urgent": "#ef4444",
+          "outline-variant": "#4d4354",
+          "on-secondary-fixed-variant": "#004e5c",
+          "tertiary": "#a4c9ff",
+          "on-error-container": "#ffdad6",
+          "surface-variant": "#2e3545",
+          "border-emphasis": "#ffffff",
+          "secondary-fixed-dim": "#4cd7f6",
+          "on-secondary-fixed": "#001f26",
+          "surface-container-high": "#232a3a",
+          "on-surface": "#dce2f7",
+          "on-tertiary": "#00315d",
+          "on-primary": "#490080",
+          "bg-chrome": "#0a0a0a",
+          "bg-card-subtle": "#1e1e1e",
+          "on-tertiary-fixed": "#001c39",
+          "secondary": "#4cd7f6",
+          "inverse-surface": "#dce2f7",
+          "on-secondary": "#003640",
+          "on-secondary-container": "#00424e",
+          "surface-tint": "#ddb7ff",
+          "accent-shift-blue": "#0000ff",
+          "bg-sidebar": "#1a1a1a",
+          "surface-container-lowest": "#070e1d",
+          "error-container": "#93000a",
+          "accent-purple-glow": "#c084fc",
+          "tertiary-fixed": "#d4e3ff",
+          "error": "#ffb4ab",
+          "background": "#0c1322"
+        },
+        "borderRadius": {
+          "DEFAULT": "0.25rem",
+          "lg": "0.5rem",
+          "xl": "0.75rem",
+          "full": "9999px"
+        },
+        "spacing": {
+          "space-xs": "0.25rem",
+          "gutter": "1rem",
+          "space-md": "1rem",
+          "margin": "1rem",
+          "space-lg": "1.5rem",
+          "margin-lg": "2rem",
+          "gutter-lg": "1.5rem",
+          "margin-md": "1.5rem",
+          "space-sm": "0.5rem",
+          "space-xl": "2rem"
+        },
+        "fontFamily": {
+          "body-lg": [
+            "Inter"
+          ],
+          "headline-xl": [
+            "Inter"
+          ],
+          "label-badge": [
+            "JetBrains Mono"
+          ],
+          "mono-metric-lg": [
+            "JetBrains Mono"
+          ],
+          "headline-lg": [
+            "Inter"
+          ],
+          "body-sm": [
+            "Inter"
+          ],
+          "mono-metric-md": [
+            "JetBrains Mono"
+          ],
+          "label-eyebrow": [
+            "JetBrains Mono"
+          ],
+          "headline-md": [
+            "Inter"
+          ],
+          "headline-hero": [
+            "Inter"
+          ],
+          "mono-metric-sm": [
+            "JetBrains Mono"
+          ],
+          "headline-hero-mobile": [
+            "Inter"
+          ],
+          "body-base": [
+            "Inter"
+          ]
+        },
+        "fontSize": {
+          "body-lg": [
+            "16px",
+            {
+              "lineHeight": "24px",
+              "fontWeight": "500"
+            }
+          ],
+          "headline-xl": [
+            "30px",
+            {
+              "lineHeight": "38px",
+              "letterSpacing": "-0.02em",
+              "fontWeight": "700"
+            }
+          ],
+          "label-badge": [
+            "10px",
+            {
+              "lineHeight": "12px",
+              "letterSpacing": "0.05em",
+              "fontWeight": "700"
+            }
+          ],
+          "mono-metric-lg": [
+            "24px",
+            {
+              "lineHeight": "30px",
+              "fontWeight": "700"
+            }
+          ],
+          "headline-lg": [
+            "24px",
+            {
+              "lineHeight": "32px",
+              "letterSpacing": "-0.01em",
+              "fontWeight": "700"
+            }
+          ],
+          "body-sm": [
+            "12px",
+            {
+              "lineHeight": "18px",
+              "fontWeight": "400"
+            }
+          ],
+          "mono-metric-md": [
+            "16px",
+            {
+              "lineHeight": "24px",
+              "fontWeight": "700"
+            }
+          ],
+          "label-eyebrow": [
+            "11px",
+            {
+              "lineHeight": "14px",
+              "letterSpacing": "0.08em",
+              "fontWeight": "700"
+            }
+          ],
+          "headline-md": [
+            "18px",
+            {
+              "lineHeight": "26px",
+              "letterSpacing": "-0.01em",
+              "fontWeight": "700"
+            }
+          ],
+          "headline-hero": [
+            "72px",
+            {
+              "lineHeight": "76px",
+              "letterSpacing": "-0.03em",
+              "fontWeight": "800"
+            }
+          ],
+          "mono-metric-sm": [
+            "13px",
+            {
+              "lineHeight": "18px",
+              "fontWeight": "500"
+            }
+          ],
+          "headline-hero-mobile": [
+            "36px",
+            {
+              "lineHeight": "42px",
+              "letterSpacing": "-0.02em",
+              "fontWeight": "800"
+            }
+          ],
+          "body-base": [
+            "14px",
+            {
+              "lineHeight": "22px",
+              "fontWeight": "400"
+            }
+          ]
+        }
+      },
+    },
+  }</script></head><body class="bg-bg-canvas font-body-base text-body-base text-on-surface antialiased selection:bg-primary selection:text-on-primary-fixed"><aside class="fixed left-0 top-0 h-full w-64 bg-bg-chrome z-50 flex flex-col justify-between shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="flex flex-col"><div class="h-16 flex items-center gap-space-sm px-space-md bg-surface-container-lowest"><img alt="SHIFT HAPPENS Logo" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/ALJJyrA7z54LxK-mWn3_cEFcaVA841lrwYa-RjeCLO4ZUOoe7YWMCYym99OJOQCt7-30bh_prcMk_kWor80Wvn_d-pXhdvE9XiVSlxPeT9t3N0xccj-12_OMWLACQQJ6d0ObGpm3vl-00hoX6CyGL9l5lAoQusfoaGGriVVjN2DkJCudf-yUgaQsbO7SxBUkwHn9V5ga-eGd4K9RKVG0lgbR00C8we-WGlnqxEBhl9XFkQD9"/><div class="flex flex-col min-w-0"><span class="font-headline-md text-headline-md tracking-tight text-text-primary uppercase truncate">SHIFT HAPPENS!</span><span class="font-label-badge text-label-badge text-secondary font-bold tracking-widest uppercase truncate">HYDRAFORGE AI</span></div></div><div class="px-space-md py-space-sm"><div class="p-space-sm rounded-lg bg-surface-container-low flex items-center justify-between"><div class="flex items-center gap-space-xs"><span class="relative flex h-2 w-2"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-status-ready opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-status-ready"></span></span><span class="font-label-badge text-label-badge text-text-secondary uppercase">PWA Live</span></div><span class="font-label-badge text-label-badge text-secondary">99.98% SYNC</span></div></div><nav class="flex flex-col gap-space-xs px-space-sm mt-space-xs" data-active-classes="bg-gradient-to-r from-accent-purple-glow/20 to-secondary/20 text-text-primary font-bold shadow-[inset_2px_0_0_0_#4cd7f6]"><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors" data-path="pos-&amp;-orders" href="#"><span class="material-symbols-outlined text-secondary">point_of_sale</span><span class="font-body-base text-body-base font-semibold">POS &amp; Orders</span></a><a aria-current="page" class="flex items-center gap-space-sm px-space-md py-space-sm rounded-lg transition-colors bg-gradient-to-r from-accent-purple-glow/20 to-secondary/20 text-text-primary font-bold shadow-[inset_2px_0_0_0_#4cd7f6]" data-path="floor-plan-&amp;-seating" href="#"><span class="material-symbols-outlined text-secondary">table_restaurant</span><span class="font-body-base text-body-base font-semibold">Floor Plan &amp; Seating</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors" data-path="kitchen-kds" href="#"><span class="material-symbols-outlined text-status-caution">skillet</span><span class="font-body-base text-body-base font-semibold">Kitchen KDS</span><span class="ml-auto px-space-xs py-0.5 rounded bg-status-urgent/20 text-status-urgent font-mono-metric-sm text-mono-metric-sm">4</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors" data-path="reservations-&amp;-crm" href="#"><span class="material-symbols-outlined text-secondary">book_online</span><span class="font-body-base text-body-base font-semibold">Reservations &amp; CRM</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors" data-path="inventory-management" href="#"><span class="material-symbols-outlined text-secondary">inventory_2</span><span class="font-body-base text-body-base font-semibold">Inventory Management</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors" data-path="voice-ai-agent" href="#"><span class="material-symbols-outlined text-accent-purple-glow">neurology</span><span class="font-body-base text-body-base font-semibold">Voice AI Agent</span><span class="ml-auto h-2 w-2 rounded-full bg-accent-purple-glow animate-pulse"></span></a></nav></div><div class="p-space-md flex flex-col gap-space-sm bg-surface-container-lowest"><div class="flex items-center justify-between text-text-subtle font-mono-metric-sm text-mono-metric-sm"><span>HOTKEYS</span><span class="px-space-xs py-0.5 rounded bg-surface-variant text-text-secondary">⌘ + K</span></div><div class="flex items-center gap-space-sm p-space-sm rounded-lg bg-surface-container-low"><div class="flex flex-col"><span class="font-label-eyebrow text-label-eyebrow text-secondary uppercase">Active Grid</span><span class="font-body-sm text-body-sm text-text-secondary truncate">Downtown Flagship</span></div></div></div></aside><div class="pl-64"><header class="fixed top-0 left-64 right-0 h-16 bg-bg-chrome/90 backdrop-blur-xl z-40 flex items-center justify-between px-space-lg shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="flex items-center gap-space-md"><div class="flex items-center gap-space-xs px-space-md py-space-xs rounded-full bg-surface-container-high"><span class="relative flex h-2.5 w-2.5"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-status-ready opacity-75"></span><span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-status-ready"></span></span><span class="font-label-badge text-label-badge text-text-primary uppercase tracking-wider">Dinner Rush • 84% Occupancy • Online</span></div><div class="hidden xl:flex items-center gap-space-xs text-text-secondary font-body-sm text-body-sm px-space-sm py-space-xs rounded bg-surface-container-low"><span class="material-symbols-outlined text-body-base text-text-subtle">store</span><span>Main Dining &amp; Bar — Downtown Flagship</span><span class="material-symbols-outlined text-body-base text-text-subtle">unfold_more</span></div></div><div class="flex items-center gap-space-md"><div class="flex items-center gap-space-xs px-space-sm py-space-xs rounded-full bg-surface-container-high"><span class="material-symbols-outlined text-accent-purple-glow text-body-base animate-pulse">graphic_eq</span><span class="font-label-badge text-label-badge text-accent-purple-glow font-bold">VOICE AI ACTIVE</span></div><button class="relative p-space-xs rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors"><span class="material-symbols-outlined text-status-caution">notifications</span><span class="absolute top-1 right-1 h-2 w-2 rounded-full bg-status-urgent"></span></button><div class="flex items-center gap-space-sm pl-space-sm"><div class="text-right hidden sm:flex flex-col"><span class="font-body-base text-body-base font-bold text-text-primary leading-tight">Chef Marco Vance</span><span class="font-label-eyebrow text-label-eyebrow text-secondary uppercase">GM &amp; Head of Ops</span></div><img alt="Profile" class="w-8 h-8 rounded-full object-cover ring-2 ring-primary/40" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDy9ZhtpNDXaG86Ys-0Q1j4OyrTEO-l2Q6rHSk5sbNKIy3_rAMsoV5LbPeVUZG92h1-x4C-c6cJNmPbKaFCGNrUOJIuE6wsbqRqH3KxaNwKL9aVLphQ_bqcAwsR1UW006mNBYrsfewRyzDJo27GYvuKAOBdOAVf7GTWqNZAJMhDXajzqoPDsNxZQhVoNTs7RZp8Sm5QF-D2X2GsLV4r51fpUfWj41xLLFIKS8MxEVY"/></div></div></header><main class="w-full pt-16 bg-bg-canvas min-h-screen"><div class="flex flex-col w-full">
+<!-- Operational Sub-Header & Live Floor Telemetry -->
+<div class="bg-surface-container-low px-space-lg py-space-md shadow-md">
+<div class="flex flex-col xl:flex-row xl:items-center justify-between gap-space-md">
+<!-- Section Navigation Tabs -->
+<div class="flex flex-wrap items-center gap-space-xs bg-bg-card-subtle p-1 rounded-xl">
+<button class="px-space-md py-space-xs rounded-lg bg-gradient-to-r from-primary-container to-secondary-container text-text-primary font-headline-md text-body-sm shadow-sm flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-body-base">restaurant</span>
+<span>Main Dining Room</span>
+<span class="px-1.5 py-0.5 rounded-full bg-bg-canvas/40 font-mono-metric-sm text-label-badge text-text-primary">24</span>
+</button>
+<button class="px-space-md py-space-xs rounded-lg text-text-secondary hover:text-text-primary hover:bg-surface-container transition-colors font-body-base text-body-sm flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-body-base">deck</span>
+<span>Patio &amp; Garden</span>
+<span class="px-1.5 py-0.5 rounded-full bg-surface-container font-mono-metric-sm text-label-badge text-text-tertiary">12</span>
+</button>
+<button class="px-space-md py-space-xs rounded-lg text-text-secondary hover:text-text-primary hover:bg-surface-container transition-colors font-body-base text-body-sm flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-body-base">local_bar</span>
+<span>Bar &amp; Lounge</span>
+<span class="px-1.5 py-0.5 rounded-full bg-surface-container font-mono-metric-sm text-label-badge text-text-tertiary">14</span>
+</button>
+<button class="px-space-md py-space-xs rounded-lg text-text-secondary hover:text-text-primary hover:bg-surface-container transition-colors font-body-base text-body-sm flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-body-base">meeting_room</span>
+<span>Private Dining (PDR)</span>
+<span class="px-1.5 py-0.5 rounded-full bg-surface-container font-mono-metric-sm text-label-badge text-text-tertiary">2</span>
+</button>
+</div>
+<!-- Live Floor Metrics Shelf -->
+<div class="flex flex-wrap items-center gap-space-md">
+<div class="flex items-center gap-space-md bg-surface-container px-space-md py-space-xs rounded-xl shadow-sm">
+<div class="flex flex-col">
+<span class="font-label-badge text-label-badge text-text-tertiary uppercase">Active Capacity</span>
+<div class="flex items-baseline gap-1">
+<span class="font-mono-metric-md text-mono-metric-md text-text-primary">42</span>
+<span class="font-mono-metric-sm text-mono-metric-sm text-text-subtle">/ 50</span>
+</div>
+</div>
+<div class="h-8 w-px bg-surface-variant"></div>
+<div class="flex flex-col">
+<span class="font-label-badge text-label-badge text-status-ready uppercase">Seated Guests</span>
+<span class="font-mono-metric-md text-mono-metric-md text-status-ready">138</span>
+</div>
+<div class="h-8 w-px bg-surface-variant"></div>
+<div class="flex flex-col">
+<span class="font-label-badge text-label-badge text-status-caution uppercase">Waitlist</span>
+<span class="font-mono-metric-md text-mono-metric-md text-status-caution">12</span>
+</div>
+<div class="h-8 w-px bg-surface-variant"></div>
+<div class="flex flex-col">
+<span class="font-label-badge text-label-badge text-secondary uppercase">Avg Turn</span>
+<span class="font-mono-metric-md text-mono-metric-md text-secondary">52<span class="text-body-sm font-normal text-text-secondary">m</span></span>
+</div>
+</div>
+<!-- Quick Action Trigger -->
+<button class="bg-gradient-to-r from-accent-purple-glow to-secondary text-bg-canvas hover:brightness-110 active:scale-95 transition-all px-space-md py-space-xs rounded-xl font-headline-md text-body-sm font-bold flex items-center gap-space-xs shadow-md">
+<span class="material-symbols-outlined text-body-base">person_add</span>
+<span>Seat Walk-in</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Operational 3-Column Workspace -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-md p-space-md">
+<!-- LEFT PANEL: Seating & Live Waitlist Timeline (3 Cols) -->
+<div class="lg:col-span-3 flex flex-col gap-space-sm bg-surface-container-low rounded-xl p-space-md shadow-md">
+<!-- Panel Header & Quick Filters -->
+<div class="flex items-center justify-between pb-space-xs">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-secondary">groups_3</span>
+<span class="font-headline-md text-headline-md text-text-primary">Floor Queue</span>
+</div>
+<span class="px-space-xs py-0.5 rounded bg-primary-container/20 text-primary font-mono-metric-sm text-mono-metric-sm font-bold">16 ACTIVE</span>
+</div>
+<!-- Filter Chips Scroller -->
+<div class="flex items-center gap-1.5 overflow-x-auto pb-space-xs">
+<button class="px-space-sm py-1 rounded-full bg-text-primary text-bg-canvas font-label-badge text-label-badge font-bold whitespace-nowrap shadow-sm">All</button>
+<button class="px-space-sm py-1 rounded-full bg-surface-container text-text-secondary hover:text-text-primary font-label-badge text-label-badge whitespace-nowrap">Seated (42)</button>
+<button class="px-space-sm py-1 rounded-full bg-surface-container text-status-info hover:text-text-primary font-label-badge text-label-badge whitespace-nowrap">Arrived (4)</button>
+<button class="px-space-sm py-1 rounded-full bg-status-urgent/20 text-status-urgent font-label-badge text-label-badge whitespace-nowrap">Overstay (2)</button>
+<button class="px-space-sm py-1 rounded-full bg-surface-container text-text-muted hover:text-text-primary font-label-badge text-label-badge whitespace-nowrap">Reset (3)</button>
+</div>
+<!-- Live Party Cards Stream -->
+<div class="flex flex-col gap-space-xs overflow-y-auto max-h-[740px] pr-1">
+<!-- Queue Card 1: Selected Table Party -->
+<div class="p-space-sm rounded-xl bg-gradient-to-r from-accent-purple-glow/15 to-transparent bg-surface-container-high transition-all cursor-pointer shadow-sm relative overflow-hidden" onclick="selectTable('T-03')">
+<div class="absolute left-0 top-0 bottom-0 w-1.5 bg-accent-purple-glow"></div>
+<div class="flex items-center justify-between ml-1">
+<div class="flex items-center gap-space-xs">
+<span class="font-headline-md text-body-base text-text-primary font-bold">Maurice T.</span>
+<span class="px-1.5 py-0.5 rounded bg-accent-purple-glow/20 text-accent-purple-glow font-label-badge text-label-badge uppercase font-bold">VIP Anniv</span>
+</div>
+<span class="font-mono-metric-sm text-mono-metric-sm text-text-secondary flex items-center gap-0.5">
+<span class="material-symbols-outlined text-body-sm text-text-tertiary">group</span>4
+            </span>
+</div>
+<div class="flex items-center justify-between mt-1 text-text-tertiary font-body-sm text-body-sm ml-1">
+<span class="flex items-center gap-1 text-secondary font-semibold font-mono-metric-sm">
+<span class="material-symbols-outlined text-body-sm">table_restaurant</span> Table 03
+            </span>
+<span class="font-mono-metric-sm text-label-badge text-status-caution bg-status-caution/10 px-1 rounded">19:15 – 21:15</span>
+</div>
+<p class="text-body-sm text-text-secondary mt-1 ml-1 line-clamp-1 italic text-opacity-80">"Quiet booth preferred. Pre-ordered Dom Pérignon."</p>
+</div>
+<!-- Queue Card 2: Overstay Alert -->
+<div class="p-space-sm rounded-xl bg-surface-container hover:bg-surface-container-high transition-all cursor-pointer shadow-sm relative overflow-hidden" onclick="selectTable('T-17')">
+<div class="absolute left-0 top-0 bottom-0 w-1.5 bg-status-urgent animate-pulse"></div>
+<div class="flex items-center justify-between ml-1">
+<div class="flex items-center gap-space-xs">
+<span class="font-headline-md text-body-base text-text-primary font-bold">Chef's Guest: Ben Z.</span>
+<span class="px-1.5 py-0.5 rounded bg-status-urgent/20 text-status-urgent font-label-badge text-label-badge font-bold uppercase">+24m Turn</span>
+</div>
+<span class="font-mono-metric-sm text-mono-metric-sm text-text-secondary flex items-center gap-0.5">
+<span class="material-symbols-outlined text-body-sm text-text-tertiary">group</span>3
+            </span>
+</div>
+<div class="flex items-center justify-between mt-1 text-text-tertiary font-body-sm text-body-sm ml-1">
+<span class="flex items-center gap-1 text-status-urgent font-mono-metric-sm font-semibold">
+<span class="material-symbols-outlined text-body-sm">skillet</span> Table 17
+            </span>
+<span class="font-mono-metric-sm text-label-badge text-status-urgent bg-status-urgent/10 px-1 rounded">2h 10m Seated</span>
+</div>
+</div>
+<!-- Queue Card 3: Arrived Waiting for Table -->
+<div class="p-space-sm rounded-xl bg-surface-container hover:bg-surface-container-high transition-all cursor-pointer shadow-sm relative overflow-hidden" onclick="selectTable('WS-05')">
+<div class="absolute left-0 top-0 bottom-0 w-1.5 bg-status-info"></div>
+<div class="flex items-center justify-between ml-1">
+<div class="flex items-center gap-space-xs">
+<span class="font-headline-md text-body-base text-text-primary font-bold">Kris W. &amp; Party</span>
+<span class="px-1.5 py-0.5 rounded bg-status-info/20 text-status-info font-label-badge text-label-badge font-bold uppercase">At Bar</span>
+</div>
+<span class="font-mono-metric-sm text-mono-metric-sm text-text-secondary flex items-center gap-0.5">
+<span class="material-symbols-outlined text-body-sm text-text-tertiary">group</span>6
+            </span>
+</div>
+<div class="flex items-center justify-between mt-1 text-text-tertiary font-body-sm text-body-sm ml-1">
+<span class="flex items-center gap-1 text-text-secondary font-mono-metric-sm font-semibold">
+<span class="material-symbols-outlined text-body-sm">assignment_turned_in</span> Assigned: WS-05
+            </span>
+<span class="font-mono-metric-sm text-label-badge text-secondary bg-secondary/10 px-1 rounded">Resetting</span>
+</div>
+</div>
+<!-- Queue Card 4: Normal In-Service -->
+<div class="p-space-sm rounded-xl bg-surface-container hover:bg-surface-container-high transition-all cursor-pointer shadow-sm relative overflow-hidden" onclick="selectTable('T-01')">
+<div class="absolute left-0 top-0 bottom-0 w-1.5 bg-status-ready"></div>
+<div class="flex items-center justify-between ml-1">
+<div class="flex items-center gap-space-xs">
+<span class="font-headline-md text-body-base text-text-primary font-bold">James G.</span>
+<span class="px-1.5 py-0.5 rounded bg-surface-variant text-text-secondary font-label-badge text-label-badge">Entree</span>
+</div>
+<span class="font-mono-metric-sm text-mono-metric-sm text-text-secondary flex items-center gap-0.5">
+<span class="material-symbols-outlined text-body-sm text-text-tertiary">group</span>4
+            </span>
+</div>
+<div class="flex items-center justify-between mt-1 text-text-tertiary font-body-sm text-body-sm ml-1">
+<span class="flex items-center gap-1 text-text-secondary font-mono-metric-sm">
+<span class="material-symbols-outlined text-body-sm">person</span> Server: Jerry K.
+            </span>
+<span class="font-mono-metric-sm text-label-badge text-text-secondary bg-surface-variant px-1 rounded">19:20 – 21:00</span>
+</div>
+</div>
+<!-- Queue Card 5: Bill Presented -->
+<div class="p-space-sm rounded-xl bg-surface-container hover:bg-surface-container-high transition-all cursor-pointer shadow-sm relative overflow-hidden" onclick="selectTable('BS-03')">
+<div class="absolute left-0 top-0 bottom-0 w-1.5 bg-status-caution"></div>
+<div class="flex items-center justify-between ml-1">
+<div class="flex items-center gap-space-xs">
+<span class="font-headline-md text-body-base text-text-primary font-bold">Raj T.</span>
+<span class="px-1.5 py-0.5 rounded bg-status-caution/20 text-status-caution font-label-badge text-label-badge uppercase font-bold">Paying</span>
+</div>
+<span class="font-mono-metric-sm text-mono-metric-sm text-text-secondary flex items-center gap-0.5">
+<span class="material-symbols-outlined text-body-sm text-text-tertiary">group</span>2
+            </span>
+</div>
+<div class="flex items-center justify-between mt-1 text-text-tertiary font-body-sm text-body-sm ml-1">
+<span class="flex items-center gap-1 text-text-secondary font-mono-metric-sm">
+<span class="material-symbols-outlined text-body-sm">receipt_long</span> $210.50
+            </span>
+<span class="font-mono-metric-sm text-label-badge text-status-caution bg-status-caution/10 px-1 rounded">Check Dropped</span>
+</div>
+</div>
+<!-- Queue Card 6: Walk-in Pending -->
+<div class="p-space-sm rounded-xl bg-surface-container hover:bg-surface-container-high transition-all cursor-pointer shadow-sm relative overflow-hidden">
+<div class="absolute left-0 top-0 bottom-0 w-1.5 bg-text-subtle"></div>
+<div class="flex items-center justify-between ml-1">
+<div class="flex items-center gap-space-xs">
+<span class="font-headline-md text-body-base text-text-primary font-bold">Sasha K.</span>
+<span class="px-1.5 py-0.5 rounded bg-surface-variant text-text-tertiary font-label-badge text-label-badge">Walk-in</span>
+</div>
+<span class="font-mono-metric-sm text-mono-metric-sm text-text-secondary flex items-center gap-0.5">
+<span class="material-symbols-outlined text-body-sm text-text-tertiary">group</span>2
+            </span>
+</div>
+<div class="flex items-center justify-between mt-1 text-text-tertiary font-body-sm text-body-sm ml-1">
+<span class="font-mono-metric-sm text-label-badge text-status-caution">Wait: ~15 mins</span>
+<span class="font-mono-metric-sm text-label-badge text-text-tertiary">Paging in 8m</span>
+</div>
+</div>
+</div>
+</div>
+<!-- CENTRAL CANVAS: Architectural Blueprint Interactive Floor Plan (6 Cols) -->
+<div class="lg:col-span-6 flex flex-col gap-space-sm bg-surface-container-low rounded-xl p-space-md shadow-md relative min-h-[760px] overflow-hidden">
+<!-- Blueprint Canvas Header with Legend -->
+<div class="flex flex-wrap items-center justify-between gap-space-xs pb-space-xs">
+<div class="flex items-center gap-space-sm">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-secondary">domain</span>
+<span class="font-headline-md text-headline-md text-text-primary">Floor Plan: Ground Level</span>
+</div>
+<div class="px-2 py-0.5 rounded bg-surface-container-high text-text-secondary font-mono-metric-sm text-label-badge">SCALE: 1:50</div>
+</div>
+<!-- Interactive Tool Buttons -->
+<div class="flex items-center gap-1 bg-surface-container-high p-1 rounded-lg">
+<button class="p-1 rounded text-text-secondary hover:text-text-primary hover:bg-surface-variant" title="Recenter View">
+<span class="material-symbols-outlined text-body-base">filter_center_focus</span>
+</button>
+<button class="p-1 rounded text-text-secondary hover:text-text-primary hover:bg-surface-variant" title="Grid Snapping On">
+<span class="material-symbols-outlined text-body-base">grid_4x4</span>
+</button>
+<button class="p-1 rounded text-text-secondary hover:text-text-primary hover:bg-surface-variant" title="Floor Heatmap Layer">
+<span class="material-symbols-outlined text-body-base">heat_pump</span>
+</button>
+</div>
+</div>
+<!-- Blueprint Status Legend -->
+<div class="flex flex-wrap items-center gap-space-md py-1 px-space-sm bg-surface-container-lowest/70 rounded-lg text-label-badge font-label-badge">
+<div class="flex items-center gap-1.5">
+<span class="h-2.5 w-2.5 rounded-full bg-status-ready shadow-[0_0_8px_rgba(34,197,94,0.6)]"></span>
+<span class="text-text-secondary">Seated</span>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="h-2.5 w-2.5 rounded-full bg-secondary shadow-[0_0_8px_rgba(76,215,246,0.6)]"></span>
+<span class="text-text-secondary">Reserved</span>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="h-2.5 w-2.5 rounded-full bg-status-caution shadow-[0_0_8px_rgba(245,158,11,0.6)]"></span>
+<span class="text-text-secondary">Dessert/Pay</span>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="h-2.5 w-2.5 rounded-full bg-status-urgent animate-ping"></span>
+<span class="text-status-urgent font-bold">Overstay</span>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="h-2.5 w-2.5 rounded-full bg-text-subtle"></span>
+<span class="text-text-secondary">Clean / Open</span>
+</div>
+</div>
+<!-- Architectural Canvas Grid Layout -->
+<div class="relative w-full flex-1 bg-surface-container-lowest rounded-xl p-space-md flex flex-col justify-between overflow-hidden shadow-inner select-none" style="background-image: radial-gradient(rgba(255,255,255,0.06) 1px, transparent 1px); background-size: 24px 24px;">
+<!-- Architectural Fixture: Top Wine Cellar & Restrooms -->
+<div class="grid grid-cols-12 gap-space-sm w-full">
+<!-- Restrooms -->
+<div class="col-span-3 bg-surface-container-high/60 rounded-lg p-space-xs flex items-center justify-center gap-1 shadow-sm">
+<span class="material-symbols-outlined text-body-sm text-text-subtle">wc</span>
+<span class="font-label-badge text-label-badge text-text-tertiary uppercase tracking-wider">Restrooms</span>
+</div>
+<!-- Architectural Wine Wall Feature -->
+<div class="col-span-6 bg-surface-container-high/60 rounded-lg p-space-xs flex items-center justify-center gap-2 shadow-sm">
+<span class="material-symbols-outlined text-body-sm text-accent-purple-glow">wine_bar</span>
+<span class="font-label-badge text-label-badge text-accent-purple-glow uppercase tracking-widest font-bold">Wine Reserve Display</span>
+<span class="text-label-badge font-mono-metric-sm text-text-subtle">18.5°C</span>
+</div>
+<!-- Waiter Station & POS -->
+<div class="col-span-3 bg-surface-container-high/60 rounded-lg p-space-xs flex items-center justify-center gap-1 shadow-sm">
+<span class="material-symbols-outlined text-body-sm text-secondary">computer</span>
+<span class="font-label-badge text-label-badge text-text-tertiary uppercase tracking-wider">POS &amp; Pantry</span>
+</div>
+</div>
+<!-- Upper Floor Table Cluster (Booths BS1-BS4 & Tables T1-T4) -->
+<div class="grid grid-cols-12 gap-space-sm items-center my-space-xs">
+<!-- Left Booths BS1 & BS2 -->
+<div class="col-span-3 flex flex-col gap-space-sm">
+<!-- Booth BS1 (Seated, Normal) -->
+<button class="w-full h-16 rounded-xl bg-status-ready/15 hover:bg-status-ready/25 transition-all flex flex-col items-center justify-center p-1 relative shadow-sm" onclick="selectTable('BS-01')">
+<span class="font-mono-metric-sm text-mono-metric-sm font-bold text-text-primary">BS-01</span>
+<span class="font-label-badge text-label-badge text-status-ready">4p • 42m</span>
+<span class="absolute top-1 right-1 h-2 w-2 rounded-full bg-status-ready"></span>
+</button>
+<!-- Booth BS2 (Paying/Check Dropped) -->
+<button class="w-full h-16 rounded-xl bg-status-caution/15 hover:bg-status-caution/25 transition-all flex flex-col items-center justify-center p-1 relative shadow-sm" onclick="selectTable('BS-02')">
+<span class="font-mono-metric-sm text-mono-metric-sm font-bold text-text-primary">BS-02</span>
+<span class="font-label-badge text-label-badge text-status-caution">4p • Bill Given</span>
+<span class="absolute top-1 right-1 h-2 w-2 rounded-full bg-status-caution"></span>
+</button>
+</div>
+<!-- Center Large Feature Tables T-01, T-02, T-03 -->
+<div class="col-span-6 grid grid-cols-3 gap-space-sm">
+<!-- T-01 (In Service) -->
+<button class="h-20 rounded-xl bg-status-ready/15 hover:bg-status-ready/25 transition-all flex flex-col items-center justify-center p-1 relative shadow-sm" onclick="selectTable('T-01')">
+<span class="font-mono-metric-sm text-mono-metric-sm font-bold text-text-primary">T-01</span>
+<span class="font-label-badge text-label-badge text-status-ready">James G.</span>
+<span class="font-mono-metric-sm text-label-badge text-text-tertiary">4p • 28m</span>
+<span class="absolute top-1 right-1 h-2 w-2 rounded-full bg-status-ready"></span>
+</button>
+<!-- T-02 (Available Clean) -->
+<button class="h-20 rounded-xl bg-surface-container hover:bg-surface-container-high transition-all flex flex-col items-center justify-center p-1 relative shadow-sm" onclick="selectTable('T-02')">
+<span class="font-mono-metric-sm text-mono-metric-sm font-bold text-text-secondary">T-02</span>
+<span class="font-label-badge text-label-badge text-text-tertiary">Open Clean</span>
+<span class="font-mono-metric-sm text-label-badge text-status-ready">Ready (4p)</span>
+</button>
+<!-- T-03 (Selected Card in Context & Inspiration) -->
+<button class="h-20 rounded-xl bg-primary-container/25 shadow-[0_0_16px_rgba(183,109,255,0.4)] transition-all flex flex-col items-center justify-center p-1 relative" onclick="selectTable('T-03')">
+<span class="font-mono-metric-sm text-mono-metric-sm font-bold text-text-primary">T-03</span>
+<span class="font-label-badge text-label-badge text-primary font-bold">Maurice T.</span>
+<span class="font-mono-metric-sm text-label-badge text-text-primary font-bold">4p • 1h 15m</span>
+<span class="absolute top-1 right-1 h-2.5 w-2.5 rounded-full bg-accent-purple-glow animate-pulse"></span>
+</button>
+</div>
+<!-- Right Kitchen Pass Window Architecture -->
+<div class="col-span-3 bg-status-caution/10 rounded-xl p-space-sm flex flex-col items-center justify-center gap-1 shadow-sm">
+<span class="material-symbols-outlined text-headline-md text-status-caution">soup_kitchen</span>
+<span class="font-headline-md text-body-sm text-status-caution font-bold">KITCHEN PASS</span>
+<span class="font-mono-metric-sm text-label-badge text-text-tertiary uppercase">4 Orders Ready</span>
+</div>
+</div>
+<!-- Center Floor: Bar Island & Stools Layout -->
+<div class="grid grid-cols-12 gap-space-sm items-center my-space-xs">
+<!-- Circular Round Tables T-11 to T-13 -->
+<div class="col-span-3 flex flex-col items-center gap-space-sm">
+<!-- Round Table 11 (Reserved Cyan Glow) -->
+<button class="w-16 h-16 rounded-full bg-secondary/15 hover:bg-secondary/25 transition-all flex flex-col items-center justify-center relative shadow-sm" onclick="selectTable('T-11')">
+<span class="font-mono-metric-sm text-mono-metric-sm font-bold text-secondary">T-11</span>
+<span class="font-label-badge text-label-badge text-text-tertiary">2p • 19:45</span>
+<span class="absolute top-1 right-1 h-2 w-2 rounded-full bg-secondary"></span>
+</button>
+<!-- Round Table 12 (Available) -->
+<button class="w-16 h-16 rounded-full bg-surface-container hover:bg-surface-container-high transition-all flex flex-col items-center justify-center relative shadow-sm" onclick="selectTable('T-12')">
+<span class="font-mono-metric-sm text-mono-metric-sm font-bold text-text-secondary">T-12</span>
+<span class="font-label-badge text-label-badge text-text-tertiary">2p Open</span>
+</button>
+</div>
+<!-- Central Island Bar Counters (BS-Bar Stools 1-8) -->
+<div class="col-span-6 bg-surface-container-high/90 rounded-2xl p-space-sm flex flex-col items-center justify-center shadow-lg relative">
+<span class="font-label-eyebrow text-label-eyebrow text-secondary uppercase tracking-widest mb-1">Central Island Bar &amp; Spirits</span>
+<!-- Bar Stools Row -->
+<div class="flex items-center justify-center gap-2 w-full py-1">
+<div class="w-7 h-7 rounded-full bg-status-ready/30 flex items-center justify-center font-mono-metric-sm text-label-badge text-status-ready font-bold" title="Bar 1: Seated">B1</div>
+<div class="w-7 h-7 rounded-full bg-status-ready/30 flex items-center justify-center font-mono-metric-sm text-label-badge text-status-ready font-bold" title="Bar 2: Seated">B2</div>
+<div class="w-7 h-7 rounded-full bg-status-caution/30 flex items-center justify-center font-mono-metric-sm text-label-badge text-status-caution font-bold" title="Bar 3: Bill Dropped">B3</div>
+<div class="w-7 h-7 rounded-full bg-surface-container-highest flex items-center justify-center font-mono-metric-sm text-label-badge text-text-subtle" title="Bar 4: Open">B4</div>
+<div class="w-7 h-7 rounded-full bg-secondary/30 flex items-center justify-center font-mono-metric-sm text-label-badge text-secondary font-bold" title="Bar 5: Reserved">B5</div>
+<div class="w-7 h-7 rounded-full bg-status-ready/30 flex items-center justify-center font-mono-metric-sm text-label-badge text-status-ready font-bold" title="Bar 6: Seated">B6</div>
+<div class="w-7 h-7 rounded-full bg-surface-container-highest flex items-center justify-center font-mono-metric-sm text-label-badge text-text-subtle" title="Bar 7: Open">B7</div>
+</div>
+<div class="text-label-badge font-mono-metric-sm text-text-tertiary mt-1">Lead Mixologist: Elena R.</div>
+</div>
+<!-- Circular Round Tables T-16 & T-17 (Critical Overstay Table) -->
+<div class="col-span-3 flex flex-col items-center gap-space-sm">
+<!-- Round Table 16 (Seated) -->
+<button class="w-16 h-16 rounded-full bg-status-ready/15 hover:bg-status-ready/25 transition-all flex flex-col items-center justify-center relative shadow-sm" onclick="selectTable('T-16')">
+<span class="font-mono-metric-sm text-mono-metric-sm font-bold text-text-primary">T-16</span>
+<span class="font-label-badge text-label-badge text-status-ready">2p • 35m</span>
+<span class="absolute top-1 right-1 h-2 w-2 rounded-full bg-status-ready"></span>
+</button>
+<!-- Round Table 17 (ALERT OVERSTAY CRIMSON PULSE) -->
+<button class="w-18 h-18 rounded-full bg-status-urgent/25 shadow-[0_0_16px_rgba(239,68,68,0.55)] transition-all flex flex-col items-center justify-center relative animate-pulse" onclick="selectTable('T-17')">
+<span class="font-mono-metric-sm text-mono-metric-sm font-bold text-text-primary">T-17</span>
+<span class="font-label-badge text-label-badge text-status-urgent font-bold">+24m Over</span>
+<span class="font-mono-metric-sm text-label-badge text-text-primary">2h 10m</span>
+<span class="absolute -top-1 -right-1 h-3.5 w-3.5 rounded-full bg-status-urgent flex items-center justify-center text-bg-canvas font-bold text-[9px]">!</span>
+</button>
+</div>
+</div>
+<!-- Lower Floor: Long Banquet Tables WS-01 to WS-05 & Entrance -->
+<div class="grid grid-cols-12 gap-space-sm items-end mt-space-xs">
+<!-- Entrance & Host Podium Station -->
+<div class="col-span-3 bg-surface-container-high/70 rounded-xl p-space-sm flex flex-col items-center justify-center shadow-sm">
+<span class="material-symbols-outlined text-headline-md text-text-primary">sensor_door</span>
+<span class="font-label-badge text-label-badge text-text-primary uppercase tracking-wider font-bold">Main Entrance</span>
+<span class="font-mono-metric-sm text-label-badge text-secondary mt-0.5">Hostess Stand Active</span>
+</div>
+<!-- Long Banquet Communal Tables WS-01, WS-02, WS-05 -->
+<div class="col-span-6 grid grid-cols-3 gap-space-sm">
+<!-- Banquet Table WS-01 -->
+<button class="h-20 rounded-xl bg-status-ready/15 hover:bg-status-ready/25 transition-all flex flex-col items-center justify-center p-1 relative shadow-sm" onclick="selectTable('WS-01')">
+<span class="font-mono-metric-sm text-mono-metric-sm font-bold text-text-primary">WS-01</span>
+<span class="font-label-badge text-label-badge text-status-ready font-semibold">Raj T. • 6p</span>
+<span class="font-mono-metric-sm text-label-badge text-text-secondary">Dessert</span>
+<span class="absolute top-1 right-1 h-2 w-2 rounded-full bg-status-ready"></span>
+</button>
+<!-- Banquet Table WS-02 -->
+<button class="h-20 rounded-xl bg-surface-container hover:bg-surface-container-high transition-all flex flex-col items-center justify-center p-1 relative shadow-sm" onclick="selectTable('WS-02')">
+<span class="font-mono-metric-sm text-mono-metric-sm font-bold text-text-secondary">WS-02</span>
+<span class="font-label-badge text-label-badge text-text-tertiary">Clean • Open</span>
+<span class="font-mono-metric-sm text-label-badge text-status-ready">Cap: 8p</span>
+</button>
+<!-- Banquet Table WS-05 (Needs Reset / Busing) -->
+<button class="h-20 rounded-xl bg-surface-container-high/50 hover:bg-surface-container-high transition-all flex flex-col items-center justify-center p-1 relative shadow-sm" onclick="selectTable('WS-05')">
+<span class="font-mono-metric-sm text-mono-metric-sm font-bold text-text-secondary">WS-05</span>
+<span class="font-label-badge text-label-badge text-status-caution font-bold">Needs Reset</span>
+<span class="font-mono-metric-sm text-label-badge text-text-subtle">Assigned: Kris W.</span>
+<span class="absolute top-1 right-1 h-2 w-2 rounded-full bg-status-caution"></span>
+</button>
+</div>
+<!-- Front Desk / Valet / Coat Check -->
+<div class="col-span-3 bg-surface-container-high/70 rounded-xl p-space-sm flex flex-col items-center justify-center shadow-sm">
+<span class="material-symbols-outlined text-headline-md text-text-secondary">checkroom</span>
+<span class="font-label-badge text-label-badge text-text-tertiary uppercase tracking-wider">Coat &amp; Valet</span>
+<span class="font-mono-metric-sm text-label-badge text-text-secondary mt-0.5">34 Tickets Out</span>
+</div>
+</div>
+</div>
+</div>
+<!-- RIGHT PANEL: Inspector & Table Action Drawer (3 Cols) -->
+<div class="lg:col-span-3 flex flex-col gap-space-sm bg-surface-container-low rounded-xl p-space-md shadow-md">
+<!-- Table Inspector Card Header -->
+<div class="flex items-center justify-between pb-space-xs">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-primary">table_restaurant</span>
+<span class="font-headline-md text-headline-md text-text-primary" id="inspector-table-name">Table 03</span>
+</div>
+<span class="px-space-xs py-0.5 rounded bg-surface-variant font-mono-metric-sm text-label-badge text-text-secondary uppercase">Ground Floor</span>
+</div>
+<!-- Live Table Status Banner -->
+<div class="p-space-sm rounded-xl bg-gradient-to-r from-accent-purple-glow/20 via-primary/10 to-transparent bg-surface-container-high flex flex-col gap-1 shadow-sm">
+<div class="flex items-center justify-between">
+<span class="font-label-badge text-label-badge text-accent-purple-glow uppercase font-bold tracking-wider">Currently Seated</span>
+<span class="font-mono-metric-sm text-mono-metric-sm text-status-ready font-bold">1h 15m ELAPSED</span>
+</div>
+<div class="flex items-center justify-between mt-1">
+<span class="font-headline-md text-headline-md text-text-primary" id="inspector-guest-name">Maurice Vance T.</span>
+<span class="font-mono-metric-sm text-mono-metric-sm text-text-secondary">4 Guests</span>
+</div>
+<div class="flex items-center gap-1 text-label-badge text-text-tertiary font-mono-metric-sm">
+<span class="material-symbols-outlined text-body-sm text-secondary">schedule</span>
+<span>Window: 19:15 – 21:15</span>
+</div>
+</div>
+<!-- Server & Order Telemetry Stats -->
+<div class="grid grid-cols-2 gap-space-xs">
+<div class="p-space-sm rounded-xl bg-surface-container flex flex-col">
+<span class="font-label-badge text-label-badge text-text-tertiary uppercase">Server Assigned</span>
+<div class="flex items-center gap-1 mt-1">
+<span class="material-symbols-outlined text-body-base text-secondary">badge</span>
+<span class="font-body-base text-body-base font-bold text-text-primary" id="inspector-server-name">Jerry K.</span>
+</div>
+</div>
+<div class="p-space-sm rounded-xl bg-surface-container flex flex-col">
+<span class="font-label-badge text-label-badge text-text-tertiary uppercase">Current Check</span>
+<div class="flex items-center gap-1 mt-1">
+<span class="material-symbols-outlined text-body-base text-status-ready">payments</span>
+<span class="font-mono-metric-md text-mono-metric-md text-text-primary font-bold" id="inspector-check-val">$142.00</span>
+</div>
+</div>
+</div>
+<!-- Quick Status Selector Buttons (from Inspiration) -->
+<div class="flex flex-col gap-1 mt-1">
+<span class="font-label-badge text-label-badge text-text-tertiary uppercase tracking-wider">Service State</span>
+<div class="grid grid-cols-4 gap-1">
+<button class="p-2 rounded-lg bg-surface-container-high text-accent-purple-glow font-label-badge text-label-badge flex flex-col items-center justify-center gap-1 shadow-sm hover:brightness-125">
+<span class="material-symbols-outlined text-body-base">restaurant</span>
+<span>In Use</span>
+</button>
+<button class="p-2 rounded-lg bg-surface-container text-text-tertiary font-label-badge text-label-badge flex flex-col items-center justify-center gap-1 hover:bg-surface-container-high hover:text-text-primary transition-colors">
+<span class="material-symbols-outlined text-body-base">icecream</span>
+<span>Dessert</span>
+</button>
+<button class="p-2 rounded-lg bg-surface-container text-text-tertiary font-label-badge text-label-badge flex flex-col items-center justify-center gap-1 hover:bg-surface-container-high hover:text-text-primary transition-colors">
+<span class="material-symbols-outlined text-body-base">point_of_sale</span>
+<span>Paying</span>
+</button>
+<button class="p-2 rounded-lg bg-surface-container text-text-tertiary font-label-badge text-label-badge flex flex-col items-center justify-center gap-1 hover:bg-surface-container-high hover:text-text-primary transition-colors">
+<span class="material-symbols-outlined text-body-base">cleaning_services</span>
+<span>Dirty</span>
+</button>
+</div>
+</div>
+<!-- Live Order Items Preview in Drawer -->
+<div class="flex flex-col gap-space-xs mt-1">
+<div class="flex items-center justify-between">
+<span class="font-label-badge text-label-badge text-text-tertiary uppercase tracking-wider">Active Ticket Items</span>
+<span class="font-mono-metric-sm text-label-badge text-secondary font-bold">POS #8842</span>
+</div>
+<div class="flex flex-col gap-1 bg-surface-container-lowest/80 p-space-sm rounded-xl">
+<div class="flex items-center justify-between text-body-sm font-body-sm">
+<span class="text-text-primary font-semibold">1x 28-Day Dry Aged Ribeye</span>
+<span class="font-mono-metric-sm text-text-secondary">$64.00</span>
+</div>
+<span class="text-label-badge text-text-tertiary italic pl-2">Med-Rare, Truffle Jus</span>
+<div class="flex items-center justify-between text-body-sm font-body-sm mt-1">
+<span class="text-text-primary font-semibold">2x Pan-Seared Chilean Seabass</span>
+<span class="font-mono-metric-sm text-text-secondary">$78.00</span>
+</div>
+<span class="text-label-badge text-status-caution font-bold pl-2">Gluten Allergy Note</span>
+</div>
+</div>
+<!-- Action Touch Controls -->
+<div class="flex flex-col gap-space-xs mt-auto pt-space-sm">
+<!-- Big Primary Complete Action (Inspired by red/crimson button) -->
+<button class="w-full py-space-sm px-space-md rounded-xl bg-status-urgent hover:bg-red-600 active:scale-95 text-text-primary font-headline-md text-headline-md font-bold shadow-md transition-all flex items-center justify-center gap-space-xs">
+<span class="material-symbols-outlined text-headline-md">check_circle</span>
+<span>Complete Check</span>
+</button>
+<!-- Utility Control Grid -->
+<div class="grid grid-cols-2 gap-space-xs">
+<button class="p-space-xs rounded-xl bg-surface-container hover:bg-surface-container-high text-text-secondary font-body-base text-body-sm font-semibold flex items-center justify-center gap-1 transition-colors">
+<span class="material-symbols-outlined text-body-base text-secondary">receipt_long</span>
+<span>View Check</span>
+</button>
+<button class="p-space-xs rounded-xl bg-surface-container hover:bg-surface-container-high text-text-secondary font-body-base text-body-sm font-semibold flex items-center justify-center gap-1 transition-colors">
+<span class="material-symbols-outlined text-body-base text-status-caution">swap_horiz</span>
+<span>Transfer</span>
+</button>
+</div>
+<!-- Secondary Action: Unseat Party -->
+<button class="w-full py-space-xs rounded-xl bg-transparent hover:bg-surface-container text-secondary font-body-base text-body-sm font-bold transition-colors flex items-center justify-center gap-1">
+<span class="material-symbols-outlined text-body-base">person_remove</span>
+<span>Unseat &amp; Mark Ready for Bus</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Client-Side Micro-Interactivity -->
+<script>
+    function selectTable(tableId) {
+      const tableData = {
+        'T-03': { name: 'Table 03', guest: 'Maurice Vance T.', server: 'Jerry K.', check: '$142.00' },
+        'T-17': { name: 'Table 17 (ALERT)', guest: 'Ben Z. (VIP Chef)', server: 'Marco V.', check: '$318.50' },
+        'BS-01': { name: 'Booth BS-01', guest: 'Claire Sterling', server: 'Elena R.', check: '$94.00' },
+        'BS-02': { name: 'Booth BS-02', guest: 'David Patel', server: 'Jerry K.', check: '$128.00' },
+        'WS-01': { name: 'Banquet WS-01', guest: 'Raj T. & Team', server: 'Jerry K.', check: '$210.50' },
+        'WS-05': { name: 'Banquet WS-05', guest: 'Kris W. (Arriving)', server: 'Jerry K.', check: '$0.00' },
+        'T-01': { name: 'Table 01', guest: 'James G.', server: 'Jerry K.', check: '$86.00' },
+        'T-02': { name: 'Table 02', guest: 'Available Table', server: 'Unassigned', check: '$0.00' },
+        'T-11': { name: 'Table 11', guest: 'Reserved (19:45)', server: 'Jerry K.', check: '$0.00' },
+        'T-12': { name: 'Table 12', guest: 'Available Table', server: 'Unassigned', check: '$0.00' },
+        'T-16': { name: 'Table 16', guest: 'Sarah Jenkins', server: 'Elena R.', check: '$72.50' }
+      };
+
+      const selected = tableData[tableId] || { name: tableId, guest: 'Walk-in Guest', server: 'Staff', check: '$45.00' };
+
+      const nameEl = document.getElementById('inspector-table-name');
+      const guestEl = document.getElementById('inspector-guest-name');
+      const serverEl = document.getElementById('inspector-server-name');
+      const checkEl = document.getElementById('inspector-check-val');
+
+      if (nameEl) nameEl.textContent = selected.name;
+      if (guestEl) guestEl.textContent = selected.guest;
+      if (serverEl) serverEl.textContent = selected.server;
+      if (checkEl) checkEl.textContent = selected.check;
+    }
+  </script>
+</div></main></div></body></html>
