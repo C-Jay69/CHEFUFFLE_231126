@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import AppShell from '@/components/AppShell';
 import CloseTableModal from '@/components/CloseTableModal';
@@ -56,6 +56,8 @@ export default function OpenChecksPage() {
   const [payBrand, setPayBrand] = useState<'visa' | 'mastercard' | 'amex' | 'debit' | 'other'>('visa');
   const [payTip, setPayTip] = useState('');
   const [busy, setBusy] = useState(false);
+  // Same intent → same key, so a retry cannot double-charge.
+  const payKeyRef = useRef<{ signature: string; key: string } | null>(null);
   const [now, setNow] = useState(() => Date.now());
   const [tables, setTables] = useState<DiningTable[]>([]);
   const [closeTarget, setCloseTarget] = useState<DiningTable | null>(null);
@@ -161,10 +163,22 @@ export default function OpenChecksPage() {
     setBusy(true);
     try {
       if (confirm.kind === 'pay') {
-        const idempotencyKey =
-          typeof crypto !== 'undefined' && 'randomUUID' in crypto
-            ? crypto.randomUUID()
-            : `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+        const signature = [
+          confirm.order.id,
+          toCents(Number(payTip) || 0),
+          payMethod,
+          payMethod === 'card' ? payBrand : '',
+        ].join('|');
+        if (!payKeyRef.current || payKeyRef.current.signature !== signature) {
+          payKeyRef.current = {
+            signature,
+            key:
+              typeof crypto !== 'undefined' && 'randomUUID' in crypto
+                ? crypto.randomUUID()
+                : `${Date.now()}-${Math.random().toString(36).slice(2)}`,
+          };
+        }
+        const idempotencyKey = payKeyRef.current.key;
         const paid = await api.post<Order>(
           `/orders/${confirm.order.id}/pay`,
           {
@@ -174,10 +188,14 @@ export default function OpenChecksPage() {
           },
           { headers: { 'Idempotency-Key': idempotencyKey } },
         );
+        payKeyRef.current = null;
         showToast(`Check #${paid.orderNumber} paid · ${money(paid.total)}.`, 'success');
       } else {
         const reason = voidReason.trim() || 'Manager void';
-        await api.post(`/orders/${confirm.order.id}/void`, { reason });
+        await api.post(`/orders/${confirm.order.id}/void`, {
+          reason,
+          refund: true,
+        });
         showToast(`Check #${confirm.order.orderNumber} voided.`, 'warn');
       }
       setConfirm(null);

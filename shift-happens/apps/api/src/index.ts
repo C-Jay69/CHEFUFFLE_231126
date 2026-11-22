@@ -28,6 +28,9 @@ export async function buildApp(): Promise<FastifyInstance> {
           : undefined,
     },
     bodyLimit: 25 * 1024 * 1024,
+    // Behind Caddy, request.ip must be the forwarded client address or every
+    // terminal shares one throttle bucket.
+    trustProxy: env.TRUST_PROXY === '1',
   });
 
   await app.register(cors, {

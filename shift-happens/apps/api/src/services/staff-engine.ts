@@ -2,6 +2,7 @@ import {
   PIN_MAX_LENGTH,
   PIN_MIN_LENGTH,
   hashPin,
+  pinLookup,
   prisma,
   verifyPin,
 } from '@shift-happens/db';
@@ -82,22 +83,39 @@ async function assertPinFree(
   pin: string,
   excludeId?: string,
 ) {
-  const candidates = await prisma.staff.findMany({
+  const lookup = pinLookup(pin, restaurantId);
+  const clash = await prisma.staff.findFirst({
     where: {
       restaurantId,
+      pinLookup: lookup,
+      isActive: true,
+      ...(excludeId ? { id: { not: excludeId } } : {}),
+    },
+    select: { name: true },
+  });
+  if (clash) {
+    throw conflict(`That PIN is already assigned to ${clash.name}.`);
+  }
+
+  // Rows hashed before the lookup column existed have no index entry; verify
+  // the candidate against those few rows so uniqueness still holds.
+  const legacy = await prisma.staff.findMany({
+    where: {
+      restaurantId,
+      pinLookup: null,
       isActive: true,
       ...(excludeId ? { id: { not: excludeId } } : {}),
       OR: [{ pinHash: { not: null } }, { pin: { not: null } }],
     },
     select: { name: true, pin: true, pinHash: true },
   });
-  const clash = candidates.find((candidate) =>
+  const legacyClash = legacy.find((candidate) =>
     candidate.pinHash
       ? verifyPin(pin, candidate.pinHash)
       : candidate.pin === pin,
   );
-  if (clash) {
-    throw conflict(`That PIN is already assigned to ${clash.name}.`);
+  if (legacyClash) {
+    throw conflict(`That PIN is already assigned to ${legacyClash.name}.`);
   }
 }
 
@@ -119,6 +137,7 @@ export async function createStaffMember(
       // until a manager assigns one.
       pin: null,
       pinHash: input.pin ? hashPin(input.pin) : null,
+      pinLookup: input.pin ? pinLookup(input.pin, restaurantId) : null,
       hourlyRate: input.hourlyRate ?? 18,
       phone: input.phone ?? null,
       email: input.email ?? null,
@@ -149,7 +168,11 @@ export async function updateStaffMember(
       ...(input.name !== undefined ? { name: input.name.trim() } : {}),
       ...(input.role !== undefined ? { role: input.role as never } : {}),
       ...(input.pin !== undefined
-        ? { pin: null, pinHash: hashPin(input.pin) }
+        ? {
+            pin: null,
+            pinHash: hashPin(input.pin),
+            pinLookup: pinLookup(input.pin, restaurantId),
+          }
         : {}),
       ...(input.hourlyRate !== undefined ? { hourlyRate: input.hourlyRate } : {}),
       ...(input.phone !== undefined ? { phone: input.phone } : {}),

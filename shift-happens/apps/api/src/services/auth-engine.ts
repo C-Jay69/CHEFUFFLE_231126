@@ -3,6 +3,7 @@ import {
   PIN_MAX_LENGTH,
   PIN_MIN_LENGTH,
   hashPin,
+  pinLookup,
   prisma,
   verifyPin,
 } from '@shift-happens/db';
@@ -190,11 +191,14 @@ export async function pinLogin(
   const key = throttleKey(ipAddress);
   assertNotLockedOut(key);
 
+  // The HMAC lookup makes this a single indexed row read. Rows hashed before
+  // the lookup column existed (pinLookup null) are the only ones scanned.
+  const lookup = pinLookup(pin, restaurantId);
   const candidates = await prisma.staff.findMany({
     where: {
       restaurantId,
       isActive: true,
-      OR: combineOrFilter(),
+      OR: [{ pinLookup: lookup }, { pinLookup: null, OR: combineOrFilter() }],
     },
   });
 
@@ -240,11 +244,22 @@ export async function pinLogin(
 
   const { staff: matched, legacy: legacyMatch } = matches[0];
 
+  // A correct PIN resets the failure window so a single later typo does not
+  // lock out an employee who just authenticated successfully.
+  pinAttempts.delete(key);
+
   let staff = matched;
   if (legacyMatch) {
     staff = await prisma.staff.update({
       where: { id: matched.id },
-      data: { pinHash: hashPin(pin), pin: null },
+      data: { pinHash: hashPin(pin), pinLookup: lookup, pin: null },
+    });
+  } else if (!staff.pinLookup) {
+    // Hash was created before the lookup index existed; backfill it now that
+    // the correct PIN is known.
+    staff = await prisma.staff.update({
+      where: { id: staff.id },
+      data: { pinLookup: lookup },
     });
   }
 

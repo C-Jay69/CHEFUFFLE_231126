@@ -1,4 +1,9 @@
-import { randomBytes, scryptSync, timingSafeEqual } from 'node:crypto';
+import {
+  createHmac,
+  randomBytes,
+  scryptSync,
+  timingSafeEqual,
+} from 'node:crypto';
 
 /**
  * PIN hashing shared by the API, the seed and the migration backfill.
@@ -14,6 +19,19 @@ const P = 1;
 
 export const PIN_MIN_LENGTH = 4;
 export const PIN_MAX_LENGTH = 8;
+
+/**
+ * Deterministic per-restaurant lookup digest. This makes PIN login a single
+ * indexed row read instead of an O(staff) scrypt scan; the salted scrypt hash
+ * is still what verifies the PIN. Keep PIN_PEPPER out of the database.
+ */
+const LOOKUP_PEPPER = process.env.PIN_PEPPER || 'chefuffle-pin-lookup-v1';
+
+export function pinLookup(pin: string, restaurantId: string): string {
+  return createHmac('sha256', LOOKUP_PEPPER)
+    .update(`${restaurantId}:${pin}`)
+    .digest('hex');
+}
 
 export function hashPin(pin: string): string {
   const salt = randomBytes(16);

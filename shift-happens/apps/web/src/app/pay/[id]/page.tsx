@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import AppShell from '@/components/AppShell';
 import { Badge, Button, Card, EmptyState } from '@/components/ui';
@@ -167,12 +167,16 @@ export default function PayPage() {
   const [printOpen, setPrintOpen] = useState(false);
   const [taxRatePercent, setTaxRatePercent] = useState(8);
   const [taxInclusive, setTaxInclusive] = useState(false);
+  // Reuse one idempotency key per payment intent so a retry after a lost
+  // response cannot charge the same share twice.
+  const paymentKeyRef = useRef<{ signature: string; key: string } | null>(null);
 
   useEffect(() => {
     void api
       .get<{ taxRate: number; taxInclusive: boolean }>('/pos/config')
       .then((config) => {
-        setTaxRatePercent(Number(config.taxRate) || 8);
+        const rate = Number(config.taxRate);
+        setTaxRatePercent(Number.isFinite(rate) ? rate : 8);
         setTaxInclusive(Boolean(config.taxInclusive));
       })
       .catch(() => undefined);
@@ -320,7 +324,14 @@ export default function PayPage() {
     const sections = seatGroups
       .map((group) => {
         const groupSubtotalCents = toCents(group.subtotal);
-        const groupTaxCents = percentOfCents(groupSubtotalCents, taxRatePercent);
+        const groupTaxCents = taxFromGrossCents(
+          groupSubtotalCents,
+          taxRatePercent,
+          taxInclusive,
+        );
+        const groupNetCents = taxInclusive
+          ? groupSubtotalCents - groupTaxCents
+          : groupSubtotalCents;
         const groupTipCents =
           subtotalCents > 0
             ? Math.round((tipCents * groupSubtotalCents) / subtotalCents)
@@ -330,7 +341,7 @@ export default function PayPage() {
         }</div>
           <table>${itemRows(group.items)}</table>
           <table>
-            <tr><td>Guest subtotal</td><td class="right">${money(group.subtotal)}</td></tr>
+            <tr><td>Guest subtotal</td><td class="right">${money(fromCents(groupNetCents))}</td></tr>
             <tr><td>Tax share</td><td class="right">${money(fromCents(groupTaxCents))}</td></tr>
             ${
               groupTipCents > 0
@@ -338,7 +349,7 @@ export default function PayPage() {
                 : ''
             }
             <tr class="total"><td>Due</td><td class="right">${money(
-              fromCents(groupSubtotalCents + groupTaxCents + groupTipCents),
+              fromCents(groupNetCents + groupTaxCents + groupTipCents),
             )}</td></tr>
           </table>`;
       })
@@ -366,7 +377,14 @@ export default function PayPage() {
     const pages = seatGroups
       .map((group, index) => {
         const groupSubtotalCents = toCents(group.subtotal);
-        const groupTaxCents = percentOfCents(groupSubtotalCents, taxRatePercent);
+        const groupTaxCents = taxFromGrossCents(
+          groupSubtotalCents,
+          taxRatePercent,
+          taxInclusive,
+        );
+        const groupNetCents = taxInclusive
+          ? groupSubtotalCents - groupTaxCents
+          : groupSubtotalCents;
         const groupTipCents =
           subtotalCents > 0
             ? Math.round((tipCents * groupSubtotalCents) / subtotalCents)
@@ -385,11 +403,11 @@ export default function PayPage() {
           <table>${itemRows(group.items)}</table>
           <hr/>
           <table>
-            <tr><td>Subtotal</td><td class="right">${money(group.subtotal)}</td></tr>
+            <tr><td>Subtotal</td><td class="right">${money(fromCents(groupNetCents))}</td></tr>
             <tr><td>${taxLabel}</td><td class="right">${money(fromCents(groupTaxCents))}</td></tr>
             ${tipRow(fromCents(groupTipCents))}
             <tr class="total"><td>Total</td><td class="right">${money(
-              fromCents(groupSubtotalCents + groupTaxCents + groupTipCents),
+              fromCents(groupNetCents + groupTaxCents + groupTipCents),
             )}</td></tr>
           </table>
           <hr/>
@@ -416,10 +434,26 @@ export default function PayPage() {
     try {
       const label =
         selectedShare !== null ? allocated[selectedShare]?.label ?? null : null;
-      const idempotencyKey =
-        typeof crypto !== 'undefined' && 'randomUUID' in crypto
-          ? crypto.randomUUID()
-          : `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+      const signature = [
+        selectedShare ?? 'all',
+        amountCents,
+        method,
+        method === 'card' ? brand : '',
+        toCents(tip),
+      ].join('|');
+      if (
+        !paymentKeyRef.current ||
+        paymentKeyRef.current.signature !== signature
+      ) {
+        paymentKeyRef.current = {
+          signature,
+          key:
+            typeof crypto !== 'undefined' && 'randomUUID' in crypto
+              ? crypto.randomUUID()
+              : `${Date.now()}-${Math.random().toString(36).slice(2)}`,
+        };
+      }
+      const idempotencyKey = paymentKeyRef.current.key;
       const updated = await api.post<Order>(
         `/orders/${order.id}/payments`,
         {
@@ -431,6 +465,7 @@ export default function PayPage() {
         },
         { headers: { 'Idempotency-Key': idempotencyKey } },
       );
+      paymentKeyRef.current = null;
       setOrder(updated);
       setSelectedShare(null);
       showToast(

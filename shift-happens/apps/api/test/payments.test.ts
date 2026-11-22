@@ -7,6 +7,7 @@ import {
   getOrder,
   payOrder,
   refundOrder,
+  reopenOrder,
   voidOrder,
 } from '../src/services/pos-engine';
 import { getEndOfNight } from '../src/services/end-of-night-engine';
@@ -474,5 +475,89 @@ describe('payments and money integrity', () => {
 
     const current = await getOrder(created.order.id, restaurantId);
     expect(current.paidAmount).toBe(40);
+  });
+
+  it('voids a legacy paid check without corrupting the ledger', async () => {
+    const created = await createCheck();
+    await prisma.order.update({
+      where: { id: created.order.id },
+      data: {
+        status: 'paid',
+        closedAt: new Date(),
+        paidAt: new Date(),
+        paymentMethod: 'card',
+        cardBrand: 'visa',
+      },
+    });
+
+    const voided = await voidOrder(
+      created.order.id,
+      'Legacy check voided',
+      restaurantId,
+      { refund: true, actorStaffId: staffId },
+    );
+
+    expect(voided.status).toBe('void');
+    expect(voided.paidAmount).toBe(0);
+    expect(voided.balance).toBe(0);
+    const rows = await prisma.payment.findMany({
+      where: { orderId: created.order.id },
+    });
+    expect(rows.some((row) => row.kind === 'payment')).toBe(true);
+    expect(rows.some((row) => row.kind === 'refund')).toBe(true);
+  });
+
+  it('re-settles a reopened fully paid check without charging again', async () => {
+    const created = await createCheck();
+    await payOrder(
+      created.order.id,
+      { method: 'card', cardBrand: 'visa' },
+      restaurantId,
+      { actorStaffId: staffId },
+    );
+    await reopenOrder(created.order.id, restaurantId, {
+      actorStaffId: staffId,
+    });
+
+    const settled = await payOrder(
+      created.order.id,
+      { method: 'card' },
+      restaurantId,
+      { actorStaffId: staffId },
+    );
+
+    expect(settled.status).toBe('paid');
+    expect(settled.paidAmount).toBe(110);
+    expect(settled.balance).toBe(0);
+    expect(
+      await prisma.payment.count({
+        where: { orderId: created.order.id, kind: 'payment' },
+      }),
+    ).toBe(1);
+  });
+
+  it('keeps end-of-night sales, tax and tips reconciled after a refund', async () => {
+    const before = await getEndOfNight(restaurantId);
+    const created = await createCheck();
+    await payOrder(
+      created.order.id,
+      { method: 'card', cardBrand: 'visa' },
+      restaurantId,
+      { actorStaffId: staffId },
+    );
+    await refundOrder(
+      created.order.id,
+      { amount: 20, reason: 'Guest adjustment' },
+      restaurantId,
+      { actorStaffId: staffId },
+    );
+
+    const after = await getEndOfNight(restaurantId);
+    const delta = (key: 'sales' | 'tax' | 'tips' | 'gross' | 'refunds') =>
+      after.totals[key] - before.totals[key];
+
+    expect(delta('gross')).toBeCloseTo(90, 2);
+    expect(delta('sales') + delta('tax') + delta('tips')).toBeCloseTo(90, 2);
+    expect(delta('refunds')).toBeCloseTo(20, 2);
   });
 });

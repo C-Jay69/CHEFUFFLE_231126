@@ -2,7 +2,7 @@
 import 'dotenv/config';
 import { PrismaClient, type KdsStation, type UserRole } from '@prisma/client';
 import { createHash } from 'node:crypto';
-import { hashPin } from './pin.js';
+import { hashPin, pinLookup } from './pin.js';
 
 /**
  * The demo seed wipes every tenant. Require an explicit opt-in so a stray
@@ -148,6 +148,7 @@ async function main() {
       role: s.role,
       pin: null,
       pinHash: hashPin(s.pin),
+      pinLookup: pinLookup(s.pin, RESTAURANT_ID),
       hourlyRate: s.rate,
       phone: `+1 555-01${String(20 + s.n).padStart(2, '0')}`,
       email: `${s.name.toLowerCase().replace(/[^a-z]+/g, '.')}@restaurant.local`,

@@ -127,7 +127,8 @@ export default function ServePage() {
     void api
       .get<{ taxRate: number; taxInclusive: boolean }>('/pos/config')
       .then((config) => {
-        setTaxRatePercent(Number(config.taxRate) || 8);
+        const rate = Number(config.taxRate);
+        setTaxRatePercent(Number.isFinite(rate) ? rate : 8);
         setTaxInclusive(Boolean(config.taxInclusive));
       })
       .catch(() => undefined);
@@ -329,8 +330,10 @@ export default function ServePage() {
     selectedTable &&
       (selectedTable.zone.includes('Patio') || covers >= 6 || (selectedTable.currentPartySize ?? 0) >= 6),
   );
+  // Gratuity is charged on the net subtotal, matching the server for
+  // tax-inclusive venues.
   const gratuityCents = gratuityApplies
-    ? percentOfCents(subtotalCents, GRATUITY_PERCENT)
+    ? percentOfCents(displaySubtotalCents, GRATUITY_PERCENT)
     : 0;
   const gratuity = fromCents(gratuityCents);
   const total = fromCents(displaySubtotalCents + taxCents + gratuityCents);

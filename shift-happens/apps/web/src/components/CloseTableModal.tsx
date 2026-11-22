@@ -46,7 +46,7 @@ export default function CloseTableModal({
         {
           action,
           ...(action === 'settle' ? { method } : {}),
-          ...(action === 'void' ? { reason } : {}),
+          ...(action === 'void' ? { reason, refund: true } : {}),
         },
       );
       const suffix =

@@ -75,6 +75,8 @@ interface Tally {
   sales: number;
   tax: number;
   tips: number;
+  /** Refunds issued against the day's captured charges (positive amount). */
+  refunds: number;
   gross: number;
   checks: number;
   covers: number;
@@ -87,6 +89,7 @@ function emptyTally(): Tally {
     sales: 0,
     tax: 0,
     tips: 0,
+    refunds: 0,
     gross: 0,
     checks: 0,
     covers: 0,
@@ -161,6 +164,7 @@ function addToTally(
         ];
 
   let netMinor = 0;
+  let refundMinor = 0;
   for (const payment of payments) {
     if (payment.status !== 'captured') continue;
     const key = tenderKey({
@@ -172,12 +176,38 @@ function addToTally(
       payment.kind === 'refund' ? -Math.abs(amountMinor) : amountMinor;
 
     // A refund is not a new slip, but it does reduce the tender.
-    if (payment.kind !== 'refund') tally.tenders[key].count += 1;
+    if (payment.kind !== 'refund') {
+      tally.tenders[key].count += 1;
+    } else {
+      refundMinor += Math.abs(amountMinor);
+    }
     tally.tenders[key].amount = addMinorAmount(
       tally.tenders[key].amount,
       signedMinor,
     );
     netMinor += signedMinor;
+  }
+
+  // Refunds reduce the sales/tax/tips lines proportionally, so
+  // sales + tax + tips continues to equal the ledger gross.
+  if (refundMinor > 0) {
+    const subtotalMinor = toMinor(order.subtotal);
+    const taxMinor = toMinor(order.tax);
+    const tipMinor = toMinor(order.tip);
+    const chargeMinor = subtotalMinor + taxMinor + tipMinor;
+    tally.refunds = addMinorAmount(tally.refunds, refundMinor);
+    if (chargeMinor > 0) {
+      const refundSales = Math.round(
+        (refundMinor * subtotalMinor) / chargeMinor,
+      );
+      const refundTax = Math.round((refundMinor * taxMinor) / chargeMinor);
+      const refundTips = refundMinor - refundSales - refundTax;
+      tally.sales = addMinorAmount(tally.sales, -refundSales);
+      tally.tax = addMinorAmount(tally.tax, -refundTax);
+      tally.tips = addMinorAmount(tally.tips, -refundTips);
+    } else {
+      tally.sales = addMinorAmount(tally.sales, -refundMinor);
+    }
   }
 
   // Collected gross follows the ledger (payments minus refunds). For the

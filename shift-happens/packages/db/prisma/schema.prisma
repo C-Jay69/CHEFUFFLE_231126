@@ -114,6 +114,9 @@ model Staff {
   /// new code must use pinHash. Remove after the PIN backfill is complete.
   pin        String?  @db.VarChar(10)
   pinHash    String?  @map("pin_hash") @db.VarChar(255)
+  /// Deterministic HMAC lookup for O(1) PIN login; the scrypt hash still
+  /// verifies the PIN. Unique per restaurant.
+  pinLookup  String?  @map("pin_lookup") @db.VarChar(64)
   hourlyRate Decimal  @default(18.00) @map("hourly_rate") @db.Decimal(10, 2)
   phone      String?  @db.VarChar(30)
   email      String?  @db.VarChar(120)
@@ -131,6 +134,7 @@ model Staff {
   sessions   Session[]
   auditLogs  AuditLog[]
 
+  @@unique([restaurantId, pinLookup])
   @@index([restaurantId, role])
   @@map("staff")
 }

@@ -135,7 +135,10 @@ function serializeOrder(order: any) {
       createdAt: payment.createdAt.toISOString(),
     })),
     paidAmount: minorToNumber(paidAmountMinor),
-    balance: minorToNumber(Math.max(0, totalMinor - paidAmountMinor)),
+    balance:
+      order.status === 'void'
+        ? 0
+        : minorToNumber(Math.max(0, totalMinor - paidAmountMinor)),
     createdAt: order.createdAt.toISOString(),
     closedAt: order.closedAt?.toISOString() ?? null,
     paidAt: order.paidAt?.toISOString() ?? null,
@@ -775,8 +778,39 @@ export async function payOrder(
       const paidBeforeMinor = paymentNetMinor(order.payments);
       const remainingMinor = totalMinor - paidBeforeMinor;
 
-      if (remainingMinor <= 0) {
-        throw conflict('This check is already settled.');
+      if (remainingMinor < 0) {
+        throw conflict(
+          `Captured payments exceed the new total by ${formatMinor(-remainingMinor)}. Refund the difference first.`,
+        );
+      }
+      if (remainingMinor === 0) {
+        // A manager reopened a fully settled check without changing the total
+        // (or reduced the tip to exactly the captured amount). Close it again
+        // instead of trapping it in an unpayable open state.
+        const settled = await tx.order.update({
+          where: { id: orderId },
+          data: {
+            status: 'paid',
+            closedAt: new Date(),
+            paidAt: new Date(),
+            tip: fromMinor(tipMinor),
+            total: fromMinor(totalMinor),
+          },
+          include: orderInclude,
+        });
+        await recordAudit(
+          {
+            restaurantId,
+            actorStaffId: options.actorStaffId ?? null,
+            action: 'order.settle_reopened',
+            entity: 'order',
+            entityId: orderId,
+            after: { status: 'paid', total: minorToNumber(totalMinor) },
+            reason: 'Reopened check already covered by captured payments',
+          },
+          tx,
+        );
+        return { order: serializeOrder(settled), payment: null, reused: false };
       }
 
       const requestedMinor =
@@ -857,12 +891,16 @@ export async function payOrder(
       emitRestaurant('ORDER_CREATED', {
         event: 'ORDER_CREATED',
         order: result.order,
-        payment: {
-          id: result.payment.id,
-          method,
-          cardBrand,
-          amount: minorToNumber(toMinor(result.payment.amount)),
-        },
+        ...(result.payment
+          ? {
+              payment: {
+                id: result.payment.id,
+                method,
+                cardBrand,
+                amount: minorToNumber(toMinor(result.payment.amount)),
+              },
+            }
+          : {}),
         timestamp: new Date().toISOString(),
       }, restaurantId);
       if (result.order.status === 'paid') {
@@ -1029,12 +1067,16 @@ export async function addOrderPayment(
       emitRestaurant('ORDER_CREATED', {
         event: 'ORDER_CREATED',
         order: result.order,
-        payment: {
-          id: result.payment.id,
-          method,
-          cardBrand,
-          amount: minorToNumber(toMinor(result.payment.amount)),
-        },
+        ...(result.payment
+          ? {
+              payment: {
+                id: result.payment.id,
+                method,
+                cardBrand,
+                amount: minorToNumber(toMinor(result.payment.amount)),
+              },
+            }
+          : {}),
         timestamp: new Date().toISOString(),
       }, restaurantId);
       if (result.fullyPaid) {
@@ -1245,12 +1287,30 @@ export async function voidOrder(
     }
 
     if (capturedMinor > 0) {
-      const original = [...order.payments]
+      let original = [...order.payments]
         .reverse()
         .find(
           (payment) =>
             (payment.kind ?? 'payment') === 'payment' && isCaptured(payment),
         );
+
+      // Legacy paid orders predate the ledger: synthesise the captured row so
+      // payments-minus-refunds reconciles to zero instead of going negative.
+      if (!original) {
+        original = await tx.payment.create({
+          data: {
+            orderId,
+            amount: fromMinor(capturedMinor),
+            method: order.paymentMethod ?? 'card',
+            cardBrand: order.cardBrand ?? null,
+            label: 'Legacy captured total',
+            kind: 'payment',
+            status: 'captured',
+            createdBy: options.actorStaffId ?? null,
+          },
+        });
+      }
+
       const refund = await tx.payment.create({
         data: {
           orderId,
