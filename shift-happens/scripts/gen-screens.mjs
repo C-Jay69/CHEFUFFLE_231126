@@ -18,9 +18,10 @@ const webRoot = resolve(root, 'apps', 'web');
 const source = resolve(designRoot, 'pos_order_terminal', 'code.html');
 
 if (!existsSync(source)) {
-  throw new Error(
-    `Design system not found at ${source}. The token palette is extracted from stitch_shift_happens_design_system/pos_order_terminal/code.html.`,
+  console.warn(
+    `Design system not found at ${source}; keeping the committed Tailwind config.`,
   );
+  process.exit(0);
 }
 
 const html = readFileSync(source, 'utf8');
