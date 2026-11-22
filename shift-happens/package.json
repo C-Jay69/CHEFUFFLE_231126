@@ -3,7 +3,7 @@
   "private": true,
   "version": "1.0.0",
   "description": "Chefuffle by HYDRAFORGE AI \u2014 restaurant operations engine",
-  "packageManager": "pnpm@12.21.0",
+  "packageManager": "packageManager": "pnpm@11.24.0",
   "scripts": {
     "db:ensure": "bash scripts/db-ensure.sh",
     "db:up": "bash scripts/db-up.sh",
