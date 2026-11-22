@@ -4,6 +4,7 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { prisma } from '@shift-happens/db';
 import { AppError } from '../src/errors.js';
 import { recordAudit } from '../src/lib/audit.js';
+import { hashSessionToken } from '../src/lib/staff-auth.js';
 import auditRoutes from '../src/routes/audit.js';
 import { listAudit } from '../src/services/audit-engine.js';
 
@@ -19,6 +20,8 @@ describe('audit trail', () => {
   const serverId = randomUUID();
   const otherManagerId = randomUUID();
   const sharedEntityId = randomUUID();
+  const managerToken = 'vitest-audit-manager-token';
+  const serverToken = 'vitest-audit-server-token';
 
   let app: FastifyInstance;
 
@@ -64,6 +67,26 @@ describe('audit trail', () => {
           name: 'Other Manager',
           role: 'owner',
           hourlyRate: 50,
+        },
+      ],
+    });
+
+    // Real bearer sessions: the merged security model no longer accepts
+    // `x-staff-id`, so the HTTP checks must authenticate like a browser does.
+    const expiresAt = new Date(Date.now() + 60 * 60 * 1000);
+    await prisma.session.createMany({
+      data: [
+        {
+          restaurantId,
+          staffId: managerId,
+          tokenHash: hashSessionToken(managerToken),
+          expiresAt,
+        },
+        {
+          restaurantId,
+          staffId: serverId,
+          tokenHash: hashSessionToken(serverToken),
+          expiresAt,
         },
       ],
     });
@@ -164,7 +187,7 @@ describe('audit trail', () => {
     const response = await app.inject({
       method: 'GET',
       url: `/api/audit?entity=order&entityId=${sharedEntityId}`,
-      headers: { 'x-staff-id': managerId },
+      headers: { authorization: `Bearer ${managerToken}` },
     });
 
     expect(response.statusCode).toBe(200);
@@ -186,15 +209,17 @@ describe('audit trail', () => {
 
   it('rejects unauthenticated callers', async () => {
     const response = await app.inject({ method: 'GET', url: '/api/audit' });
-    expect(response.statusCode).toBe(403);
-    expect(response.json()).toMatchObject({ error: expect.stringContaining('Sign in') });
+    expect(response.statusCode).toBe(401);
+    expect(response.json()).toMatchObject({
+      error: expect.stringContaining('Authentication required'),
+    });
   });
 
   it('rejects authenticated staff without staff.manage', async () => {
     const response = await app.inject({
       method: 'GET',
       url: '/api/audit',
-      headers: { 'x-staff-id': serverId },
+      headers: { authorization: `Bearer ${serverToken}` },
     });
     expect(response.statusCode).toBe(403);
   });
