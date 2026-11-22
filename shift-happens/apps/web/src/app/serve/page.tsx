@@ -46,8 +46,23 @@ const KEY_ROWS = ['1234567890', 'qwertyuiop', 'asdfghjkl', 'zxcvbnm'];
 
 type Step = 'map' | 'order' | 'review' | 'sent';
 
-const TAX_RATE = 0.08;
-const GRATUITY_RATE = 0.18;
+const GRATUITY_PERCENT = 18;
+
+/** Integer-cent helpers: tax and totals are never float arithmetic. */
+const toCents = (value: number | string | null | undefined) =>
+  Math.round(Number(value ?? 0) * 100);
+const fromCents = (cents: number) => cents / 100;
+const percentOfCents = (cents: number, percent: number) =>
+  Math.round((cents * percent) / 100);
+/** Tax embedded in a gross amount when prices are tax-inclusive. */
+const taxFromGrossCents = (
+  cents: number,
+  percent: number,
+  inclusive: boolean,
+) =>
+  inclusive
+    ? Math.round((cents * percent) / (100 + percent))
+    : percentOfCents(cents, percent);
 
 const statusCard: Record<DiningTable['status'], string> = {
   available: 'border-status-ready/40 bg-status-ready/[0.07] hover:bg-status-ready/[0.12]',
@@ -105,6 +120,19 @@ export default function ServePage() {
   const [appendOrderId, setAppendOrderId] = useState<string | null>(null);
   const prefillHandled = useRef(false);
   const categoryInitialized = useRef(false);
+  const [taxRatePercent, setTaxRatePercent] = useState(8);
+  const [taxInclusive, setTaxInclusive] = useState(false);
+
+  useEffect(() => {
+    void api
+      .get<{ taxRate: number; taxInclusive: boolean }>('/pos/config')
+      .then((config) => {
+        const rate = Number(config.taxRate);
+        setTaxRatePercent(Number.isFinite(rate) ? rate : 8);
+        setTaxInclusive(Boolean(config.taxInclusive));
+      })
+      .catch(() => undefined);
+  }, []);
 
   const loadTables = useCallback(async () => {
     const response = await api.get<DiningTable[]>('/tables');
@@ -273,23 +301,42 @@ export default function ServePage() {
 
   const guestSubtotal = useCallback(
     (guest: number) =>
-      guestLines(guest).reduce((sum, line) => sum + lineUnitPrice(line) * line.quantity, 0),
+      fromCents(
+        guestLines(guest).reduce(
+          (sum, line) => sum + toCents(lineUnitPrice(line)) * line.quantity,
+          0,
+        ),
+      ),
     [guestLines],
   );
   const guestCount = (guest: number) =>
     guestLines(guest).reduce((sum, line) => sum + line.quantity, 0);
 
-  const subtotal = lines.reduce(
-    (sum, line) => sum + lineUnitPrice(line) * line.quantity,
+  const subtotalCents = lines.reduce(
+    (sum, line) => sum + toCents(lineUnitPrice(line)) * line.quantity,
     0,
   );
-  const tax = subtotal * TAX_RATE;
+  const taxCents = taxFromGrossCents(
+    subtotalCents,
+    taxRatePercent,
+    taxInclusive,
+  );
+  const displaySubtotalCents = taxInclusive
+    ? subtotalCents - taxCents
+    : subtotalCents;
+  const subtotal = fromCents(displaySubtotalCents);
+  const tax = fromCents(taxCents);
   const gratuityApplies = Boolean(
     selectedTable &&
       (selectedTable.zone.includes('Patio') || covers >= 6 || (selectedTable.currentPartySize ?? 0) >= 6),
   );
-  const gratuity = gratuityApplies ? subtotal * GRATUITY_RATE : 0;
-  const total = subtotal + tax + gratuity;
+  // Gratuity is charged on the net subtotal, matching the server for
+  // tax-inclusive venues.
+  const gratuityCents = gratuityApplies
+    ? percentOfCents(displaySubtotalCents, GRATUITY_PERCENT)
+    : 0;
+  const gratuity = fromCents(gratuityCents);
+  const total = fromCents(displaySubtotalCents + taxCents + gratuityCents);
   const hasStarters = lines.some((line) => line.course === 'starter');
   const hasMains = lines.some((line) => line.course === 'main');
   const mainsWillHold = hasStarters && hasMains;
@@ -987,9 +1034,17 @@ export default function ServePage() {
                       </span>
                     </div>
                     <div className="flex justify-between">
-                      <span>Tax (8%)</span>
+                      <span>Tax ({taxRatePercent}%)</span>
                       <span className="font-mono-metric-sm text-mono-metric-sm text-text-primary">
-                        {money(guestSubtotal(activeGuest) * TAX_RATE)}
+                        {money(
+                          fromCents(
+                            taxFromGrossCents(
+                              toCents(guestSubtotal(activeGuest)),
+                              taxRatePercent,
+                              taxInclusive,
+                            ),
+                          ),
+                        )}
                       </span>
                     </div>
                   </div>
@@ -1150,7 +1205,7 @@ export default function ServePage() {
                       <span className="font-mono-metric-sm text-mono-metric-sm text-text-primary">{money(subtotal)}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span>Tax (8%)</span>
+                      <span>Tax ({taxRatePercent}%)</span>
                       <span className="font-mono-metric-sm text-mono-metric-sm text-text-primary">{money(tax)}</span>
                     </div>
                     {gratuity > 0 && (

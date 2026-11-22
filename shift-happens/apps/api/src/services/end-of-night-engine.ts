@@ -1,8 +1,13 @@
 import { prisma } from '@shift-happens/db';
 import { env } from '../env.js';
+import { minorToNumber, toMinor } from '../lib/money.js';
 
-const num = (v: unknown) => Number(v ?? 0);
-const round = (v: number) => Number(v.toFixed(2));
+/** Add money exactly by converting both sides to integer minor units. */
+const addMoney = (current: number, amount: unknown) =>
+  minorToNumber(toMinor(current) + toMinor(amount));
+/** Add an already-computed minor-unit delta to a major-unit running total. */
+const addMinorAmount = (current: number, deltaMinor: number) =>
+  minorToNumber(toMinor(current) + deltaMinor);
 
 export const TENDER_KEYS = [
   'visa',
@@ -70,6 +75,8 @@ interface Tally {
   sales: number;
   tax: number;
   tips: number;
+  /** Refunds issued against the day's captured charges (positive amount). */
+  refunds: number;
   gross: number;
   checks: number;
   covers: number;
@@ -82,6 +89,7 @@ function emptyTally(): Tally {
     sales: 0,
     tax: 0,
     tips: 0,
+    refunds: 0,
     gross: 0,
     checks: 0,
     covers: 0,
@@ -108,63 +116,128 @@ function addToTally(
       amount: unknown;
       method: string;
       cardBrand: string | null;
+      kind?: string | null;
+      status?: string | null;
     }>;
   },
 ) {
-  tally.sales = round(tally.sales + num(order.subtotal));
-  tally.tax = round(tally.tax + num(order.tax));
-  tally.tips = round(tally.tips + num(order.tip));
-  tally.gross = round(tally.gross + num(order.total));
+  tally.sales = addMoney(tally.sales, order.subtotal);
+  tally.tax = addMoney(tally.tax, order.tax);
+  tally.tips = addMoney(tally.tips, order.tip);
   tally.checks += 1;
   tally.covers += coversFor(order);
   tally.checkList.push({
     id: order.id,
     orderNumber: order.orderNumber,
-    total: num(order.total),
-    tip: num(order.tip),
+    total: minorToNumber(toMinor(order.total)),
+    tip: minorToNumber(toMinor(order.tip)),
     closedAt: order.closedAt ? order.closedAt.toISOString() : null,
     status: order.status,
   });
 
   // Split/partial payments: each payment row is one tender (one card slip).
-  // Legacy paid orders without payment rows fall back to the order fields.
-  const payments =
+  // Refund rows are negative and reduce both the tender mix and the collected
+  // gross. Legacy paid orders without payment rows fall back to order fields.
+  const payments: Array<{
+    amount: unknown;
+    method: string;
+    cardBrand: string | null;
+    kind: string;
+    status: string;
+  }> =
     order.payments && order.payments.length > 0
       ? order.payments.map((payment) => ({
-          key: tenderKey({
-            paymentMethod: payment.method,
-            cardBrand: payment.cardBrand,
-          }),
-          amount: num(payment.amount),
+          amount: payment.amount,
+          method: payment.method,
+          cardBrand: payment.cardBrand,
+          kind: payment.kind ?? 'payment',
+          status: payment.status ?? 'captured',
         }))
       : [
           {
-            key: tenderKey(order),
-            amount: num(order.total),
+            amount: order.total,
+            method: order.paymentMethod ?? '',
+            cardBrand: order.cardBrand,
+            kind: 'payment',
+            status: 'captured',
           },
         ];
 
+  let netMinor = 0;
+  let refundMinor = 0;
   for (const payment of payments) {
-    tally.tenders[payment.key].count += 1;
-    tally.tenders[payment.key].amount = round(
-      tally.tenders[payment.key].amount + payment.amount,
+    if (payment.status !== 'captured') continue;
+    const key = tenderKey({
+      paymentMethod: payment.method || null,
+      cardBrand: payment.cardBrand,
+    });
+    const amountMinor = toMinor(payment.amount);
+    const signedMinor =
+      payment.kind === 'refund' ? -Math.abs(amountMinor) : amountMinor;
+
+    // A refund is not a new slip, but it does reduce the tender.
+    if (payment.kind !== 'refund') {
+      tally.tenders[key].count += 1;
+    } else {
+      refundMinor += Math.abs(amountMinor);
+    }
+    tally.tenders[key].amount = addMinorAmount(
+      tally.tenders[key].amount,
+      signedMinor,
     );
+    netMinor += signedMinor;
   }
+
+  // Refunds reduce the sales/tax/tips lines proportionally, so
+  // sales + tax + tips continues to equal the ledger gross.
+  if (refundMinor > 0) {
+    const subtotalMinor = toMinor(order.subtotal);
+    const taxMinor = toMinor(order.tax);
+    const tipMinor = toMinor(order.tip);
+    const chargeMinor = subtotalMinor + taxMinor + tipMinor;
+    tally.refunds = addMinorAmount(tally.refunds, refundMinor);
+    if (chargeMinor > 0) {
+      const refundSales = Math.round(
+        (refundMinor * subtotalMinor) / chargeMinor,
+      );
+      const refundTax = Math.round((refundMinor * taxMinor) / chargeMinor);
+      const refundTips = refundMinor - refundSales - refundTax;
+      tally.sales = addMinorAmount(tally.sales, -refundSales);
+      tally.tax = addMinorAmount(tally.tax, -refundTax);
+      tally.tips = addMinorAmount(tally.tips, -refundTips);
+    } else {
+      tally.sales = addMinorAmount(tally.sales, -refundMinor);
+    }
+  }
+
+  // Collected gross follows the ledger (payments minus refunds). For the
+  // legacy fallback above it is simply the stored order total.
+  tally.gross = addMinorAmount(tally.gross, netMinor);
 }
 
 function finishTally<T extends Tally>(tally: T) {
-  const cardTotal = round(
-    CARD_KEYS.reduce((sum, key) => sum + tally.tenders[key].amount, 0),
+  const cardMinor = CARD_KEYS.reduce(
+    (sum, key) => sum + toMinor(tally.tenders[key].amount),
+    0,
   );
-  const giftTotal = tally.tenders.giftCard.amount;
-  const houseTotal = tally.tenders.house.amount;
-  const cashDue = round(tally.gross - cardTotal - giftTotal - houseTotal);
-  const slipCount = CARD_KEYS.reduce((sum, key) => sum + tally.tenders[key].count, 0);
+  const giftMinor = toMinor(tally.tenders.giftCard.amount);
+  const houseMinor = toMinor(tally.tenders.house.amount);
+  const cashMinor = toMinor(tally.tenders.cash.amount);
+  const unallocatedMinor = toMinor(tally.tenders.unallocated.amount);
+  // Expected cash is the collected gross that was not settled on a card, gift
+  // card or house account — and an unallocated legacy tender is *not* assumed
+  // to be cash, otherwise it would inflate the drawer expectation.
+  const cashDueMinor =
+    toMinor(tally.gross) - cardMinor - giftMinor - houseMinor - unallocatedMinor;
+  const slipCount = CARD_KEYS.reduce(
+    (sum, key) => sum + tally.tenders[key].count,
+    0,
+  );
   return {
     ...tally,
-    cardTotal,
-    cashRecorded: tally.tenders.cash.amount,
-    cashDue,
+    cardTotal: minorToNumber(cardMinor),
+    cashRecorded: minorToNumber(cashMinor),
+    cashDue: minorToNumber(cashDueMinor),
     slipCount,
   };
 }

@@ -17,7 +17,7 @@ const staffBody = z.object({
   role: roleSchema,
   pin: z
     .string()
-    .regex(/^\d{3,6}$/, 'PIN must be 3-6 digits')
+    .regex(/^\d{4,8}$/, 'PIN must be 4-8 digits')
     .optional(),
   hourlyRate: z.number().min(0).max(500).optional(),
   phone: z.string().max(30).nullish(),
@@ -29,6 +29,8 @@ const staffBody = z.object({
 
 const staffRoutes: FastifyPluginAsync = async (app) => {
   app.get('/staff', async (request) => {
+    // Full staff records include phone, address and masked SIN: manager only.
+    await requirePermission(request, 'staff.manage');
     const { includeInactive } = parse(
       z.object({ includeInactive: z.enum(['true', 'false']).optional() }),
       request.query,

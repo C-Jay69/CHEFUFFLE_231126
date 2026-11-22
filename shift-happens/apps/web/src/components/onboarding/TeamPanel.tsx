@@ -204,8 +204,8 @@ export default function TeamPanel() {
       showToast('Pay rate must be between 0 and 500 per hour.', 'warn');
       return;
     }
-    if (form.pin && !/^\d{3,6}$/.test(form.pin)) {
-      showToast('PIN must be 3-6 digits.', 'warn');
+    if (form.pin && !/^\d{4,8}$/.test(form.pin)) {
+      showToast('PIN must be 4-8 digits.', 'warn');
       return;
     }
 
@@ -484,11 +484,11 @@ export default function TeamPanel() {
                 className={INPUT}
               />
             </Field>
-            <Field label="Terminal PIN" hint="3-6 digits used at the login screen">
+            <Field label="Terminal PIN" hint="4-8 digits used at the login screen">
               <input
                 inputMode="numeric"
                 value={form.pin}
-                onChange={(event) => update('pin', event.target.value.replace(/\D/g, '').slice(0, 6))}
+                onChange={(event) => update('pin', event.target.value.replace(/\D/g, '').slice(0, 8))}
                 placeholder={editing ? 'Leave blank to keep current' : 'e.g. 4821'}
                 className={INPUT}
               />

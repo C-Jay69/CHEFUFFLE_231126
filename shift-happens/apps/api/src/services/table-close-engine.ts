@@ -21,6 +21,9 @@ export async function closeTable(
     action: CloseTableAction;
     method?: string;
     reason?: string;
+    /** Required to void a check that already has captured payments. */
+    refund?: boolean;
+    actorStaffId?: string | null;
   },
   restaurantId = env.RESTAURANT_ID,
 ) {
@@ -55,6 +58,7 @@ export async function closeTable(
         order.id,
         { method: input.method ?? 'card' },
         restaurantId,
+        { actorStaffId: input.actorStaffId ?? null },
       );
       closedOrders.push({
         id: paid.id,
@@ -68,6 +72,10 @@ export async function closeTable(
         order.id,
         input.reason ?? 'Manager close-out',
         restaurantId,
+        {
+          actorStaffId: input.actorStaffId ?? null,
+          refund: input.refund ?? false,
+        },
       );
       closedOrders.push({
         id: voided.id,

@@ -2,6 +2,32 @@
 import 'dotenv/config';
 import { PrismaClient, type KdsStation, type UserRole } from '@prisma/client';
 import { createHash } from 'node:crypto';
+import { hashPin, pinLookup } from './pin.js';
+
+/**
+ * The demo seed wipes every tenant. Require an explicit opt-in so a stray
+ * `db:seed` in production can never destroy real data.
+ */
+function demoSeedEnabled(): boolean {
+  return process.env.SEED_DEMO === '1' || process.argv.includes('--demo');
+}
+
+function refuseUnlessDemo(): void {
+  if (demoSeedEnabled()) return;
+  console.error('✗ Refusing to run the demo seed: it DELETES all restaurant data.');
+  console.error('');
+  console.error('  To seed the demo dataset on a disposable database, run:');
+  console.error('    SEED_DEMO=1 pnpm db:seed');
+  console.error('  or:');
+  console.error('    pnpm --filter @shift-happens/db exec tsx src/seed.ts --demo');
+  console.error('');
+  console.error('  Never run this against a database with real data.');
+  process.exit(1);
+}
+
+// Check the opt-in before constructing a database client, so an accidental
+// invocation cannot even open a connection.
+refuseUnlessDemo();
 
 const prisma = new PrismaClient();
 
@@ -120,7 +146,9 @@ async function main() {
       restaurantId: RESTAURANT_ID,
       name: s.name,
       role: s.role,
-      pin: s.pin,
+      pin: null,
+      pinHash: hashPin(s.pin),
+      pinLookup: pinLookup(s.pin, RESTAURANT_ID),
       hourlyRate: s.rate,
       phone: `+1 555-01${String(20 + s.n).padStart(2, '0')}`,
       email: `${s.name.toLowerCase().replace(/[^a-z]+/g, '.')}@restaurant.local`,

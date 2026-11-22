@@ -24,3 +24,10 @@ export const prisma =
 if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma;
 
 export * from '@prisma/client';
+export {
+  hashPin,
+  pinLookup,
+  verifyPin,
+  PIN_MIN_LENGTH,
+  PIN_MAX_LENGTH,
+} from './pin.js';

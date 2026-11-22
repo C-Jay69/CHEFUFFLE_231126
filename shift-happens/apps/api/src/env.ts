@@ -17,6 +17,8 @@ const schema = z.object({
   REDIS_URL: z.string().optional().default(''),
   API_PORT: z.coerce.number().default(Number(process.env.PORT) || 4000),
   API_HOST: z.string().default('0.0.0.0'),
+  /** Set to 1 when a trusted reverse proxy (Caddy) fronts the API. */
+  TRUST_PROXY: z.enum(['0', '1']).default('0'),
   CORS_ORIGIN: z.string().default('http://localhost:3010,http://localhost:3000,http://localhost:3001'),
   WEB_ORIGIN: z.string().default('http://localhost:3010'),
   RESTAURANT_ID: z.string().uuid().default('11111111-1111-4111-8111-111111111111'),

@@ -157,9 +157,25 @@ export const KDS_STATION_LABELS: Record<KdsStation, string> = {
   bar: 'Bar',
 };
 
+/**
+ * @deprecated Tax is configured per restaurant (`Restaurant.taxRate`, a
+ * percent such as 8.00). This constant is only a last-resort fallback for
+ * callers that cannot load the restaurant row.
+ */
 export const TAX_RATE = 0.08;
+/** Default percent used when a restaurant has no explicit tax rate. */
+export const DEFAULT_TAX_RATE_PERCENT = 8;
 export const AUTO_GRATUITY_RATE = 0.18;
+/** Same 18% expressed as a percent for integer basis-point helpers. */
+export const AUTO_GRATUITY_PERCENT = 18;
 export const DEFAULT_TARGET_LABOR_PERCENTAGE = 18.5;
+
+/** Payment ledger kinds. Refund rows always carry a negative amount. */
+export const PAYMENT_KINDS = ['payment', 'refund', 'adjustment'] as const;
+export type PaymentKind = (typeof PAYMENT_KINDS)[number];
+
+export const PAYMENT_STATUSES = ['captured', 'authorized', 'voided', 'failed'] as const;
+export type PaymentStatus = (typeof PAYMENT_STATUSES)[number];
 
 export const RESTAURANT_ID =
   process.env.RESTAURANT_ID || '11111111-1111-4111-8111-111111111111';

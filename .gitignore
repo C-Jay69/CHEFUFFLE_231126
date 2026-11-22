@@ -1,0 +1,7 @@
+.claude/
+.turbo/
+.DS_Store
+
+# Local database backups produced by scripts/db-backup.sh
+backups/
+shift-happens/backups/

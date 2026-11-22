@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import AppShell from '@/components/AppShell';
 import CloseTableModal from '@/components/CloseTableModal';
@@ -33,7 +33,14 @@ const STATUS_META: Record<string, { label: string; tone: BadgeTone }> = {
 
 type Confirm = { kind: 'pay' | 'void'; order: Order };
 
-const tipFor = (order: Order) => Math.round(order.subtotal * 0.2 * 100) / 100;
+/** Integer-cent helpers for the pay dialog. */
+const toCents = (value: number | string | null | undefined) =>
+  Math.round(Number(value ?? 0) * 100);
+const fromCents = (cents: number) => cents / 100;
+const centsToInput = (cents: number) => {
+  const absolute = Math.abs(Math.round(cents));
+  return `${Math.floor(absolute / 100)}.${String(absolute % 100).padStart(2, '0')}`;
+};
 
 export default function OpenChecksPage() {
   const router = useRouter();
@@ -47,7 +54,10 @@ export default function OpenChecksPage() {
   const [voidReason, setVoidReason] = useState('Manager void');
   const [payMethod, setPayMethod] = useState<'card' | 'cash' | 'gift_card' | 'house'>('card');
   const [payBrand, setPayBrand] = useState<'visa' | 'mastercard' | 'amex' | 'debit' | 'other'>('visa');
+  const [payTip, setPayTip] = useState('');
   const [busy, setBusy] = useState(false);
+  // Same intent → same key, so a retry cannot double-charge.
+  const payKeyRef = useRef<{ signature: string; key: string } | null>(null);
   const [now, setNow] = useState(() => Date.now());
   const [tables, setTables] = useState<DiningTable[]>([]);
   const [closeTarget, setCloseTarget] = useState<DiningTable | null>(null);
@@ -142,6 +152,9 @@ export default function OpenChecksPage() {
     setVoidReason('Manager void');
     setPayMethod('card');
     setPayBrand('visa');
+    // Default to zero. If the check already carries an auto-gratuity, show
+    // that stored amount so it is collected once rather than added again.
+    setPayTip(order.tip > 0 ? centsToInput(toCents(order.tip)) : '');
     setConfirm({ kind, order });
   };
 
@@ -150,15 +163,39 @@ export default function OpenChecksPage() {
     setBusy(true);
     try {
       if (confirm.kind === 'pay') {
-        const paid = await api.post<Order>(`/orders/${confirm.order.id}/pay`, {
-          tip: tipFor(confirm.order),
-          method: payMethod,
-          ...(payMethod === 'card' ? { cardBrand: payBrand } : {}),
-        });
+        const signature = [
+          confirm.order.id,
+          toCents(Number(payTip) || 0),
+          payMethod,
+          payMethod === 'card' ? payBrand : '',
+        ].join('|');
+        if (!payKeyRef.current || payKeyRef.current.signature !== signature) {
+          payKeyRef.current = {
+            signature,
+            key:
+              typeof crypto !== 'undefined' && 'randomUUID' in crypto
+                ? crypto.randomUUID()
+                : `${Date.now()}-${Math.random().toString(36).slice(2)}`,
+          };
+        }
+        const idempotencyKey = payKeyRef.current.key;
+        const paid = await api.post<Order>(
+          `/orders/${confirm.order.id}/pay`,
+          {
+            tip: fromCents(toCents(Number(payTip) || 0)),
+            method: payMethod,
+            ...(payMethod === 'card' ? { cardBrand: payBrand } : {}),
+          },
+          { headers: { 'Idempotency-Key': idempotencyKey } },
+        );
+        payKeyRef.current = null;
         showToast(`Check #${paid.orderNumber} paid · ${money(paid.total)}.`, 'success');
       } else {
         const reason = voidReason.trim() || 'Manager void';
-        await api.post(`/orders/${confirm.order.id}/void`, { reason });
+        await api.post(`/orders/${confirm.order.id}/void`, {
+          reason,
+          refund: true,
+        });
         showToast(`Check #${confirm.order.orderNumber} voided.`, 'warn');
       }
       setConfirm(null);
@@ -189,8 +226,14 @@ export default function OpenChecksPage() {
       .concat(order.items.length > 2 ? ` +${order.items.length - 2} more` : '');
   };
 
-  const payTip = confirm ? tipFor(confirm.order) : 0;
-  const payTotal = confirm ? confirm.order.subtotal + confirm.order.tax + payTip : 0;
+  const payTipAmount = confirm ? fromCents(toCents(Number(payTip) || 0)) : 0;
+  const payTotal = confirm
+    ? fromCents(
+        toCents(confirm.order.subtotal) +
+          toCents(confirm.order.tax) +
+          toCents(payTipAmount),
+      )
+    : 0;
 
   return (
     <AppShell>
@@ -451,7 +494,7 @@ export default function OpenChecksPage() {
                       : payMethod === 'house'
                         ? 'house account'
                         : 'cash'
-                } payment with a 20% tip.`
+                } payment. Add a tip only if the guest asked for one.`
               : `${confirm.order.tableNumber ?? 'Takeout'} · this cannot be undone.`
           }
           footer={
@@ -539,12 +582,17 @@ export default function OpenChecksPage() {
                   {money(confirm.order.tax)}
                 </span>
               </div>
-              <div className="flex justify-between">
-                <span>Tip (20%)</span>
-                <span className="font-mono-metric-sm text-mono-metric-sm text-text-primary">
-                  {money(payTip)}
-                </span>
-              </div>
+              <label className="flex items-center justify-between gap-2">
+                <span>Tip</span>
+                <input
+                  inputMode="decimal"
+                  value={payTip}
+                  onChange={(event) => setPayTip(event.target.value)}
+                  placeholder="0.00"
+                  aria-label="Tip amount"
+                  className="h-9 w-28 rounded-lg border border-border-subtle bg-surface-container-lowest px-2 text-right font-mono-metric-sm text-mono-metric-sm text-text-primary outline-none focus:border-secondary"
+                />
+              </label>
               <div className="mt-1 flex justify-between border-t border-border-subtle pt-2">
                 <span className="font-body-base font-bold text-text-primary">Total</span>
                 <span className="font-mono-metric-md text-mono-metric-md font-bold text-accent-cyan-bright">
