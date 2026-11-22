@@ -198,23 +198,35 @@ export async function pinLogin(
     },
   });
 
-  let matched: Staff | null = null;
-  let legacyMatch = false;
-
+  // Collect every match rather than taking the first: a duplicated PIN must
+  // never silently sign someone in as the wrong employee.
+  const matches: Array<{ staff: Staff; legacy: boolean }> = [];
   for (const candidate of candidates) {
     if (candidate.pinHash && verifyPin(pin, candidate.pinHash)) {
-      matched = candidate;
-      legacyMatch = false;
-      break;
+      matches.push({ staff: candidate, legacy: false });
+      continue;
     }
     if (!candidate.pinHash && candidate.pin && candidate.pin === pin) {
-      matched = candidate;
-      legacyMatch = true;
-      break;
+      matches.push({ staff: candidate, legacy: true });
     }
   }
 
-  if (!matched) {
+  if (matches.length > 1) {
+    recordFailure(key);
+    await recordAudit({
+      restaurantId,
+      action: 'auth.login_failed',
+      entity: 'auth',
+      reason: 'ambiguous_pin',
+      ipAddress,
+    });
+    throw new AppError(
+      409,
+      'This PIN is assigned to more than one active employee. Ask a manager to make it unique.',
+    );
+  }
+
+  if (matches.length === 0) {
     recordFailure(key);
     await recordAudit({
       restaurantId,
@@ -225,6 +237,8 @@ export async function pinLogin(
     });
     throw new AppError(401, 'Invalid PIN');
   }
+
+  const { staff: matched, legacy: legacyMatch } = matches[0];
 
   let staff = matched;
   if (legacyMatch) {

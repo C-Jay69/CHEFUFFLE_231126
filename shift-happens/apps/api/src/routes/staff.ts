@@ -17,7 +17,7 @@ const staffBody = z.object({
   role: roleSchema,
   pin: z
     .string()
-    .regex(/^\d{3,6}$/, 'PIN must be 3-6 digits')
+    .regex(/^\d{4,8}$/, 'PIN must be 4-8 digits')
     .optional(),
   hourlyRate: z.number().min(0).max(500).optional(),
   phone: z.string().max(30).nullish(),
