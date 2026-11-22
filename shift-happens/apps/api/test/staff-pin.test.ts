@@ -1,6 +1,11 @@
 import { randomUUID } from 'node:crypto';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import { prisma, verifyPin } from '@shift-happens/db';
+import {
+  hashPin,
+  pinLookup,
+  prisma,
+  verifyPin,
+} from '@shift-happens/db';
 import { pinLogin, resetPinThrottle } from '../src/services/auth-engine.js';
 import {
   createStaffMember,
@@ -112,5 +117,34 @@ describe('staff PIN handling', () => {
     await expect(pinLogin('1111', { restaurantId })).rejects.toMatchObject({
       statusCode: 409,
     });
+  });
+
+  it('signs in an active employee whose index is held by a stale duplicate', async () => {
+    const lookup = pinLookup('2468', restaurantId);
+    await prisma.staff.createMany({
+      data: [
+        {
+          restaurantId,
+          name: 'Stale Index Holder',
+          role: 'server',
+          pinHash: hashPin('2468'),
+          pinLookup: lookup,
+          isActive: false,
+          hourlyRate: 18,
+        },
+        {
+          restaurantId,
+          name: 'Active Duplicate',
+          role: 'server',
+          pin: '2468',
+          hourlyRate: 18,
+        },
+      ],
+    });
+
+    resetPinThrottle();
+    const session = await pinLogin('2468', { restaurantId });
+    expect(session.token.length).toBeGreaterThan(20);
+    expect(session.staff.name).toBe('Active Duplicate');
   });
 });

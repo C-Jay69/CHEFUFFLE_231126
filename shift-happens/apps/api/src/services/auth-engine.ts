@@ -249,18 +249,34 @@ export async function pinLogin(
   pinAttempts.delete(key);
 
   let staff = matched;
+  const metadata: { pinHash?: string; pin?: null; pinLookup?: string } = {};
   if (legacyMatch) {
-    staff = await prisma.staff.update({
-      where: { id: matched.id },
-      data: { pinHash: hashPin(pin), pinLookup: lookup, pin: null },
-    });
-  } else if (!staff.pinLookup) {
-    // Hash was created before the lookup index existed; backfill it now that
-    // the correct PIN is known.
-    staff = await prisma.staff.update({
-      where: { id: staff.id },
-      data: { pinLookup: lookup },
-    });
+    metadata.pinHash = hashPin(pin);
+    metadata.pin = null;
+  }
+  if (legacyMatch || !staff.pinLookup) {
+    metadata.pinLookup = lookup;
+  }
+
+  if (Object.keys(metadata).length > 0) {
+    try {
+      staff = await prisma.staff.update({
+        where: { id: staff.id },
+        data: metadata,
+      });
+    } catch (error) {
+      if ((error as { code?: string }).code !== 'P2002') throw error;
+      // Stale duplicate data already owns this lookup index. A valid PIN must
+      // still sign in: retry the metadata without the index and keep using the
+      // null-lookup fallback for this employee.
+      delete metadata.pinLookup;
+      if (Object.keys(metadata).length > 0) {
+        staff = await prisma.staff.update({
+          where: { id: staff.id },
+          data: metadata,
+        });
+      }
+    }
   }
 
   const token = randomBytes(32).toString('base64url');
