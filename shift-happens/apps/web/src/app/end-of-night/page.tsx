@@ -48,6 +48,14 @@ interface Drawer {
   cashRecorded: number;
   cashDue: number;
   slipCount: number;
+  checkList: Array<{
+    id: string;
+    orderNumber: number;
+    total: number;
+    tip: number;
+    closedAt: string | null;
+    status: string;
+  }>;
 }
 
 interface EndOfNightResponse {
@@ -166,6 +174,7 @@ export default function EndOfNightPage() {
   const [recalling, setRecalling] = useState(false);
   const [reopening, setReopening] = useState(false);
   const [recallOrder, setRecallOrder] = useState<Order | null>(null);
+  const [checksDrawer, setChecksDrawer] = useState<Drawer | null>(null);
 
   const storageKey = `sh-eon-${dateKey(cursor)}`;
 
@@ -218,8 +227,9 @@ export default function EndOfNightPage() {
     });
   };
 
-  const recallCheck = async () => {
-    const number = Number(recallInput);
+  const recallCheck = async (value?: number) => {
+    const number = value ?? Number(recallInput);
+    if (value) setRecallInput(String(value));
     if (!Number.isInteger(number) || number <= 0) {
       showToast('Enter a check number to recall.', 'warn');
       return;
@@ -536,13 +546,17 @@ export default function EndOfNightPage() {
                             <span className="truncate font-body-base text-body-base font-bold text-text-primary">
                               {isBar ? 'Bar till' : drawerName(drawer)}
                             </span>
-                            {isBar ? (
-                              <Badge tone="violet">Bar</Badge>
-                            ) : (
-                              <Badge tone="neutral">
-                                {drawer.checks} check{drawer.checks === 1 ? '' : 's'}
-                              </Badge>
-                            )}
+                            {isBar && <Badge tone="violet">Bar</Badge>}
+                            <button
+                              type="button"
+                              onClick={() => setChecksDrawer(drawer)}
+                              className="flex items-center gap-1 rounded-full bg-surface-container-high px-2.5 py-1 font-body-sm text-[11px] font-bold text-text-secondary transition-colors hover:bg-surface-container-highest hover:text-text-primary"
+                            >
+                              {drawer.checks} check{drawer.checks === 1 ? '' : 's'}
+                              <span className="material-symbols-outlined text-[14px]">
+                                chevron_right
+                              </span>
+                            </button>
                             <span className="font-body-sm text-body-sm text-text-tertiary">
                               {drawer.covers} covers
                             </span>
@@ -915,6 +929,81 @@ export default function EndOfNightPage() {
                 )}
               </div>
             )}
+          </div>
+        )}
+      </Modal>
+
+      <Modal
+        open={Boolean(checksDrawer)}
+        onClose={() => setChecksDrawer(null)}
+        title={checksDrawer ? drawerName(checksDrawer) : 'Checks'}
+        description={
+          checksDrawer
+            ? `${checksDrawer.checks} paid check${
+                checksDrawer.checks === 1 ? '' : 's'
+              } · ${money(checksDrawer.gross)}`
+            : undefined
+        }
+        icon="receipt_long"
+        footer={
+          <Button variant="ghost" size="md" onClick={() => setChecksDrawer(null)}>
+            Close
+          </Button>
+        }
+      >
+        {checksDrawer && (
+          <div className="flex flex-col gap-2">
+            <ul className="flex max-h-[50vh] flex-col gap-1 overflow-y-auto">
+              {[...checksDrawer.checkList]
+                .sort((a, b) =>
+                  (b.closedAt ?? '').localeCompare(a.closedAt ?? ''),
+                )
+                .map((check) => (
+                  <li
+                    key={check.id}
+                    className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-border-subtle bg-surface-container px-3 py-2"
+                  >
+                    <div className="flex min-w-0 flex-wrap items-center gap-x-3 gap-y-1">
+                      <span className="font-mono-metric-md text-mono-metric-md font-bold text-text-primary">
+                        #{check.orderNumber}
+                      </span>
+                      <span className="font-body-sm text-body-sm text-text-tertiary">
+                        {check.closedAt ? timeLabel(check.closedAt) : '—'} · tip{' '}
+                        {money(check.tip)}
+                      </span>
+                      <Badge tone="neutral">{check.status.replace(/_/g, ' ')}</Badge>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="font-mono-metric-md text-mono-metric-md font-bold text-text-primary">
+                        {money(check.total)}
+                      </span>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        icon="manage_search"
+                        onClick={() => {
+                          setChecksDrawer(null);
+                          void recallCheck(check.orderNumber);
+                        }}
+                      >
+                        Recall
+                      </Button>
+                      <Button
+                        variant="secondary"
+                        size="sm"
+                        icon="payments"
+                        onClick={() => router.push(`/pay/${check.id}`)}
+                      >
+                        Open
+                      </Button>
+                    </div>
+                  </li>
+                ))}
+            </ul>
+            <p className="font-body-sm text-body-sm text-text-subtle">
+              Recall pulls the check up with its items and payments; a manager can re-open a paid
+              check from there.
+            </p>
           </div>
         )}
       </Modal>

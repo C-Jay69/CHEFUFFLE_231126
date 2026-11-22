@@ -57,6 +57,15 @@ function isBarOrder(order: {
   return zone.includes('bar') || number.startsWith('bar');
 }
 
+interface CheckSummary {
+  id: string;
+  orderNumber: number;
+  total: number;
+  tip: number;
+  closedAt: string | null;
+  status: string;
+}
+
 interface Tally {
   sales: number;
   tax: number;
@@ -64,16 +73,30 @@ interface Tally {
   gross: number;
   checks: number;
   covers: number;
+  checkList: CheckSummary[];
   tenders: Tenders;
 }
 
 function emptyTally(): Tally {
-  return { sales: 0, tax: 0, tips: 0, gross: 0, checks: 0, covers: 0, tenders: emptyTenders() };
+  return {
+    sales: 0,
+    tax: 0,
+    tips: 0,
+    gross: 0,
+    checks: 0,
+    covers: 0,
+    checkList: [],
+    tenders: emptyTenders(),
+  };
 }
 
 function addToTally(
   tally: Tally,
   order: {
+    id: string;
+    orderNumber: number;
+    status: string;
+    closedAt: Date | null;
     subtotal: unknown;
     tax: unknown;
     tip: unknown;
@@ -94,6 +117,14 @@ function addToTally(
   tally.gross = round(tally.gross + num(order.total));
   tally.checks += 1;
   tally.covers += coversFor(order);
+  tally.checkList.push({
+    id: order.id,
+    orderNumber: order.orderNumber,
+    total: num(order.total),
+    tip: num(order.tip),
+    closedAt: order.closedAt ? order.closedAt.toISOString() : null,
+    status: order.status,
+  });
 
   // Split/partial payments: each payment row is one tender (one card slip).
   // Legacy paid orders without payment rows fall back to the order fields.

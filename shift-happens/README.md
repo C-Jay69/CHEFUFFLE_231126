@@ -235,7 +235,8 @@ every payment records its tender at the till.
   (payments stay on the check) to amend items or the tip, or jump to the
   payment screen to settle any difference.
 * **Server & bar tallies** — one drawer per server plus the **bar till** as its
-  own drawer (bar-zone orders are attributed to the till, so server tallies +
+  own drawer; the check count on each row opens the recorded check numbers for
+  that drawer, with **Recall** and **Open** per check. (bar-zone orders are attributed to the till, so server tallies +
   bar reconcile to the computer total). Each row shows sales, card total, cash
   due (`sales − card − gift − house`), and the expected Visa / Mastercard / Amex
   slip counts. **Count** opens a worksheet to enter the counted Visa,

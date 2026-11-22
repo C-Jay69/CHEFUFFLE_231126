@@ -308,6 +308,8 @@ describe('POS → KDS → Floor Plan → Inventory integration', () => {
     expect(server?.slipCount).toBeGreaterThanOrEqual(1);
     expect(server?.cashDue).toBe(0);
     expect(server?.cardTotal).toBeGreaterThan(0);
+    expect(server?.checkList.length).toBeGreaterThanOrEqual(1);
+    expect(server?.checkList[0].orderNumber).toBeGreaterThan(0);
   });
 
   it('shows servers only their own tables and ready tables', async () => {
