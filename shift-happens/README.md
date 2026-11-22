@@ -7,6 +7,8 @@ Fastify + PostgreSQL + Socket.io API.
 ```
 apps/web  Next.js 14 App Router  ── REST + WebSocket ──  apps/api  Fastify
         │                                              │
+        ├── /               landing page + pricing link
+        ├── /pricing        plans, modules and FAQ
         ├── /serve          table → covers → guest order ├── POS engine
         ├── /pay/:id        tip + split + part payments
         ├── /kds            live station tickets         ├── KDS + stage engine
@@ -52,7 +54,7 @@ app pointed at a dead database. If the cluster is not running and you start the
 API by hand, every screen shows `Database unreachable … Start it with
 pnpm db:up` instead of a bare `Internal server error`.
 
-Open <http://localhost:3010/serve>. The root redirects to the Serve workflow.
+Open <http://localhost:3010/> for the landing page, or <http://localhost:3010/serve> for the terminal.
 You can also run the same commands from the repository root; the root
 `package.json` delegates to `shift-happens/`.
 
