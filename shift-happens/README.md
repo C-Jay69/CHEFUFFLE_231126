@@ -159,7 +159,7 @@ on the server at load time — no rebuild when the address changes:
 | `same-origin` | Uses the page origin; Caddy proxies `/api` and `/socket.io` |
 | `https://api.example.com` | Calls that host |
 | `http://192.168.1.50:4000` | Direct LAN API access |
-| empty | `NEXT_PUBLIC_API_URL`, else `<hostname>:4000` |
+| empty | `NEXT_PUBLIC_API_URL`, else `<hostname>:4000`; a localhost API value is remapped to the page host on the LAN |
 
 `CORS_ORIGIN` must include every origin that calls the API directly. After
 changing the value, restart the web app (or the `web` container). `/setup` shows

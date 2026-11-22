@@ -22,7 +22,19 @@ function resolveApiBase(): string {
   if (runtime) return runtime.replace(/\/$/, '');
 
   const configured = process.env.NEXT_PUBLIC_API_URL?.trim();
-  if (configured) return configured.replace(/\/$/, '');
+  if (configured) {
+    const localHostname =
+      typeof window !== 'undefined' &&
+      (window.location.hostname === 'localhost' ||
+        window.location.hostname === '127.0.0.1');
+    const pointsAtLocalhost = /\/\/(localhost|127\.0\.0\.1)(:|\/|$)/i.test(configured);
+    // A tablet loading the page over the LAN cannot reach the laptop's
+    // localhost; use the page's own host on the API port instead.
+    if (typeof window !== 'undefined' && pointsAtLocalhost && !localHostname) {
+      return `${window.location.protocol}//${window.location.hostname}:4000`;
+    }
+    return configured.replace(/\/$/, '');
+  }
 
   if (typeof window !== 'undefined') {
     return `${window.location.protocol}//${window.location.hostname}:4000`;

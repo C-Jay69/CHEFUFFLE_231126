@@ -35,7 +35,7 @@ a rebuild.
 | `same-origin` | `https://pos.example.com/api/...` | Behind Caddy (the kit's default) |
 | `https://api.example.com` | that host | API on a separate domain |
 | `http://192.168.1.50:4000` | that host | Direct LAN access without a proxy |
-| empty / unset | `NEXT_PUBLIC_API_URL`, else `<hostname>:4000` | Local development |
+| empty / unset | `NEXT_PUBLIC_API_URL`, else `<hostname>:4000` (a localhost value is remapped to the page host on the LAN) | Local development |
 
 `CORS_ORIGIN` must list the page origins that call the API directly. With
 `same-origin` behind Caddy, browser requests are same-origin and CORS is not

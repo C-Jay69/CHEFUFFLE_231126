@@ -118,6 +118,16 @@ Restart `pnpm dev`. `/config.js` hands that address to the browser at load time.
 **B. Build-time setting.** Change `NEXT_PUBLIC_API_URL` to the same address and
 restart (in production, rebuild). Runtime is preferable.
 
+Either way, add the tablet's web origin to the API's allow-list:
+
+```bash
+CORS_ORIGIN="http://192.168.1.50:3010,http://localhost:3010"
+```
+
+The app will also auto-remap a `localhost` API value to `<page-host>:4000` on a
+tablet, but the API still has to accept the tablet's origin. Restart after the
+change.
+
 Then open `http://192.168.1.50:3010/setup` on the tablet and press **Run checks**.
 You want API **Online**, Database **Connected**, Realtime **Connected**, Menu
 **Loaded**. Fix anything red before moving on.
