@@ -9,6 +9,7 @@ apps/web  Next.js 14 App Router  ── REST + WebSocket ──  apps/api  Fasti
         │                                              │
         ├── /               landing page + pricing link
         ├── /pricing        plans, modules and FAQ
+        ├── /setup          device, API, database and realtime checks
         ├── /serve          table → covers → guest order ├── POS engine
         ├── /pay/:id        tip + split + part payments
         ├── /kds            live station tickets         ├── KDS + stage engine
@@ -54,7 +55,8 @@ app pointed at a dead database. If the cluster is not running and you start the
 API by hand, every screen shows `Database unreachable … Start it with
 pnpm db:up` instead of a bare `Internal server error`.
 
-Open <http://localhost:3010/> for the landing page, or <http://localhost:3010/serve> for the terminal.
+Open <http://localhost:3010/> for the landing page, <http://localhost:3010/setup>
+for diagnostics, or <http://localhost:3010/serve> for the terminal.
 You can also run the same commands from the repository root; the root
 `package.json` delegates to `shift-happens/`.
 
@@ -124,6 +126,45 @@ the table plan — with a note in the sidebar; any other route redirects back.
 Clock out to regain the rest of their permitted screens. Managers keep full
 access while clocked in. The time clock reuses today’s scheduled shift or opens
 an eight-hour shift, and closes yesterday’s forgotten punch automatically.
+
+## Deployment and tablets
+
+The tablet is a browser client; it reaches the server over the LAN. Two runbooks
+ship with the repo:
+
+* **[SETUP.md](SETUP.md)** — step-by-step walkthrough: laptop → tablet, on-prem
+  server, cloud, PWA install, printers, first shift.
+* **[DEPLOYMENT.md](DEPLOYMENT.md)** — reference: services, configuration,
+  HTTPS, backups, upgrades, security.
+
+The deployment kit lives in `deploy/`:
+
+```bash
+cd shift-happens/deploy
+cp .env.example .env            # set SITE_ADDRESS, PUBLIC_ORIGIN, POSTGRES_PASSWORD
+docker compose up -d --build
+```
+
+It runs Postgres, the Fastify API, the Next.js web app and Caddy (TLS +
+reverse proxy). `deploy/Caddyfile` is for a public domain; `deploy/Caddyfile.lan`
+uses Caddy's internal CA for an offline LAN install.
+
+### API address at runtime
+
+The browser resolves the API from `/config.js`, which reads `PUBLIC_API_URL`
+on the server at load time — no rebuild when the address changes:
+
+| `PUBLIC_API_URL` | Result |
+| --- | --- |
+| `same-origin` | Uses the page origin; Caddy proxies `/api` and `/socket.io` |
+| `https://api.example.com` | Calls that host |
+| `http://192.168.1.50:4000` | Direct LAN API access |
+| empty | `NEXT_PUBLIC_API_URL`, else `<hostname>:4000` |
+
+`CORS_ORIGIN` must include every origin that calls the API directly. After
+changing the value, restart the web app (or the `web` container). `/setup` shows
+the resolved API address, database health, realtime connection, menu count and a
+test receipt — use it on every new tablet.
 
 ## The Serve workflow
 
@@ -526,7 +567,10 @@ See `.env.example`. Every integration degrades gracefully:
 * Redis unset → in-process Socket.io adapter.
 * SendGrid/Stripe unset → notifications are persisted; payment is simulated by
   the POS payload (`method: 'card'`).
-* `NEXT_PUBLIC_API_URL` defaults to `http://localhost:4000`.
+* `NEXT_PUBLIC_API_URL` defaults to `http://localhost:4000` and is only a
+  fallback; `PUBLIC_API_URL` (runtime) is preferred. Set it to `same-origin`
+  behind a reverse proxy.
+* `deploy/.env.example` documents the production deployment variables.
 
 ## Scripts
 
@@ -555,9 +599,11 @@ See `.env.example`. Every integration degrades gracefully:
   in the dish preview and press **Publish dish**; coverage updates live.
 * `/login` is a PIN terminal demo; all seeded staff share the roster PINs shown
   in the UI. Do not use these values in production.
-* Floor-plan uploads are stored on the API host’s local disk. A production
-  deployment (Render, Vercel, etc.) needs a persistent disk or object storage
-  for `apps/api/uploads/floorplans/`; the rest of the app is stateless.
+* Floor-plan uploads are stored on the API host’s local disk. The deployment kit
+  mounts a `whiteout-uploads` volume for them; any other production deployment
+  needs a persistent disk or object storage. The rest of the app is stateless.
+* The PIN terminal is a demo gate, and card payments are simulated until a
+  processor (Stripe Terminal, Adyen, Moneris, Chase) is integrated.
 * Serving an occupied table creates a new ticket/round for that table rather
   than merging into the original check. This keeps the ordering flow simple and
   leaves the original check intact for the manager view.

@@ -1,0 +1,12 @@
+# Public domain (Caddy gets a Let's Encrypt certificate automatically).
+# SITE_ADDRESS=pos.example.com in deploy/.env.
+{$SITE_ADDRESS} {
+	encode zstd gzip
+
+	# API, realtime and uploaded floor plans go to Fastify.
+	@backend path /api/* /socket.io/* /uploads/*
+	reverse_proxy @backend api:4000
+
+	# Everything else is the Next.js app.
+	reverse_proxy web:3010
+}

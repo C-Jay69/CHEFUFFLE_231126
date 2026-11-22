@@ -1,5 +1,36 @@
-const rawBase = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
-export const API_BASE = rawBase.replace(/\/$/, '');
+declare global {
+  interface Window {
+    __WHITEOUT_API_BASE__?: string;
+  }
+}
+
+/**
+ * Resolved at runtime so a deployment can change its address without a rebuild:
+ *   1. `/config.js` (PUBLIC_API_URL): "same-origin" or an absolute URL.
+ *   2. NEXT_PUBLIC_API_URL at build time (legacy).
+ *   3. Auto: same host on port 4000 (dev and LAN tablets).
+ */
+function resolveApiBase(): string {
+  const runtime =
+    typeof window !== 'undefined' ? window.__WHITEOUT_API_BASE__?.trim() : undefined;
+
+  if (runtime === 'same-origin') {
+    return typeof window !== 'undefined'
+      ? window.location.origin
+      : 'http://localhost:4000';
+  }
+  if (runtime) return runtime.replace(/\/$/, '');
+
+  const configured = process.env.NEXT_PUBLIC_API_URL?.trim();
+  if (configured) return configured.replace(/\/$/, '');
+
+  if (typeof window !== 'undefined') {
+    return `${window.location.protocol}//${window.location.hostname}:4000`;
+  }
+  return 'http://localhost:4000';
+}
+
+export const API_BASE = resolveApiBase();
 
 export class ApiError extends Error {
   constructor(
