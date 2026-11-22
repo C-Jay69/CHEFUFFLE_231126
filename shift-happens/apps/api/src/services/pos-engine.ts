@@ -1,12 +1,21 @@
-import { prisma } from '@shift-happens/db';
+import { prisma, Prisma } from '@shift-happens/db';
 import {
-  AUTO_GRATUITY_RATE,
-  TAX_RATE,
+  AUTO_GRATUITY_PERCENT,
+  DEFAULT_TAX_RATE_PERCENT,
   courseForCategory,
   type CreateOrderInput,
 } from '@shift-happens/shared';
 import { env } from '../env.js';
 import { badRequest, conflict, notFound } from '../errors.js';
+import { recordAudit } from '../lib/audit.js';
+import {
+  applyTax,
+  formatMinor,
+  fromMinor,
+  minorToNumber,
+  percentOfMinor,
+  toMinor,
+} from '../lib/money.js';
 import { emitRestaurant, emitStation } from '../realtime.js';
 import { getTickets, toTicket } from './kds-engine.js';
 import { calculateLaborPacing } from './labor-engine.js';
@@ -21,7 +30,80 @@ const orderInclude = {
   server: true,
 };
 
+type PaymentLike = {
+  amount: unknown;
+  kind?: string | null;
+  status?: string | null;
+};
+
+function isCaptured(payment: PaymentLike) {
+  return (payment.status ?? 'captured') === 'captured';
+}
+
+/**
+ * The payment ledger: captured `payment` rows minus `refund` rows.
+ * Refund rows are stored with a negative amount, but legacy/test rows may be
+ * positive, so the kind decides the sign.
+ */
+export function paymentNetMinor(payments: readonly PaymentLike[]): number {
+  let net = 0;
+  for (const payment of payments) {
+    if (!isCaptured(payment)) continue;
+    const amount = toMinor(payment.amount);
+    if ((payment.kind ?? 'payment') === 'refund') net -= Math.abs(amount);
+    else net += amount;
+  }
+  return net;
+}
+
+function uniqueViolation(error: unknown): boolean {
+  return (
+    error instanceof Prisma.PrismaClientKnownRequestError &&
+    error.code === 'P2002'
+  );
+}
+
+interface RestaurantMoneyConfig {
+  taxRatePercent: unknown;
+  taxInclusive: boolean;
+  currency: string;
+}
+
+async function restaurantMoneyConfig(
+  restaurantId: string,
+): Promise<RestaurantMoneyConfig> {
+  const restaurant = await prisma.restaurant.findUnique({
+    where: { id: restaurantId },
+    select: { taxRate: true, taxInclusive: true, currency: true },
+  });
+  if (!restaurant) throw notFound('Restaurant not found');
+  return {
+    taxRatePercent: restaurant.taxRate ?? DEFAULT_TAX_RATE_PERCENT,
+    taxInclusive: restaurant.taxInclusive,
+    currency: restaurant.currency,
+  };
+}
+
+/** Serialised restaurant tax config for POS clients (percent, not fraction). */
+export async function getRestaurantConfig(restaurantId = env.RESTAURANT_ID) {
+  const config = await restaurantMoneyConfig(restaurantId);
+  return {
+    taxRate: minorToNumber(toMinor(config.taxRatePercent)),
+    taxInclusive: config.taxInclusive,
+    currency: config.currency,
+  };
+}
+
 function serializeOrder(order: any) {
+  const payments = order.payments ?? [];
+  const hasLedger = payments.length > 0;
+  const paidAmountMinor = hasLedger
+    ? paymentNetMinor(payments)
+    : order.status === 'paid'
+      ? toMinor(order.total)
+      : 0;
+  const totalMinor = toMinor(order.total);
+
   return {
     id: order.id,
     orderNumber: order.orderNumber,
@@ -32,48 +114,37 @@ function serializeOrder(order: any) {
     serverId: order.serverId,
     serverName: order.server?.name ?? null,
     status: order.status,
-    subtotal: num(order.subtotal),
-    tax: num(order.tax),
-    tip: num(order.tip),
-    total: num(order.total),
+    subtotal: minorToNumber(toMinor(order.subtotal)),
+    tax: minorToNumber(toMinor(order.tax)),
+    tip: minorToNumber(toMinor(order.tip)),
+    total: minorToNumber(totalMinor),
     paymentMethod: order.paymentMethod ?? null,
     cardBrand: order.cardBrand ?? null,
+    voidReason: order.voidReason ?? null,
+    voidedBy: order.voidedBy ?? null,
     allergyNotes: order.allergyNotes,
-    payments: (order.payments ?? []).map((payment: any) => ({
+    payments: payments.map((payment: any) => ({
       id: payment.id,
-      amount: num(payment.amount),
+      amount: minorToNumber(toMinor(payment.amount)),
       method: payment.method,
       cardBrand: payment.cardBrand,
       label: payment.label,
+      kind: payment.kind ?? 'payment',
+      status: payment.status ?? 'captured',
+      refundOfId: payment.refundOfId ?? null,
       createdAt: payment.createdAt.toISOString(),
     })),
-    paidAmount:
-      order.status === 'paid' && (order.payments ?? []).length === 0
-        ? num(order.total)
-        : round(
-            (order.payments ?? []).reduce(
-              (sum: number, payment: any) => sum + num(payment.amount),
-              0,
-            ),
-          ),
-    balance:
-      order.status === 'paid'
-        ? 0
-        : round(
-            num(order.total) -
-              (order.payments ?? []).reduce(
-                (sum: number, payment: any) => sum + num(payment.amount),
-                0,
-              ),
-          ),
+    paidAmount: minorToNumber(paidAmountMinor),
+    balance: minorToNumber(Math.max(0, totalMinor - paidAmountMinor)),
     createdAt: order.createdAt.toISOString(),
     closedAt: order.closedAt?.toISOString() ?? null,
+    paidAt: order.paidAt?.toISOString() ?? null,
     items: order.items.map((item: any) => ({
       id: item.id,
       menuItemId: item.menuItemId,
       name: item.menuItem.name,
       quantity: item.quantity,
-      unitPrice: num(item.unitPrice),
+      unitPrice: minorToNumber(toMinor(item.unitPrice)),
       modifiers: item.modifiers,
       prepStatus: item.prepStatus,
       station: item.station,
@@ -114,12 +185,15 @@ async function prepareRound(
     );
   }
 
-  let subtotal = 0;
+  let subtotalMinor = 0;
   const preparedRows = items.map((item) => {
     const menu = menuMap.get(item.menuItemId)!;
-    const modifiersTotal = item.modifiers.reduce((sum, m) => sum + m.priceDelta, 0);
-    const unitPrice = num(menu.price) + modifiersTotal;
-    subtotal += unitPrice * item.quantity;
+    const modifiersTotalMinor = item.modifiers.reduce(
+      (sum, modifier) => sum + toMinor(modifier.priceDelta),
+      0,
+    );
+    const unitPriceMinor = toMinor(menu.price) + modifiersTotalMinor;
+    subtotalMinor += unitPriceMinor * item.quantity;
     const course =
       item.course ??
       menu.course ??
@@ -127,7 +201,7 @@ async function prepareRound(
     return {
       menuItemId: menu.id,
       quantity: item.quantity,
-      unitPrice: round(unitPrice),
+      unitPrice: fromMinor(unitPriceMinor),
       modifiers: item.modifiers,
       course,
       station: menu.station,
@@ -136,7 +210,7 @@ async function prepareRound(
     };
   });
 
-  return { menuMap, preparedRows, subtotal: round(subtotal) };
+  return { menuMap, preparedRows, subtotalMinor };
 }
 
 /**
@@ -336,10 +410,11 @@ export async function createOrder(
   input: CreateOrderInput,
   restaurantId = env.RESTAURANT_ID,
 ) {
-  const { menuMap, preparedRows, subtotal } = await prepareRound(
+  const { menuMap, preparedRows, subtotalMinor } = await prepareRound(
     input.items,
     restaurantId,
   );
+  const moneyConfig = await restaurantMoneyConfig(restaurantId);
 
   let serverId = input.serverId;
   if (serverId) {
@@ -368,9 +443,15 @@ export async function createOrder(
   }
 
   const rows = withPrepStatus(preparedRows, input.sendToKitchen);
-  const tax = round(subtotal * TAX_RATE);
-  const tip = input.autoGratuity ? round(subtotal * AUTO_GRATUITY_RATE) : 0;
-  const total = round(subtotal + tax + tip);
+  const { subtotalMinor: netSubtotalMinor, taxMinor } = applyTax(
+    subtotalMinor,
+    moneyConfig.taxRatePercent,
+    moneyConfig.taxInclusive,
+  );
+  const tipMinor = input.autoGratuity
+    ? percentOfMinor(netSubtotalMinor, AUTO_GRATUITY_PERCENT)
+    : 0;
+  const totalMinor = netSubtotalMinor + taxMinor + tipMinor;
   const status = input.sendToKitchen ? 'sent_to_kitchen' : 'open';
 
   const result = await prisma.$transaction(async (tx) => {
@@ -380,10 +461,10 @@ export async function createOrder(
         tableId: input.tableId ?? null,
         serverId: serverId!,
         status,
-        subtotal,
-        tax,
-        tip,
-        total,
+        subtotal: fromMinor(netSubtotalMinor),
+        tax: fromMinor(taxMinor),
+        tip: fromMinor(tipMinor),
+        total: fromMinor(totalMinor),
         allergyNotes: input.allergyNotes ?? null,
         items: { create: rows as never },
       },
@@ -421,7 +502,12 @@ export async function createOrder(
     order: serialized,
     lowStockAlerts: result.lowStockAlerts,
     newly86ed: result.eightySixed,
-    totals: { subtotal, tax, tip, total },
+    totals: {
+      subtotal: minorToNumber(netSubtotalMinor),
+      tax: minorToNumber(taxMinor),
+      tip: minorToNumber(tipMinor),
+      total: minorToNumber(totalMinor),
+    },
   };
 }
 
@@ -448,18 +534,32 @@ export async function appendOrderItems(
   }
 
   const sendToKitchen = input.sendToKitchen ?? true;
-  const { menuMap, preparedRows, subtotal: roundSubtotal } = await prepareRound(
+  const { menuMap, preparedRows, subtotalMinor: roundSubtotalMinor } = await prepareRound(
     input.items,
     restaurantId,
   );
+  const moneyConfig = await restaurantMoneyConfig(restaurantId);
   const rows = withPrepStatus(preparedRows, sendToKitchen);
 
-  const subtotal = round(num(existing.subtotal) + roundSubtotal);
-  const tax = round(subtotal * TAX_RATE);
-  const tip = input.autoGratuity
-    ? round(subtotal * AUTO_GRATUITY_RATE)
-    : num(existing.tip);
-  const total = round(subtotal + tax + tip);
+  // Recompute from the new gross menu subtotal so an inclusive restaurant
+  // does not double-count the tax it already embedded in the previous items.
+  // `order.subtotal` is net of tax, so for exclusive tax it already is the
+  // previous menu gross; for inclusive tax the gross is subtotal + tax.
+  const previousGrossMinor = moneyConfig.taxInclusive
+    ? toMinor(existing.subtotal) + toMinor(existing.tax)
+    : toMinor(existing.subtotal);
+  const grossSubtotalMinor = previousGrossMinor + roundSubtotalMinor;
+  const { subtotalMinor, taxMinor } = applyTax(
+    grossSubtotalMinor,
+    moneyConfig.taxRatePercent,
+    moneyConfig.taxInclusive,
+  );
+  // Auto-gratuity is stored once on the order; appending a round recalculates
+  // it from the new subtotal rather than layering a second gratuity on top.
+  const tipMinor = input.autoGratuity
+    ? percentOfMinor(subtotalMinor, AUTO_GRATUITY_PERCENT)
+    : toMinor(existing.tip);
+  const totalMinor = subtotalMinor + taxMinor + tipMinor;
   const status = sendToKitchen ? 'sent_to_kitchen' : existing.status;
 
   const result = await prisma.$transaction(async (tx) => {
@@ -469,10 +569,10 @@ export async function appendOrderItems(
     await tx.order.update({
       where: { id: orderId },
       data: {
-        subtotal,
-        tax,
-        tip,
-        total,
+        subtotal: fromMinor(subtotalMinor),
+        tax: fromMinor(taxMinor),
+        tip: fromMinor(tipMinor),
+        total: fromMinor(totalMinor),
         status,
         ...(input.allergyNotes !== undefined
           ? { allergyNotes: input.allergyNotes }
@@ -512,7 +612,12 @@ export async function appendOrderItems(
     order,
     lowStockAlerts: result.lowStockAlerts,
     newly86ed: result.eightySixed,
-    totals: { subtotal, tax, tip, total },
+    totals: {
+      subtotal: minorToNumber(subtotalMinor),
+      tax: minorToNumber(taxMinor),
+      tip: minorToNumber(tipMinor),
+      total: minorToNumber(totalMinor),
+    },
   };
 }
 
@@ -558,80 +663,228 @@ export async function getOrderByNumber(
 export async function reopenOrder(
   orderId: string,
   restaurantId = env.RESTAURANT_ID,
+  options: { actorStaffId?: string | null } = {},
 ) {
-  const order = await prisma.order.findFirst({
-    where: { id: orderId, restaurantId },
+  const reopened = await prisma.$transaction(async (tx) => {
+    const locked = await tx.$queryRaw<Array<{ id: string }>>`
+      SELECT id FROM orders
+      WHERE id = ${orderId}::uuid AND restaurant_id = ${restaurantId}::uuid
+      FOR UPDATE`;
+    if (locked.length === 0) throw notFound('Order not found');
+
+    const order = await tx.order.findFirst({ where: { id: orderId, restaurantId } });
+    if (!order) throw notFound('Order not found');
+    if (order.status !== 'paid') {
+      throw conflict('Only a paid check can be re-opened.');
+    }
+
+    const updated = await tx.order.update({
+      where: { id: orderId },
+      data: { status: 'sent_to_kitchen', closedAt: null, paidAt: null },
+      include: orderInclude,
+    });
+
+    await recordAudit(
+      {
+        restaurantId,
+        actorStaffId: options.actorStaffId ?? null,
+        action: 'order.reopen',
+        entity: 'order',
+        entityId: orderId,
+        before: { status: order.status, closedAt: order.closedAt },
+        after: { status: updated.status, closedAt: null },
+        reason: 'Manager reopened a paid check',
+      },
+      tx,
+    );
+
+    return serializeOrder(updated);
   });
-  if (!order) throw notFound('Order not found');
-  if (order.status !== 'paid') {
-    throw conflict('Only a paid check can be re-opened.');
-  }
-  const updated = await prisma.order.update({
-    where: { id: orderId },
-    data: { status: 'sent_to_kitchen', closedAt: null },
-    include: orderInclude,
-  });
-  const serialized = serializeOrder(updated);
+
   emitRestaurant('ORDER_CREATED', {
     event: 'ORDER_CREATED',
-    order: serialized,
+    order: reopened,
     reopened: true,
     timestamp: new Date().toISOString(),
   }, restaurantId);
-  return serialized;
+  return reopened;
 }
 
+/**
+ * Settle the outstanding balance of a check. The remaining amount is always
+ * recomputed from the payment ledger inside a row-locked transaction, so a
+ * concurrent or repeated call can never charge the full total twice.
+ *
+ * Pass `amount` to take a partial payment; omit it to settle exactly the
+ * remainder. An amount above the remainder is rejected.
+ */
 export async function payOrder(
   orderId: string,
-  input: { tip?: number; method?: string; cardBrand?: string } = {},
+  input: {
+    amount?: number;
+    tip?: number;
+    method?: string;
+    cardBrand?: string;
+    idempotencyKey?: string;
+  } = {},
   restaurantId = env.RESTAURANT_ID,
+  options: { actorStaffId?: string | null } = {},
 ) {
-  const order = await prisma.order.findFirst({
-    where: { id: orderId, restaurantId },
-  });
-  if (!order) throw notFound('Order not found');
-  if (order.status === 'void') throw conflict('Cannot pay a voided order');
-  if (order.status === 'paid') throw conflict('This check is already paid');
-
-  const tip = input.tip !== undefined ? round(input.tip) : num(order.tip);
-  const total = round(num(order.subtotal) + num(order.tax) + tip);
   const method = input.method ?? 'card';
   const cardBrand = method === 'cash' ? null : (input.cardBrand ?? 'other');
-  const updated = await prisma.$transaction(async (tx) => {
-    await tx.payment.create({
-      data: { orderId, amount: total, method, cardBrand, label: 'Full payment' },
+  const idempotencyKey = input.idempotencyKey?.trim() || null;
+
+  try {
+    const result = await prisma.$transaction(async (tx) => {
+      // Serialise every settlement for this order.
+      const locked = await tx.$queryRaw<Array<{ id: string }>>`
+        SELECT id FROM orders
+        WHERE id = ${orderId}::uuid AND restaurant_id = ${restaurantId}::uuid
+        FOR UPDATE`;
+      if (locked.length === 0) throw notFound('Order not found');
+
+      const order = await tx.order.findFirst({
+        where: { id: orderId, restaurantId },
+        include: { payments: { orderBy: { createdAt: 'asc' } } },
+      });
+      if (!order) throw notFound('Order not found');
+
+      // A replay with the same idempotency key returns the committed result
+      // even when the first call already closed the check.
+      if (idempotencyKey) {
+        const existing = await tx.payment.findFirst({
+          where: { orderId, idempotencyKey },
+        });
+        if (existing) {
+          const current = await tx.order.findFirstOrThrow({
+            where: { id: orderId },
+            include: orderInclude,
+          });
+          return { order: serializeOrder(current), payment: existing, reused: true };
+        }
+      }
+
+      if (order.status === 'void') throw conflict('Cannot pay a voided order');
+      if (order.status === 'paid') throw conflict('This check is already paid');
+
+      const subtotalMinor = toMinor(order.subtotal);
+      const taxMinor = toMinor(order.tax);
+      const tipMinor =
+        input.tip !== undefined ? Math.max(0, toMinor(input.tip)) : toMinor(order.tip);
+      const totalMinor = subtotalMinor + taxMinor + tipMinor;
+      const paidBeforeMinor = paymentNetMinor(order.payments);
+      const remainingMinor = totalMinor - paidBeforeMinor;
+
+      if (remainingMinor <= 0) {
+        throw conflict('This check is already settled.');
+      }
+
+      const requestedMinor =
+        input.amount !== undefined ? toMinor(input.amount) : remainingMinor;
+      if (requestedMinor <= 0) {
+        throw badRequest('Enter a payment amount above zero');
+      }
+      if (requestedMinor > remainingMinor) {
+        throw badRequest(
+          `That is more than the remaining balance of ${formatMinor(remainingMinor)}.`,
+        );
+      }
+
+      const fullyPaid = requestedMinor === remainingMinor;
+      const hadPayment = order.payments.some(
+        (payment) => (payment.kind ?? 'payment') === 'payment' && isCaptured(payment),
+      );
+
+      const payment = await tx.payment.create({
+        data: {
+          orderId,
+          amount: fromMinor(requestedMinor),
+          method,
+          cardBrand,
+          label: fullyPaid
+            ? hadPayment
+              ? 'Balance payment'
+              : 'Full payment'
+            : 'Partial payment',
+          kind: 'payment',
+          status: 'captured',
+          idempotencyKey,
+          createdBy: options.actorStaffId ?? null,
+        },
+      });
+
+      const updated = await tx.order.update({
+        where: { id: orderId },
+        data: {
+          tip: fromMinor(tipMinor),
+          total: fromMinor(totalMinor),
+          ...(fullyPaid
+            ? {
+                status: 'paid',
+                closedAt: new Date(),
+                paidAt: new Date(),
+                paymentMethod: hadPayment ? 'split' : method,
+                cardBrand,
+              }
+            : {}),
+        },
+        include: orderInclude,
+      });
+
+      await recordAudit(
+        {
+          restaurantId,
+          actorStaffId: options.actorStaffId ?? null,
+          action: 'payment.capture',
+          entity: 'order',
+          entityId: orderId,
+          after: {
+            paymentId: payment.id,
+            amount: minorToNumber(requestedMinor),
+            method,
+            cardBrand,
+            kind: 'payment',
+            balanceAfter: minorToNumber(remainingMinor - requestedMinor),
+          },
+        },
+        tx,
+      );
+
+      return { order: serializeOrder(updated), payment, reused: false };
     });
-    return tx.order.update({
-      where: { id: orderId },
-      data: {
-        status: 'paid',
-        tip,
-        total,
-        closedAt: new Date(),
-        paymentMethod: method,
-        cardBrand,
-      },
-      include: orderInclude,
-    });
-  });
-  const serialized = serializeOrder(updated);
-  emitRestaurant('ORDER_CREATED', {
-    event: 'ORDER_CREATED',
-    order: serialized,
-    payment: {
-      method: input.method ?? 'card',
-      cardBrand: input.cardBrand ?? null,
-    },
-    timestamp: new Date().toISOString(),
-  }, restaurantId);
-  void calculateLaborPacing(restaurantId).catch(() => undefined);
-  return serialized;
+
+    if (!result.reused) {
+      emitRestaurant('ORDER_CREATED', {
+        event: 'ORDER_CREATED',
+        order: result.order,
+        payment: {
+          id: result.payment.id,
+          method,
+          cardBrand,
+          amount: minorToNumber(toMinor(result.payment.amount)),
+        },
+        timestamp: new Date().toISOString(),
+      }, restaurantId);
+      if (result.order.status === 'paid') {
+        void calculateLaborPacing(restaurantId).catch(() => undefined);
+      }
+    }
+    return result.order;
+  } catch (error) {
+    if (idempotencyKey && uniqueViolation(error)) {
+      const existing = await prisma.payment.findFirst({
+        where: { orderId, idempotencyKey },
+      });
+      if (existing) return getOrder(orderId, restaurantId);
+    }
+    throw error;
+  }
 }
 
 /**
  * Records a (possibly partial) payment against an open check. The guest can
  * pay part card, part cash, part gift card; the check closes automatically
- * when the payments cover the total.
+ * when the ledger covers the total.
  */
 export async function addOrderPayment(
   orderId: string,
@@ -641,106 +894,439 @@ export async function addOrderPayment(
     cardBrand?: string;
     tip?: number;
     label?: string | null;
+    idempotencyKey?: string;
   },
   restaurantId = env.RESTAURANT_ID,
+  options: { actorStaffId?: string | null } = {},
 ) {
-  const order = await prisma.order.findFirst({
-    where: { id: orderId, restaurantId },
-    include: { payments: true },
-  });
-  if (!order) throw notFound('Order not found');
-  if (order.status === 'void') throw conflict('Cannot pay a voided check');
-  if (order.status === 'paid') throw conflict('This check is already paid');
-
-  const subtotal = num(order.subtotal);
-  const tax = num(order.tax);
-  const tip =
-    input.tip !== undefined ? Math.max(0, round(input.tip)) : num(order.tip);
-  const total = round(subtotal + tax + tip);
-  const paidBefore = round(
-    order.payments.reduce((sum, payment) => sum + num(payment.amount), 0),
-  );
-  const amount = round(input.amount);
-  const remaining = round(total - paidBefore);
-
-  if (remaining < -0.005) {
-    throw badRequest(
-      'The tip is lower than the amount already paid. Raise the tip or refund a payment first.',
-    );
-  }
-  if (!(amount > 0)) throw badRequest('Enter a payment amount above zero');
-  if (amount > remaining + 0.005) {
-    throw badRequest(
-      `That is more than the remaining balance of $${remaining.toFixed(2)}.`,
-    );
-  }
-
-  const fullyPaid = round(paidBefore + amount) >= total - 0.005;
   const method = input.method;
   const cardBrand = method === 'cash' ? null : (input.cardBrand ?? 'other');
-  const isFirstPayment = order.payments.length === 0;
+  const idempotencyKey = input.idempotencyKey?.trim() || null;
 
-  const updated = await prisma.$transaction(async (tx) => {
-    await tx.payment.create({
-      data: {
-        orderId,
-        amount,
-        method,
-        cardBrand,
-        label: input.label ?? null,
-      },
+  try {
+    const result = await prisma.$transaction(async (tx) => {
+      const locked = await tx.$queryRaw<Array<{ id: string }>>`
+        SELECT id FROM orders
+        WHERE id = ${orderId}::uuid AND restaurant_id = ${restaurantId}::uuid
+        FOR UPDATE`;
+      if (locked.length === 0) throw notFound('Order not found');
+
+      const order = await tx.order.findFirst({
+        where: { id: orderId, restaurantId },
+        include: { payments: { orderBy: { createdAt: 'asc' } } },
+      });
+      if (!order) throw notFound('Order not found');
+
+      if (idempotencyKey) {
+        const existing = await tx.payment.findFirst({
+          where: { orderId, idempotencyKey },
+        });
+        if (existing) {
+          const current = await tx.order.findFirstOrThrow({
+            where: { id: orderId },
+            include: orderInclude,
+          });
+          return {
+            order: serializeOrder(current),
+            payment: existing,
+            fullyPaid: false,
+            reused: true,
+          };
+        }
+      }
+
+      if (order.status === 'void') throw conflict('Cannot pay a voided check');
+      if (order.status === 'paid') throw conflict('This check is already paid');
+
+      const subtotalMinor = toMinor(order.subtotal);
+      const taxMinor = toMinor(order.tax);
+      const tipMinor =
+        input.tip !== undefined ? Math.max(0, toMinor(input.tip)) : toMinor(order.tip);
+      const totalMinor = subtotalMinor + taxMinor + tipMinor;
+      const paidBeforeMinor = paymentNetMinor(order.payments);
+      const remainingMinor = totalMinor - paidBeforeMinor;
+
+      if (remainingMinor < 0) {
+        throw badRequest(
+          'The tip is lower than the amount already paid. Raise the tip or refund a payment first.',
+        );
+      }
+
+      const amountMinor = toMinor(input.amount);
+      if (amountMinor <= 0) throw badRequest('Enter a payment amount above zero');
+      if (amountMinor > remainingMinor) {
+        throw badRequest(
+          `That is more than the remaining balance of ${formatMinor(remainingMinor)}.`,
+        );
+      }
+
+      const fullyPaid = amountMinor === remainingMinor;
+      const isFirstPayment = !order.payments.some(
+        (payment) => (payment.kind ?? 'payment') === 'payment' && isCaptured(payment),
+      );
+
+      const payment = await tx.payment.create({
+        data: {
+          orderId,
+          amount: fromMinor(amountMinor),
+          method,
+          cardBrand,
+          label: input.label ?? null,
+          kind: 'payment',
+          status: 'captured',
+          idempotencyKey,
+          createdBy: options.actorStaffId ?? null,
+        },
+      });
+
+      const updated = await tx.order.update({
+        where: { id: orderId },
+        data: {
+          tip: fromMinor(tipMinor),
+          total: fromMinor(totalMinor),
+          ...(fullyPaid
+            ? {
+                status: 'paid',
+                closedAt: new Date(),
+                paidAt: new Date(),
+                paymentMethod: isFirstPayment ? method : 'split',
+                cardBrand,
+              }
+            : {}),
+        },
+        include: orderInclude,
+      });
+
+      await recordAudit(
+        {
+          restaurantId,
+          actorStaffId: options.actorStaffId ?? null,
+          action: 'payment.capture',
+          entity: 'order',
+          entityId: orderId,
+          after: {
+            paymentId: payment.id,
+            amount: minorToNumber(amountMinor),
+            method,
+            cardBrand,
+            kind: 'payment',
+            label: input.label ?? null,
+            balanceAfter: minorToNumber(remainingMinor - amountMinor),
+          },
+        },
+        tx,
+      );
+
+      return {
+        order: serializeOrder(updated),
+        payment,
+        fullyPaid,
+        reused: false,
+      };
     });
-    return tx.order.update({
+
+    if (!result.reused) {
+      emitRestaurant('ORDER_CREATED', {
+        event: 'ORDER_CREATED',
+        order: result.order,
+        payment: {
+          id: result.payment.id,
+          method,
+          cardBrand,
+          amount: minorToNumber(toMinor(result.payment.amount)),
+        },
+        timestamp: new Date().toISOString(),
+      }, restaurantId);
+      if (result.fullyPaid) {
+        void calculateLaborPacing(restaurantId).catch(() => undefined);
+      }
+    }
+    return result.order;
+  } catch (error) {
+    if (idempotencyKey && uniqueViolation(error)) {
+      const existing = await prisma.payment.findFirst({
+        where: { orderId, idempotencyKey },
+      });
+      if (existing) return getOrder(orderId, restaurantId);
+    }
+    throw error;
+  }
+}
+
+/**
+ * Refund captured money. The refund is stored as a negative `kind='refund'`
+ * payment row; the ledger (payments minus refunds) can never go below zero.
+ */
+export async function refundOrder(
+  orderId: string,
+  input: {
+    amount?: number;
+    reason: string;
+    method?: string;
+    cardBrand?: string;
+    idempotencyKey?: string;
+  },
+  restaurantId = env.RESTAURANT_ID,
+  options: { actorStaffId?: string | null } = {},
+) {
+  const reason = input.reason?.trim();
+  if (!reason) throw badRequest('A refund reason is required.');
+  const idempotencyKey = input.idempotencyKey?.trim() || null;
+
+  try {
+    const result = await prisma.$transaction(async (tx) => {
+      const locked = await tx.$queryRaw<Array<{ id: string }>>`
+        SELECT id FROM orders
+        WHERE id = ${orderId}::uuid AND restaurant_id = ${restaurantId}::uuid
+        FOR UPDATE`;
+      if (locked.length === 0) throw notFound('Order not found');
+
+      const order = await tx.order.findFirst({
+        where: { id: orderId, restaurantId },
+        include: { payments: { orderBy: { createdAt: 'asc' } } },
+      });
+      if (!order) throw notFound('Order not found');
+
+      if (idempotencyKey) {
+        const existing = await tx.payment.findFirst({
+          where: { orderId, idempotencyKey },
+        });
+        if (existing) {
+          const current = await tx.order.findFirstOrThrow({
+            where: { id: orderId },
+            include: orderInclude,
+          });
+          return { order: serializeOrder(current), payment: existing, reused: true };
+        }
+      }
+
+      if (order.status === 'void') {
+        throw conflict('Cannot refund a voided check.');
+      }
+
+      const capturedMinor = paymentNetMinor(order.payments);
+      if (capturedMinor <= 0) {
+        throw badRequest('This check has no captured payment to refund.');
+      }
+
+      const requestedMinor =
+        input.amount !== undefined ? toMinor(input.amount) : capturedMinor;
+      if (requestedMinor <= 0) {
+        throw badRequest('Enter a refund amount above zero');
+      }
+      if (requestedMinor > capturedMinor) {
+        throw badRequest(
+          `Refund cannot exceed the captured balance of ${formatMinor(capturedMinor)}.`,
+        );
+      }
+
+      const original = [...order.payments]
+        .reverse()
+        .find(
+          (payment) =>
+            (payment.kind ?? 'payment') === 'payment' && isCaptured(payment),
+        );
+      const refundMethod = input.method ?? original?.method ?? 'card';
+      const refundBrand =
+        refundMethod === 'cash'
+          ? null
+          : (input.cardBrand ?? original?.cardBrand ?? 'other');
+
+      const payment = await tx.payment.create({
+        data: {
+          orderId,
+          amount: fromMinor(-requestedMinor),
+          method: refundMethod,
+          cardBrand: refundBrand,
+          label: reason.slice(0, 60),
+          kind: 'refund',
+          status: 'captured',
+          idempotencyKey,
+          refundOfId: original?.id ?? null,
+          createdBy: options.actorStaffId ?? null,
+        },
+      });
+
+      const updated = await tx.order.findFirstOrThrow({
+        where: { id: orderId },
+        include: orderInclude,
+      });
+
+      await recordAudit(
+        {
+          restaurantId,
+          actorStaffId: options.actorStaffId ?? null,
+          action: 'payment.refund',
+          entity: 'order',
+          entityId: orderId,
+          after: {
+            paymentId: payment.id,
+            amount: minorToNumber(requestedMinor),
+            storedAmount: minorToNumber(-requestedMinor),
+            method: refundMethod,
+            cardBrand: refundBrand,
+            refundOfId: original?.id ?? null,
+            capturedBefore: minorToNumber(capturedMinor),
+            capturedAfter: minorToNumber(capturedMinor - requestedMinor),
+          },
+          reason,
+        },
+        tx,
+      );
+
+      return { order: serializeOrder(updated), payment, reused: false };
+    });
+
+    if (!result.reused) {
+      emitRestaurant('ORDER_CREATED', {
+        event: 'ORDER_CREATED',
+        order: result.order,
+        refund: {
+          id: result.payment.id,
+          amount: minorToNumber(toMinor(result.payment.amount)),
+        },
+        timestamp: new Date().toISOString(),
+      }, restaurantId);
+    }
+    return result.order;
+  } catch (error) {
+    if (idempotencyKey && uniqueViolation(error)) {
+      const existing = await prisma.payment.findFirst({
+        where: { orderId, idempotencyKey },
+      });
+      if (existing) return getOrder(orderId, restaurantId);
+    }
+    throw error;
+  }
+}
+
+/**
+ * Void a check. A reason is mandatory. A check with captured money cannot be
+ * silently voided: pass `refund: true` to reverse the captured ledger first.
+ */
+export async function voidOrder(
+  orderId: string,
+  reason: string | undefined,
+  restaurantId = env.RESTAURANT_ID,
+  options: { actorStaffId?: string | null; refund?: boolean } = {},
+) {
+  const trimmedReason = reason?.trim();
+  if (!trimmedReason) throw badRequest('A void reason is required.');
+
+  const voided = await prisma.$transaction(async (tx) => {
+    const locked = await tx.$queryRaw<Array<{ id: string }>>`
+      SELECT id FROM orders
+      WHERE id = ${orderId}::uuid AND restaurant_id = ${restaurantId}::uuid
+      FOR UPDATE`;
+    if (locked.length === 0) throw notFound('Order not found');
+
+    const order = await tx.order.findFirst({
+      where: { id: orderId, restaurantId },
+      include: { payments: { orderBy: { createdAt: 'asc' } } },
+    });
+    if (!order) throw notFound('Order not found');
+    if (order.status === 'void') {
+      throw conflict('This check is already voided.');
+    }
+
+    // Legacy paid orders predate the payment ledger; treat the stored total as
+    // captured so they cannot be silently voided either.
+    const capturedMinor =
+      order.payments.length > 0
+        ? paymentNetMinor(order.payments)
+        : order.status === 'paid'
+          ? toMinor(order.total)
+          : 0;
+
+    if (capturedMinor > 0 && !options.refund) {
+      throw conflict(
+        'This check has captured payments. Void it with refund: true to reverse them.',
+      );
+    }
+
+    if (capturedMinor > 0) {
+      const original = [...order.payments]
+        .reverse()
+        .find(
+          (payment) =>
+            (payment.kind ?? 'payment') === 'payment' && isCaptured(payment),
+        );
+      const refund = await tx.payment.create({
+        data: {
+          orderId,
+          amount: fromMinor(-capturedMinor),
+          method: original?.method ?? order.paymentMethod ?? 'card',
+          cardBrand: original?.cardBrand ?? order.cardBrand ?? null,
+          label: `Void: ${trimmedReason}`.slice(0, 60),
+          kind: 'refund',
+          status: 'captured',
+          refundOfId: original?.id ?? null,
+          createdBy: options.actorStaffId ?? null,
+        },
+      });
+
+      await recordAudit(
+        {
+          restaurantId,
+          actorStaffId: options.actorStaffId ?? null,
+          action: 'payment.refund',
+          entity: 'order',
+          entityId: orderId,
+          after: {
+            paymentId: refund.id,
+            amount: minorToNumber(capturedMinor),
+            storedAmount: minorToNumber(-capturedMinor),
+            method: original?.method ?? order.paymentMethod ?? 'card',
+            reason: 'void',
+          },
+          reason: trimmedReason,
+        },
+        tx,
+      );
+    }
+
+    const updated = await tx.order.update({
       where: { id: orderId },
       data: {
-        tip,
-        total,
-        ...(fullyPaid
-          ? {
-              status: 'paid',
-              closedAt: new Date(),
-              paymentMethod: isFirstPayment ? method : 'split',
-              cardBrand,
-            }
-          : {}),
+        status: 'void',
+        closedAt: new Date(),
+        voidReason: trimmedReason,
+        voidedBy: options.actorStaffId ?? null,
       },
       include: orderInclude,
     });
+
+    await recordAudit(
+      {
+        restaurantId,
+        actorStaffId: options.actorStaffId ?? null,
+        action: 'order.void',
+        entity: 'order',
+        entityId: orderId,
+        before: { status: order.status, total: minorToNumber(toMinor(order.total)) },
+        after: {
+          status: 'void',
+          refunded: minorToNumber(capturedMinor > 0 ? capturedMinor : 0),
+        },
+        reason: trimmedReason,
+      },
+      tx,
+    );
+
+    return {
+      order: serializeOrder(updated),
+      orderNumber: order.orderNumber,
+      refundedMinor: capturedMinor > 0 ? capturedMinor : 0,
+    };
   });
 
-  const serialized = serializeOrder(updated);
-  emitRestaurant('ORDER_CREATED', {
-    event: 'ORDER_CREATED',
-    order: serialized,
-    payment: { method, cardBrand, amount },
-    timestamp: new Date().toISOString(),
-  }, restaurantId);
-  if (fullyPaid) {
-    void calculateLaborPacing(restaurantId).catch(() => undefined);
-  }
-  return serialized;
-}
-
-export async function voidOrder(
-  orderId: string,
-  reason?: string,
-  restaurantId = env.RESTAURANT_ID,
-) {
-  const order = await prisma.order.findFirst({
-    where: { id: orderId, restaurantId },
-  });
-  if (!order) throw notFound('Order not found');
-  const updated = await prisma.order.update({
-    where: { id: orderId },
-    data: { status: 'void', closedAt: new Date() },
-    include: orderInclude,
-  });
   emitRestaurant('ORDER_VOIDED', {
     event: 'ORDER_VOIDED',
     orderId,
-    orderNumber: order.orderNumber,
-    reason: reason ?? 'Manager void',
+    orderNumber: voided.orderNumber,
+    reason: trimmedReason,
+    refunded: minorToNumber(voided.refundedMinor),
     timestamp: new Date().toISOString(),
   }, restaurantId);
-  return serializeOrder(updated);
+  return voided.order;
 }

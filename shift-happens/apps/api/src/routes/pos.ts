@@ -1,6 +1,13 @@
-import type { FastifyPluginAsync } from 'fastify';
+import type { FastifyPluginAsync, FastifyRequest } from 'fastify';
 import { z } from 'zod';
-import { createOrderSchema, orderItemInputSchema } from '@shift-happens/shared';
+import {
+  createOrderSchema,
+  orderItemInputSchema,
+  orderPaymentSchema,
+  payOrderSchema,
+  refundSchema,
+  voidOrderSchema,
+} from '@shift-happens/shared';
 import { parse } from '../lib/validate.js';
 import {
   canViewAllTables,
@@ -15,15 +22,29 @@ import {
   createOrder,
   getOrder,
   getOrderByNumber,
+  getRestaurantConfig,
   listOrders,
   payOrder,
+  refundOrder,
   reopenOrder,
   voidOrder,
 } from '../services/pos-engine.js';
 
 const idParams = z.object({ id: z.string().uuid() });
 
+/** Accept `Idempotency-Key` (preferred) or `idempotencyKey` in the body. */
+function idempotencyKeyFrom(
+  request: FastifyRequest,
+  body?: { idempotencyKey?: string },
+): string | undefined {
+  const header = request.headers['idempotency-key'];
+  const value = Array.isArray(header) ? header[0] : header;
+  return value?.trim() || body?.idempotencyKey?.trim() || undefined;
+}
+
 const posRoutes: FastifyPluginAsync = async (app) => {
+  app.get('/pos/config', async () => getRestaurantConfig());
+
   app.post('/orders', async (request, reply) => {
     await requirePermission(request, 'serve.order');
     const body = parse(createOrderSchema, request.body);
@@ -63,20 +84,14 @@ const posRoutes: FastifyPluginAsync = async (app) => {
 
   app.post('/orders/:id/payments', async (request) => {
     const { id } = parse(idParams, request.params);
-    await requireOrderAccess(request, id, 'serve.pay');
-    const body = parse(
-      z.object({
-        amount: z.number().positive().max(100000),
-        method: z.enum(['card', 'cash', 'gift_card', 'house']),
-        cardBrand: z
-          .enum(['visa', 'mastercard', 'amex', 'debit', 'other'])
-          .optional(),
-        tip: z.number().min(0).max(5000).optional(),
-        label: z.string().max(60).nullish(),
-      }),
-      request.body,
+    const staff = await requireOrderAccess(request, id, 'serve.pay');
+    const body = parse(orderPaymentSchema, request.body);
+    return addOrderPayment(
+      id,
+      { ...body, idempotencyKey: idempotencyKeyFrom(request, body) },
+      undefined,
+      { actorStaffId: staff?.id ?? null },
     );
-    return addOrderPayment(id, body);
   });
 
   app.get('/orders/by-number/:number', async (request) => {
@@ -94,8 +109,8 @@ const posRoutes: FastifyPluginAsync = async (app) => {
 
   app.post('/orders/:id/reopen', async (request) => {
     const { id } = parse(idParams, request.params);
-    await requirePermission(request, 'orders.void');
-    return reopenOrder(id);
+    const staff = await requirePermission(request, 'orders.void');
+    return reopenOrder(id, undefined, { actorStaffId: staff?.id ?? null });
   });
 
   app.get('/orders/:id', async (request) => {
@@ -110,28 +125,36 @@ const posRoutes: FastifyPluginAsync = async (app) => {
 
   app.post('/orders/:id/pay', async (request) => {
     const { id } = parse(idParams, request.params);
-    await requireOrderAccess(request, id, 'serve.pay');
-    const body = parse(
-      z.object({
-        tip: z.number().min(0).max(5000).optional(),
-        method: z.enum(['card', 'cash', 'gift_card', 'house']).optional(),
-        cardBrand: z
-          .enum(['visa', 'mastercard', 'amex', 'debit', 'other'])
-          .optional(),
-      }),
-      request.body ?? {},
+    const staff = await requireOrderAccess(request, id, 'serve.pay');
+    const body = parse(payOrderSchema, request.body ?? {});
+    return payOrder(
+      id,
+      { ...body, idempotencyKey: idempotencyKeyFrom(request, body) },
+      undefined,
+      { actorStaffId: staff?.id ?? null },
     );
-    return payOrder(id, body);
+  });
+
+  app.post('/orders/:id/refunds', async (request) => {
+    const { id } = parse(idParams, request.params);
+    const staff = await requirePermission(request, 'orders.void');
+    const body = parse(refundSchema, request.body);
+    return refundOrder(
+      id,
+      { ...body, idempotencyKey: idempotencyKeyFrom(request, body) },
+      undefined,
+      { actorStaffId: staff?.id ?? null },
+    );
   });
 
   app.post('/orders/:id/void', async (request) => {
-    await requirePermission(request, 'orders.void');
+    const staff = await requirePermission(request, 'orders.void');
     const { id } = parse(idParams, request.params);
-    const body = parse(
-      z.object({ reason: z.string().max(300).optional() }),
-      request.body ?? {},
-    );
-    return voidOrder(id, body.reason);
+    const body = parse(voidOrderSchema, request.body ?? {});
+    return voidOrder(id, body.reason, undefined, {
+      actorStaffId: staff?.id ?? null,
+      refund: body.refund,
+    });
   });
 };
 

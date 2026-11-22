@@ -39,7 +39,47 @@ export const createOrderSchema = z.object({
 });
 
 export const voidOrderSchema = z.object({
-  reason: z.string().max(300).optional(),
+  /** Voiding is a privileged correction: always record why. */
+  reason: z.string().trim().min(1).max(300),
+  /** Refund captured payments as part of the void (paid checks). */
+  refund: z.boolean().default(false),
+});
+
+const paymentMethodSchema = z.enum(['card', 'cash', 'gift_card', 'house']);
+const cardBrandSchema = z.enum(['visa', 'mastercard', 'amex', 'debit', 'other']);
+const idempotencyKeyValueSchema = z.string().trim().min(1).max(120).optional();
+
+export const idempotencyKeySchema = idempotencyKeyValueSchema;
+
+export const orderPaymentSchema = z.object({
+  amount: z.number().positive().max(100000),
+  method: paymentMethodSchema,
+  cardBrand: cardBrandSchema.optional(),
+  tip: z.number().min(0).max(5000).optional(),
+  label: z.string().max(60).nullish(),
+  idempotencyKey: idempotencyKeySchema,
+});
+
+/**
+ * "Pay the rest of this check". `amount` is optional: when omitted the
+ * server settles exactly the outstanding ledger balance. An amount above the
+ * remaining balance is rejected rather than treated as a tip.
+ */
+export const payOrderSchema = z.object({
+  amount: z.number().positive().max(100000).optional(),
+  tip: z.number().min(0).max(5000).optional(),
+  method: paymentMethodSchema.optional(),
+  cardBrand: cardBrandSchema.optional(),
+  idempotencyKey: idempotencyKeySchema,
+});
+
+export const refundSchema = z.object({
+  /** Positive refund amount; stored as a negative `refund` payment row. */
+  amount: z.number().positive().max(100000).optional(),
+  reason: z.string().trim().min(1).max(300),
+  method: paymentMethodSchema.optional(),
+  cardBrand: cardBrandSchema.optional(),
+  idempotencyKey: idempotencyKeySchema,
 });
 
 export const bumpTicketSchema = z.object({
