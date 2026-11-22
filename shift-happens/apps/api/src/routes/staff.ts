@@ -29,6 +29,8 @@ const staffBody = z.object({
 
 const staffRoutes: FastifyPluginAsync = async (app) => {
   app.get('/staff', async (request) => {
+    // Full staff records include phone, address and masked SIN: manager only.
+    await requirePermission(request, 'staff.manage');
     const { includeInactive } = parse(
       z.object({ includeInactive: z.enum(['true', 'false']).optional() }),
       request.query,
