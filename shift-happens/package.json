@@ -2,7 +2,7 @@
   "name": "shift-happens",
   "private": true,
   "version": "1.0.0",
-  "description": "SHIFT HAPPENS! by HYDRAFORGE AI - restaurant operations engine",
+  "description": "Chefuffle by HYDRAFORGE AI \u2014 restaurant operations engine",
   "packageManager": "pnpm@12.21.0",
   "scripts": {
     "db:ensure": "bash scripts/db-ensure.sh",

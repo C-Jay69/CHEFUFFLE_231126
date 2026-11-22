@@ -1,4 +1,6 @@
-# Whiteout by HYDRAFORGE AI
+# Chefuffle by HYDRAFORGE AI
+
+**Run the restaurant. Skip the kerfuffle.**
 
 A production-shaped, full-stack restaurant operations engine. The screens are
 clean, purpose-built React pages (no dense cockpit mockups) backed by a live
@@ -609,7 +611,7 @@ See `.env.example`. Every integration degrades gracefully:
 * `/login` is a PIN terminal demo; all seeded staff share the roster PINs shown
   in the UI. Do not use these values in production.
 * Floor-plan uploads are stored on the API host’s local disk. The deployment kit
-  mounts a `whiteout-uploads` volume for them; any other production deployment
+  mounts a `chefuffle-uploads` volume for them; any other production deployment
   needs a persistent disk or object storage. The rest of the app is stateless.
 * The PIN terminal is a demo gate, and card payments are simulated until a
   processor (Stripe Terminal, Adyen, Moneris, Chase) is integrated.

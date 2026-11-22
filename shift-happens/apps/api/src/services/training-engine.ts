@@ -136,7 +136,7 @@ export async function enrollTrainee(
       restaurantId,
       channel: 'sms',
       recipients: [input.fullName],
-      message: `Welcome to Whiteout, ${input.fullName}. Your onboarding track is ready: ${magicLink}`,
+      message: `Welcome to Chefuffle, ${input.fullName}. Your onboarding track is ready: ${magicLink}`,
     }).catch(() => undefined);
   }
 

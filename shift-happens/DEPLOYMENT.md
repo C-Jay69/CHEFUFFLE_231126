@@ -1,4 +1,4 @@
-# Whiteout deployment reference
+# Chefuffle deployment reference
 
 Companion to [SETUP.md](SETUP.md). This page is the reference for the deployment
 kit in `deploy/`: services, configuration, networking, operations and recovery.
@@ -32,7 +32,7 @@ a rebuild.
 
 | `PUBLIC_API_URL` | Browser calls | Use when |
 | --- | --- | --- |
-| `same-origin` | `https://pos.example.com/api/...` | Behind Caddy (the kit's default) |
+| `same-origin` | `https://chefuffle.online/api/...` | Behind Caddy (the kit's default) |
 | `https://api.example.com` | that host | API on a separate domain |
 | `http://192.168.1.50:4000` | that host | Direct LAN access without a proxy |
 | empty / unset | `NEXT_PUBLIC_API_URL`, else `<hostname>:4000` (a localhost value is remapped to the page host on the LAN) | Local development |
@@ -49,10 +49,10 @@ menu count — use it on every new device.
 
 | Service | Image / build | Port | Volume |
 | --- | --- | --- | --- |
-| `db` | `pgvector/pgvector:pg16` | internal 5432 | `whiteout-db` |
-| `api` | `deploy/Dockerfile.api` | internal 4000 | `whiteout-uploads` → `/app/apps/api/uploads` |
+| `db` | `pgvector/pgvector:pg16` | internal 5432 | `chefuffle-db` |
+| `api` | `deploy/Dockerfile.api` | internal 4000 | `chefuffle-uploads` → `/app/apps/api/uploads` |
 | `web` | `deploy/Dockerfile.web` | internal 3010 | — |
-| `caddy` | `caddy:2-alpine` | 80, 443 (TCP+UDP) | `whiteout-caddy-data`, `whiteout-caddy-config` |
+| `caddy` | `caddy:2-alpine` | 80, 443 (TCP+UDP) | `chefuffle-caddy-data`, `chefuffle-caddy-config` |
 
 The API container starts with:
 
@@ -69,7 +69,7 @@ change process, switch to Prisma migrations (`prisma migrate deploy`) and remove
 
 | Variable | Required | Meaning |
 | --- | --- | --- |
-| `SITE_ADDRESS` | yes | Caddy site address (`pos.example.com` or `https://whiteout.local`) |
+| `SITE_ADDRESS` | yes | Caddy site address (`chefuffle.online` or `https://chefuffle.local`) |
 | `PUBLIC_ORIGIN` | yes | Public URL used in CORS, SMS links and Twilio callbacks |
 | `PUBLIC_API_URL` | yes | Browser API resolution; `same-origin` with Caddy |
 | `POSTGRES_PASSWORD` | yes | Database password; generate a long random string |
@@ -96,8 +96,8 @@ certificate on each tablet:
 docker compose cp caddy:/data/caddy/pki/authorities/local/root.crt ./root.crt
 ```
 
-Then set `SITE_ADDRESS=https://whiteout.local`, `PUBLIC_ORIGIN` to the same, and
-add a local DNS/hosts entry for `whiteout.local`.
+Then set `SITE_ADDRESS=https://chefuffle.local`, `PUBLIC_ORIGIN` to the same, and
+add a local DNS/hosts entry for `chefuffle.local`.
 
 Plain HTTP is supported for quick tests but the PWA cannot install and offline
 caching does not work.
@@ -129,17 +129,17 @@ docker compose exec api pnpm --filter @shift-happens/db db:reset
 
 ```bash
 # database
-docker compose exec -T db pg_dump -U whiteout whiteout | gzip > backup-$(date +%F).sql.gz
+docker compose exec -T db pg_dump -U chefuffle chefuffle | gzip > backup-$(date +%F).sql.gz
 
 # uploaded floor plans
-docker run --rm -v whiteout_whiteout-uploads:/data -v "$PWD":/backup alpine \
+docker run --rm -v chefuffle_chefuffle-uploads:/data -v "$PWD":/backup alpine \
   tar czf /backup/uploads-$(date +%F).tar.gz -C /data .
 ```
 
 Restore:
 
 ```bash
-gunzip -c backup-2026-11-21.sql.gz | docker compose exec -T db psql -U whiteout whiteout
+gunzip -c backup-2026-11-21.sql.gz | docker compose exec -T db psql -U chefuffle chefuffle
 ```
 
 Keep at least seven daily and four weekly backups off the server. Test a restore
@@ -180,7 +180,7 @@ a test receipt.
 
 ## Payments and Voice AI
 
-The app currently **simulates** card payments. Before selling “Whiteout
+The app currently **simulates** card payments. Before selling “Chefuffle
 Payments”, integrate a processor (Stripe Terminal, Adyen, Moneris, Chase) and
 their terminal SDK, then set the merchant-facing rates with that processor's
 approval.
@@ -199,5 +199,5 @@ must be the public HTTPS address so Twilio can reach `/api/voice/inbound` and
 - Restrict SSH to keys, enable unattended security updates, and keep the host
   firewall closed except 22/80/443.
 - Back up and test restores of the database and uploads volume.
-- Uploaded files live on the `whiteout-uploads` volume; a failed disk loses
+- Uploaded files live on the `chefuffle-uploads` volume; a failed disk loses
   floor-plan images even if the database is backed up.

@@ -114,7 +114,7 @@ process.on('SIGTERM', () => void shutdown('SIGTERM'));
 
 try {
   await app.listen({ port: env.API_PORT, host: env.API_HOST });
-  app.log.info(`Whiteout API listening on http://localhost:${env.API_PORT}`);
+  app.log.info(`Chefuffle API listening on http://localhost:${env.API_PORT}`);
   app.log.info(`REST endpoints under http://localhost:${env.API_PORT}/api`);
 } catch (error) {
   app.log.error(error);

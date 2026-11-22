@@ -4,9 +4,10 @@ import SiteFooter from '@/components/marketing/SiteFooter';
 import SiteHeader from '@/components/marketing/SiteHeader';
 
 export const metadata: Metadata = {
-  title: { absolute: 'Whiteout — Restaurant Operations' },
+  title: { absolute: 'Chefuffle — Restaurant Operations' },
+  alternates: { canonical: '/' },
   description:
-    'Whiteout connects the floor, the kitchen, the check and the close in real time — table service, course-aware KDS, split payments, close-out and voice AI in one system.',
+    'Run the restaurant. Skip the kerfuffle. Chefuffle connects the floor, the kitchen, the check and the close in real time — table service, course-aware KDS, split payments, close-out and voice AI in one system.',
 };
 
 const TABLES = [
@@ -91,7 +92,7 @@ const PRICING = [
   {
     name: 'Core',
     price: '$79',
-    note: 'or $0 with Whiteout Payments',
+    note: 'or $0 with Chefuffle Payments',
     bullets: ['POS, menu and tables', 'Open checks and payments', 'Staff PINs and permissions'],
     href: '/pricing',
   },
@@ -126,7 +127,7 @@ export default function HomePage() {
             <div className="flex flex-col gap-6">
               <div className="flex items-center gap-2 font-label-badge text-label-badge uppercase tracking-[0.18em] text-text-tertiary">
                 <span className="h-2 w-2 rounded-full bg-[#ff8a1f]" />
-                Restaurant operations · one system
+                Run the restaurant. Skip the kerfuffle.
               </div>
 
               <h1 className="font-headline-xl text-[clamp(2.35rem,4.6vw,3.8rem)] font-black leading-[1.02] tracking-[-0.035em]">
@@ -136,7 +137,7 @@ export default function HomePage() {
               </h1>
 
               <p className="max-w-xl font-body-lg text-body-lg leading-relaxed text-text-secondary">
-                Whiteout connects the floor, the kitchen, the check and the close in
+                Chefuffle connects the floor, the kitchen, the check and the close in
                 real time. Take an order guest by guest, fire courses, split the bill,
                 and reconcile the night without leaving the app.
               </p>
@@ -174,7 +175,7 @@ export default function HomePage() {
               <div className="rounded-2xl border border-white/10 bg-[#0a1120] p-3 shadow-[0_30px_90px_rgba(0,0,0,0.6)]">
                 <div className="flex items-center justify-between border-b border-white/10 pb-2">
                   <div className="flex items-center gap-2">
-                    <img src="/whiteout-logo.png" alt="" className="h-4 w-auto" />
+                    <img src="/chefuffle-wordmark.png" alt="" className="h-4 w-auto" />
                     <span className="font-label-badge text-[9px] uppercase tracking-widest text-white/40">
                       Downtown Flagship
                     </span>
@@ -313,7 +314,7 @@ export default function HomePage() {
                   One loop, four moves.
                 </h2>
                 <p className="max-w-md font-body-base text-body-base leading-relaxed text-text-secondary">
-                  Most systems stop at the ticket. Whiteout carries the table from the
+                  Most systems stop at the ticket. Chefuffle carries the table from the
                   first seat to the last slip — the data your team needs is already on
                   the same check.
                 </p>
@@ -510,7 +511,8 @@ export default function HomePage() {
         <section className="relative overflow-hidden">
           <div className="pointer-events-none absolute left-1/2 top-0 h-72 w-[700px] -translate-x-1/2 rounded-full bg-[#4cd7f6]/10 blur-[120px]" />
           <div className="relative mx-auto flex w-full max-w-4xl flex-col items-center gap-5 px-4 py-24 text-center sm:px-6 lg:px-8">
-            <img src="/whiteout-logo.png" alt="Whiteout" className="h-10 w-auto" />
+            <img src="/chefuffle-wordmark.png" alt="Chefuffle" className="h-9 w-auto" />
+            <span className="font-body-sm text-body-sm font-bold text-text-secondary">Run the restaurant. Skip the kerfuffle.</span>
             <h2 className="font-headline-xl text-[clamp(2.2rem,5vw,3.6rem)] font-black leading-[1.02] tracking-[-0.03em]">
               The whole shift is already on the check.
             </h2>

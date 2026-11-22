@@ -107,8 +107,8 @@ export default function LoginPage() {
       <div className="relative z-10 flex w-full max-w-md flex-col gap-space-md">
         <div className="flex flex-col gap-2">
           <img
-            src="/whiteout-logo.png"
-            alt="Whiteout"
+            src="/chefuffle-logo.png"
+            alt="Chefuffle"
             className="h-16 w-auto self-start object-contain"
           />
           <span className="font-label-badge text-label-badge font-bold uppercase tracking-widest text-secondary">

@@ -9,7 +9,7 @@ export const dynamic = 'force-dynamic';
 
 export function GET() {
   const value = process.env.PUBLIC_API_URL ?? '';
-  return new Response(`window.__WHITEOUT_API_BASE__=${JSON.stringify(value)};`, {
+  return new Response(`window.__CHEFUFFLE_API_BASE__=${JSON.stringify(value)};`, {
     headers: {
       'content-type': 'application/javascript; charset=utf-8',
       'cache-control': 'no-store, max-age=0',

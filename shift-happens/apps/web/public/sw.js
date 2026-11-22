@@ -1,5 +1,5 @@
-/* Whiteout offline shell — production PWA service worker */
-const CACHE = 'whiteout-v1';
+/* Chefuffle offline shell — production PWA service worker */
+const CACHE = 'chefuffle-v1';
 const SHELL = ['/', '/serve', '/manifest.webmanifest', '/icon-192.png'];
 
 self.addEventListener('install', (event) => {

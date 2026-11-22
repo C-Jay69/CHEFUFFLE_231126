@@ -47,8 +47,8 @@ async function sendViaSendGrid(to: string, body: string): Promise<boolean> {
     },
     body: JSON.stringify({
       personalizations: [{ to: [{ email: to }] }],
-      from: { email: env.SENDGRID_FROM_EMAIL, name: 'Whiteout' },
-      subject: 'Whiteout operations notice',
+      from: { email: env.SENDGRID_FROM_EMAIL, name: 'Chefuffle' },
+      subject: 'Chefuffle operations notice',
       content: [{ type: 'text/plain', value: body }],
     }),
   });

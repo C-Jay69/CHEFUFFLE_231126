@@ -217,7 +217,7 @@ export default function PayPage() {
     }</title><style>${RECEIPT_CSS}</style></head><body>${body}</body></html>`;
 
   const receiptHeader = () =>
-    `<h1>WHITEOUT</h1>
+    `<h1>CHEFUFFLE</h1>
      <div class="meta">Downtown Flagship</div>
      <div class="section">${escapeHtml(order?.tableNumber ?? 'Takeout')} · Check #${
        order?.orderNumber ?? ''
@@ -314,7 +314,7 @@ export default function PayPage() {
         const groupTax = round2(group.subtotal * taxRate);
         const groupTip = subtotal > 0 ? round2(tip * (group.subtotal / subtotal)) : 0;
         return `<div class="page">
-          <h1>WHITEOUT</h1>
+          <h1>CHEFUFFLE</h1>
           <div class="meta">Downtown Flagship</div>
           <div class="section">${
             group.key === 'Shared' ? 'Shared items' : `Guest ${escapeHtml(group.key)}`

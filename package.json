@@ -1,7 +1,7 @@
 {
-  "name": "whiteout-181126",
+  "name": "chefuffle-root",
   "private": true,
-  "description": "Repo-root convenience delegates for the shift-happens monorepo",
+  "description": "Repo-root convenience delegates for the Chefuffle monorepo",
   "scripts": {
     "db:up": "pnpm --dir shift-happens db:up",
     "db:down": "pnpm --dir shift-happens db:down",

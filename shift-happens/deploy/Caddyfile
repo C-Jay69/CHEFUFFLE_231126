@@ -1,5 +1,5 @@
 # Public domain (Caddy gets a Let's Encrypt certificate automatically).
-# SITE_ADDRESS=pos.example.com in deploy/.env.
+# SITE_ADDRESS=chefuffle.online in deploy/.env.
 {$SITE_ADDRESS} {
 	encode zstd gzip
 

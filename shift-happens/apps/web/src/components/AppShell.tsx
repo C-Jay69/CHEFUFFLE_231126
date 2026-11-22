@@ -173,9 +173,9 @@ export default function AppShell({
         <div className="flex min-h-0 flex-col">
           <Link href="/serve" className="flex h-16 items-center border-b border-border-subtle px-4">
             <img
-              src="/whiteout-logo.png"
-              alt="Whiteout"
-              className="h-9 w-auto max-w-[200px] object-contain"
+              src="/chefuffle-wordmark.png"
+              alt="Chefuffle"
+              className="h-8 w-auto max-w-[210px] object-contain"
             />
           </Link>
           <div className="flex-1 overflow-y-auto p-3">{nav}</div>
@@ -205,7 +205,7 @@ export default function AppShell({
           />
           <div className="absolute left-0 top-0 flex h-full w-72 flex-col border-r border-border-subtle bg-bg-chrome p-3">
             <div className="mb-3 flex items-center justify-between border-b border-border-subtle pb-3">
-              <img src="/whiteout-logo.png" alt="Whiteout" className="h-7 w-auto" />
+              <img src="/chefuffle-wordmark.png" alt="Chefuffle" className="h-7 w-auto" />
               <button
                 onClick={() => setMobileOpen(false)}
                 className="flex h-9 w-9 items-center justify-center rounded-lg text-text-tertiary hover:text-text-primary"

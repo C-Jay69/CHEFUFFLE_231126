@@ -1,4 +1,4 @@
-# Whiteout setup guide
+# Chefuffle setup guide
 
 This is the walkthrough: from a fresh machine to a tablet on the floor, a
 kitchen screen, and a live service. For the reference version — environment
@@ -51,8 +51,8 @@ pnpm -v
 ### 2. Get the code and install
 
 ```bash
-git clone <your-repo> WHITEOUT_181126
-cd WHITEOUT_181126/shift-happens
+git clone <your-repo> CHEFUFFLE_181126
+cd CHEFUFFLE_181126/shift-happens
 pnpm install
 ```
 
@@ -158,21 +158,21 @@ docker compose version
 ### 3. Get the code
 
 ```bash
-git clone <your-repo> /opt/whiteout
-cd /opt/whiteout/shift-happens/deploy
+git clone <your-repo> /opt/chefuffle
+cd /opt/chefuffle/shift-happens/deploy
 ```
 
 ### 4. Choose how the site is addressed
 
 **Public domain (automatic HTTPS, needed for Twilio/Voice AI):**
 
-- Point `pos.example.com` (A record) at the server's public IP; forward ports
+- Point `chefuffle.online` (A record) at the server's public IP; forward ports
   80/443 on the router.
 - Keep `deploy/Caddyfile`.
 
 **LAN only (no internet needed):**
 
-- Give the server a local name in your router/DNS, e.g. `whiteout.local`.
+- Give the server a local name in your router/DNS, e.g. `chefuffle.local`.
 - Use `deploy/Caddyfile.lan` instead (it enables Caddy's internal CA):
 
 ```bash
@@ -198,8 +198,8 @@ cp .env.example .env
 Edit `deploy/.env`:
 
 ```bash
-SITE_ADDRESS=pos.example.com          # or https://whiteout.local
-PUBLIC_ORIGIN=https://pos.example.com # or https://whiteout.local
+SITE_ADDRESS=chefuffle.online          # or https://chefuffle.local
+PUBLIC_ORIGIN=https://chefuffle.online # or https://chefuffle.local
 PUBLIC_API_URL=same-origin            # Caddy proxies /api and /socket.io
 POSTGRES_PASSWORD=<long hex random>    # openssl rand -hex 24
 RESTAURANT_ID=11111111-1111-4111-8111-111111111111
@@ -234,10 +234,10 @@ install, load the menu and floor plan before service.
 ### 8. Verify from the server and from a tablet
 
 ```bash
-curl -s https://pos.example.com/api/health
+curl -s https://chefuffle.online/api/health
 ```
 
-Then open `https://pos.example.com/setup` on the tablet. All four checks should
+Then open `https://chefuffle.online/setup` on the tablet. All four checks should
 be green. Open the terminal, sign in, and walk one table from seat to payment.
 
 ### 9. Install the PWA and lock the devices
@@ -264,7 +264,7 @@ docker compose down             # stop everything (data stays in volumes)
 Back up nightly (see DEPLOYMENT.md):
 
 ```bash
-docker compose exec -T db pg_dump -U whiteout whiteout | gzip > backup-$(date +%F).sql.gz
+docker compose exec -T db pg_dump -U chefuffle chefuffle | gzip > backup-$(date +%F).sql.gz
 ```
 
 ---
@@ -317,4 +317,4 @@ Same compose file, no LAN assumptions:
 - Use a long `POSTGRES_PASSWORD`; never commit `deploy/.env`.
 - Only Caddy should be public (80/443). Keep 3010/4000 internal.
 - Restrict SSH to keys, enable automatic security updates.
-- Back up Postgres and the `whiteout-uploads` volume; test a restore.
+- Back up Postgres and the `chefuffle-uploads` volume; test a restore.

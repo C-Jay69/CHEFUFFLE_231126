@@ -3,18 +3,19 @@ import './globals.css';
 import PwaRegister from '@/components/PwaRegister';
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://chefuffle.online'),
   title: {
-    default: 'Whiteout — Restaurant Operations',
-    template: '%s · Whiteout',
+    default: 'Chefuffle — Restaurant Operations',
+    template: '%s · Chefuffle',
   },
   description:
-    'Real-time restaurant operations engine — POS, KDS, floor plan, labor pacing, inventory, reservations and a voice AI concierge.',
-  applicationName: 'Whiteout',
+    'Run the restaurant. Skip the kerfuffle. Chefuffle is the real-time operating system for POS, KDS, floor plan, labor, inventory, reservations, close-out and voice AI.',
+  applicationName: 'Chefuffle',
   manifest: '/manifest.webmanifest',
   appleWebApp: {
     capable: true,
     statusBarStyle: 'black-translucent',
-    title: 'Whiteout',
+    title: 'Chefuffle',
   },
   icons: {
     icon: [

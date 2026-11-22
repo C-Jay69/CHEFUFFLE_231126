@@ -6,7 +6,7 @@ import { useState } from 'react';
 const LINKS = [
   { href: '/#product', label: 'Product' },
   { href: '/#modules', label: 'Modules' },
-  { href: '/#why', label: 'Why Whiteout' },
+  { href: '/#why', label: 'Why Chefuffle' },
   { href: '/pricing', label: 'Pricing' },
 ];
 
@@ -18,9 +18,9 @@ export default function SiteHeader() {
       <div className="mx-auto flex h-16 w-full max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
         <Link href="/" className="flex items-center" onClick={() => setOpen(false)}>
           <img
-            src="/whiteout-logo.png"
-            alt="Whiteout"
-            className="h-8 w-auto object-contain"
+            src="/chefuffle-wordmark.png"
+            alt="Chefuffle"
+            className="h-7 w-auto object-contain"
           />
         </Link>
 

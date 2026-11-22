@@ -1,6 +1,6 @@
 # Offline / LAN install with Caddy's internal certificate authority.
 # Use this file instead of Caddyfile when the restaurant has no public domain.
-# Set SITE_ADDRESS=https://whiteout.local (or another local name) and install
+# Set SITE_ADDRESS=https://chefuffle.local (or another local name) and install
 # Caddy's root certificate on each tablet: http://<server>/ca  is not exposed,
 # so copy /data/caddy/pki/authorities/local/root.crt from the caddy volume.
 {$SITE_ADDRESS} {

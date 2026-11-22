@@ -1,6 +1,6 @@
 declare global {
   interface Window {
-    __WHITEOUT_API_BASE__?: string;
+    __CHEFUFFLE_API_BASE__?: string;
   }
 }
 
@@ -12,7 +12,7 @@ declare global {
  */
 function resolveApiBase(): string {
   const runtime =
-    typeof window !== 'undefined' ? window.__WHITEOUT_API_BASE__?.trim() : undefined;
+    typeof window !== 'undefined' ? window.__CHEFUFFLE_API_BASE__?.trim() : undefined;
 
   if (runtime === 'same-origin') {
     return typeof window !== 'undefined'

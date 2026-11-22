@@ -6,8 +6,9 @@ import PricingPlans from './PricingPlans';
 
 export const metadata: Metadata = {
   title: 'Pricing',
+  alternates: { canonical: '/pricing' },
   description:
-    'Whiteout pricing: a $79 Core POS or $0 with Whiteout Payments, modular add-ons, Growth at $199, Pro at $349 and Full Stack at $449 — per location, month-to-month.',
+    'Run the restaurant. Skip the kerfuffle. Chefuffle pricing: a $79 Core POS or $0 with Chefuffle Payments, modular add-ons, Growth at $199, Pro at $349 and Full Stack at $449 — per location, month-to-month.',
 };
 
 const ADDONS = [
@@ -43,11 +44,11 @@ const FAQ = [
   },
   {
     q: 'What is the difference between $0 Core and $79 Core?',
-    a: '$0 Core bundles Whiteout Payments at 2.79% + 15¢ card-present. $79 Core lets you keep a lower 2.49% + 15¢ processing rate. If you bring your own processor, Core is $79 plus $29/mo.',
+    a: '$0 Core bundles Chefuffle Payments at 2.79% + 15¢ card-present. $79 Core lets you keep a lower 2.49% + 15¢ processing rate. If you bring your own processor, Core is $79 plus $29/mo.',
   },
   {
-    q: 'Do we have to use Whiteout Payments?',
-    a: 'No. Bring your own processor for $29/mo on top of Core. Whiteout Payments is the path that makes the software free.',
+    q: 'Do we have to use Chefuffle Payments?',
+    a: 'No. Bring your own processor for $29/mo on top of Core. Chefuffle Payments is the path that makes the software free.',
   },
   {
     q: 'Is there really no long contract?',
@@ -111,7 +112,7 @@ export default function PricingPage() {
                   $0 Core · 2.79% + 15¢
                 </span>
                 <p className="font-body-sm text-[13px] leading-relaxed text-text-tertiary">
-                  The software is free when Whiteout Payments handles card-present
+                  The software is free when Chefuffle Payments handles card-present
                   transactions. Same Core features, no monthly subscription.
                 </p>
               </div>
@@ -204,12 +205,12 @@ export default function PricingPage() {
                       Bought separately
                     </th>
                     <th className="px-4 py-3 font-label-badge text-[10px] uppercase tracking-widest text-text-subtle">
-                      Whiteout
+                      Chefuffle
                     </th>
                   </tr>
                 </thead>
                 <tbody>
-                  {COMPARISON.map(([capability, separately, whiteout]) => (
+                  {COMPARISON.map(([capability, separately, chefuffle]) => (
                     <tr key={capability} className="border-b border-white/5 last:border-0">
                       <td className="px-4 py-3 font-body-sm text-[13px] text-text-secondary">
                         {capability}
@@ -218,7 +219,7 @@ export default function PricingPage() {
                         {separately}
                       </td>
                       <td className="px-4 py-3 font-mono text-[12px] font-bold text-[#4cd7f6]">
-                        {whiteout}
+                        {chefuffle}
                       </td>
                     </tr>
                   ))}
@@ -293,7 +294,8 @@ export default function PricingPage() {
         <section className="relative overflow-hidden">
           <div className="pointer-events-none absolute left-1/2 top-0 h-64 w-[680px] -translate-x-1/2 rounded-full bg-[#4cd7f6]/10 blur-[120px]" />
           <div className="relative mx-auto flex w-full max-w-4xl flex-col items-center gap-4 px-4 py-20 text-center sm:px-6 lg:px-8">
-            <img src="/whiteout-logo.png" alt="Whiteout" className="h-9 w-auto" />
+            <img src="/chefuffle-wordmark.png" alt="Chefuffle" className="h-9 w-auto" />
+            <span className="font-body-sm text-body-sm font-bold text-text-secondary">Run the restaurant. Skip the kerfuffle.</span>
             <h2 className="font-headline-xl text-[clamp(2rem,4.4vw,3.2rem)] font-black leading-[1.03] tracking-[-0.03em]">
               Put the whole shift on one check.
             </h2>

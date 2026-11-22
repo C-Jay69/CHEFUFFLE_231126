@@ -1,7 +1,7 @@
 {
-  "name": "Whiteout by HYDRAFORGE AI",
-  "short_name": "Whiteout",
-  "description": "Whiteout — real-time restaurant operations for POS, KDS, floor plan, labor, inventory, reservations and voice AI.",
+  "name": "Chefuffle by HYDRAFORGE AI",
+  "short_name": "Chefuffle",
+  "description": "Run the restaurant. Skip the kerfuffle. Chefuffle brings POS, KDS, floor plan, labor, inventory, reservations and voice AI into one real-time system.",
   "start_url": "/serve",
   "scope": "/",
   "display": "standalone",

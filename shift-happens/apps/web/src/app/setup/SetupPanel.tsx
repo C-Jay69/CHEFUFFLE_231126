@@ -25,7 +25,7 @@ function printTestReceipt() {
     return;
   }
   doc.open();
-  doc.write(`<!doctype html><html><head><meta charset="utf-8"><title>Whiteout printer test</title>
+  doc.write(`<!doctype html><html><head><meta charset="utf-8"><title>Chefuffle printer test</title>
     <style>
       @page { margin: 4mm; }
       body { width: 72mm; margin: 0 auto; font-family: "Courier New", monospace; font-size: 12px; color: #000; }
@@ -34,7 +34,7 @@ function printTestReceipt() {
       hr { border: 0; border-top: 1px dashed #000; margin: 6px 0; }
       .big { font-size: 18px; text-align: center; font-weight: bold; }
     </style></head><body>
-      <h1>WHITEOUT</h1>
+      <h1>CHEFUFFLE</h1>
       <div class="meta">Printer test</div>
       <hr/>
       <div class="big">RECEIPT PRINTER OK</div>
@@ -171,8 +171,8 @@ export default function SetupPanel() {
       <div className="mx-auto flex w-full max-w-4xl flex-col gap-6">
         <header className="flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <Link href="/" aria-label="Whiteout home">
-              <img src="/whiteout-logo.png" alt="Whiteout" className="h-8 w-auto" />
+            <Link href="/" aria-label="Chefuffle home">
+              <img src="/chefuffle-wordmark.png" alt="Chefuffle" className="h-8 w-auto" />
             </Link>
             <div className="flex flex-col">
               <h1 className="font-headline-lg text-headline-lg font-bold">

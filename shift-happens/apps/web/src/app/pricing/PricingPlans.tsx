@@ -8,7 +8,7 @@ const PLANS = [
     id: 'core',
     name: 'Core',
     monthly: 79,
-    note: 'or $0 with Whiteout Payments',
+    note: 'or $0 with Chefuffle Payments',
     description: 'The till, the menu and the floor — enough to run service.',
     features: [
       'POS, menu and tables',

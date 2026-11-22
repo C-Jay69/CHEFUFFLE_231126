@@ -242,7 +242,7 @@ export async function broadcastBiometricPolicy(restaurantId = env.RESTAURANT_ID)
     channel: 'sms',
     recipients,
     message:
-      'Whiteout: Biometric clock-in now requires the HACCP + allergen briefing sign-off before your punch is accepted. See the lineup cockpit.',
+      'Chefuffle: Biometric clock-in now requires the HACCP + allergen briefing sign-off before your punch is accepted. See the lineup cockpit.',
   });
   return {
     recipients,

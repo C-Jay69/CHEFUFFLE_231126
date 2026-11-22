@@ -1,17 +1,17 @@
-name: whiteout
+name: chefuffle
 
 services:
   db:
     image: pgvector/pgvector:pg16
     restart: unless-stopped
     environment:
-      POSTGRES_USER: whiteout
+      POSTGRES_USER: chefuffle
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in deploy/.env}
-      POSTGRES_DB: whiteout
+      POSTGRES_DB: chefuffle
     volumes:
-      - whiteout-db:/var/lib/postgresql/data
+      - chefuffle-db:/var/lib/postgresql/data
     healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -U whiteout -d whiteout']
+      test: ['CMD-SHELL', 'pg_isready -U chefuffle -d chefuffle']
       interval: 5s
       timeout: 5s
       retries: 20
@@ -27,12 +27,12 @@ services:
       NODE_ENV: production
       API_HOST: 0.0.0.0
       API_PORT: '4000'
-      DATABASE_URL: postgresql://whiteout:${POSTGRES_PASSWORD}@db:5432/whiteout?schema=public
+      DATABASE_URL: postgresql://chefuffle:${POSTGRES_PASSWORD}@db:5432/chefuffle?schema=public
       CORS_ORIGIN: ${PUBLIC_ORIGIN:?Set PUBLIC_ORIGIN in deploy/.env}
       WEB_ORIGIN: ${PUBLIC_ORIGIN}
       RESTAURANT_ID: ${RESTAURANT_ID:-11111111-1111-4111-8111-111111111111}
     volumes:
-      - whiteout-uploads:/app/apps/api/uploads
+      - chefuffle-uploads:/app/apps/api/uploads
     depends_on:
       db:
         condition: service_healthy
@@ -73,8 +73,8 @@ services:
       - '443:443/udp'
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile:ro
-      - whiteout-caddy-data:/data
-      - whiteout-caddy-config:/config
+      - chefuffle-caddy-data:/data
+      - chefuffle-caddy-config:/config
     depends_on:
       web:
         condition: service_started
@@ -82,7 +82,7 @@ services:
         condition: service_started
 
 volumes:
-  whiteout-db:
-  whiteout-uploads:
-  whiteout-caddy-data:
-  whiteout-caddy-config:
+  chefuffle-db:
+  chefuffle-uploads:
+  chefuffle-caddy-data:
+  chefuffle-caddy-config:
