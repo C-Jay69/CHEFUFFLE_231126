@@ -21,6 +21,8 @@ const RES = (n: number) => uuid('bbbbbbbb', n + 1);
 const KB = (n: number) => uuid('cccccccc', n + 1);
 const TRAINEE = (n: number) => uuid('dddddddd', n + 1);
 const MODULE = (n: number) => uuid('eeeeeeee', n + 1);
+const MODG = (n: number) => uuid('f1f1f1f1', n);
+const MODO = (n: number) => uuid('f2f2f2f2', n);
 
 const now = new Date();
 const startOfDay = new Date(now);
@@ -50,6 +52,9 @@ export function embedText(text: string, dims = 128): number[] {
 }
 
 async function wipe() {
+  await prisma.menuItemModifier.deleteMany();
+  await prisma.modifierOption.deleteMany();
+  await prisma.modifierGroup.deleteMany();
   await prisma.briefingSignoff.deleteMany();
   await prisma.trainingAssignment.deleteMany();
   await prisma.trainingModule.deleteMany();
@@ -409,6 +414,250 @@ async function main() {
       is86ed: m.is86 ?? false,
       eightySixReason: m.reason ?? null,
     })),
+  });
+
+  console.log('→ modifiers');
+  const modifierSeed: Array<{
+    n: number; name: string; kind: string; selection: 'single' | 'multi';
+    required?: boolean; min?: number; max?: number; prompt?: string;
+    options: Array<{ name: string; price?: string; default?: boolean }>;
+  }> = [
+    {
+      n: 1, name: 'Temperature', kind: 'doneness', selection: 'single',
+      required: true, min: 1, max: 1,
+      prompt: 'Non-negotiable — choose a temperature',
+      options: [
+        { name: 'Blue' }, { name: 'Rare' }, { name: 'Medium Rare', default: true },
+        { name: 'Medium' }, { name: 'Medium Well' }, { name: 'Well Done' },
+      ],
+    },
+    {
+      n: 2, name: 'Cooking Method', kind: 'cooking', selection: 'single',
+      options: [
+        { name: 'Grilled', default: true }, { name: 'Pan Seared' }, { name: 'Fried' },
+        { name: 'Steamed' }, { name: 'Blackened' }, { name: 'Baked' },
+      ],
+    },
+    {
+      n: 3, name: 'Size / Portion', kind: 'size', selection: 'single',
+      options: [
+        { name: 'Small' }, { name: 'Medium', default: true },
+        { name: 'Large', price: '4.00' }, { name: 'Half portion' }, { name: 'Full portion' },
+      ],
+    },
+    {
+      n: 4, name: 'Milk / Dairy', kind: 'milk', selection: 'single',
+      options: [
+        { name: 'Whole', default: true }, { name: '2%' },
+        { name: 'Oat', price: '0.75' }, { name: 'Soy', price: '0.75' },
+        { name: 'Almond', price: '0.75' }, { name: 'Lactose-free' },
+      ],
+    },
+    {
+      n: 5, name: 'Spice Level', kind: 'spice', selection: 'single',
+      options: [
+        { name: 'No spice' }, { name: 'Mild', default: true }, { name: 'Medium' },
+        { name: 'Spicy' }, { name: 'Extra spicy' },
+      ],
+    },
+    {
+      n: 6, name: 'Bread / Bun', kind: 'bread', selection: 'single',
+      options: [
+        { name: 'White', default: true }, { name: 'Whole wheat' }, { name: 'Sourdough' },
+        { name: 'Gluten-free bun', price: '2.00' }, { name: 'Tortilla' }, { name: 'Lettuce wrap' },
+      ],
+    },
+    {
+      n: 7, name: 'Side Dish', kind: 'side', selection: 'single',
+      options: [
+        { name: 'Fries', default: true }, { name: 'Salad' }, { name: 'Rice' },
+        { name: 'Mashed potatoes' }, { name: 'Coleslaw' }, { name: 'Roasted vegetables' },
+        { name: 'Sweet potato fries', price: '2.00' }, { name: 'Truffle fries', price: '3.00' },
+      ],
+    },
+    {
+      n: 8, name: 'Sauce / Dressing', kind: 'sauce', selection: 'single',
+      options: [
+        { name: 'Ketchup' }, { name: 'Mustard' }, { name: 'Mayo' }, { name: 'BBQ' },
+        { name: 'Ranch' }, { name: 'Vinaigrette' }, { name: 'Pesto' },
+        { name: 'Sauce on the side' },
+      ],
+    },
+    {
+      n: 9, name: 'Cheese', kind: 'cheese', selection: 'single',
+      options: [
+        { name: 'Cheddar', default: true }, { name: 'Mozzarella' }, { name: 'Swiss' },
+        { name: 'Provolone' }, { name: 'Blue cheese', price: '1.00' }, { name: 'No cheese' },
+      ],
+    },
+    {
+      n: 10, name: 'Toppings', kind: 'topping', selection: 'multi', max: 3,
+      prompt: 'Choose up to 3',
+      options: [
+        { name: 'Pepperoni', price: '2.50' }, { name: 'Mushrooms', price: '1.50' },
+        { name: 'Onion', price: '1.00' }, { name: 'Peppers', price: '1.00' },
+        { name: 'Olives', price: '1.50' }, { name: 'Tomato', price: '1.00' },
+        { name: 'Ham', price: '3.00' }, { name: 'Extra cheese', price: '2.00' },
+      ],
+    },
+    {
+      n: 11, name: 'Dietary / Allergy', kind: 'dietary', selection: 'multi',
+      options: [
+        { name: 'Gluten-free', price: '2.00' }, { name: 'Vegan' },
+        { name: 'Nut-free' }, { name: 'Jain (no onion/garlic)' },
+      ],
+    },
+    {
+      n: 12, name: 'Drink Size', kind: 'size', selection: 'single',
+      options: [
+        { name: 'Small' }, { name: 'Medium', default: true }, { name: 'Large', price: '1.50' },
+      ],
+    },
+    {
+      n: 13, name: 'Ice', kind: 'drink', selection: 'single',
+      options: [{ name: 'With ice', default: true }, { name: 'No ice' }],
+    },
+    {
+      n: 14, name: 'Coffee & Dessert Add-ons', kind: 'addon', selection: 'multi',
+      options: [
+        { name: 'Extra shot', price: '1.50' }, { name: 'Vanilla', price: '1.00' },
+        { name: 'Caramel', price: '1.00' }, { name: 'Hazelnut', price: '1.00' },
+        { name: 'Extra whipped cream', price: '1.00' }, { name: 'Extra syrup', price: '0.75' },
+      ],
+    },
+    {
+      n: 15, name: 'Steak Add-ons', kind: 'addon', selection: 'multi',
+      options: [
+        { name: 'Prawn skewer', price: '9.00' }, { name: 'Grilled mushrooms', price: '4.00' },
+        { name: 'Red wine mushroom sauce', price: '3.00' },
+        { name: 'Peppercorn sauce', price: '3.00' },
+        { name: 'Blue cheese butter', price: '3.00' }, { name: 'Extra steak sauce', price: '2.00' },
+      ],
+    },
+    {
+      n: 16, name: 'Burger Add-ons', kind: 'addon', selection: 'multi',
+      options: [
+        { name: 'Extra cheese', price: '1.50' }, { name: 'Bacon', price: '3.00' },
+        { name: 'Avocado', price: '3.00' }, { name: 'Second patty', price: '6.00' },
+        { name: 'Fried egg', price: '2.00' }, { name: 'Extra sauce', price: '1.00' },
+      ],
+    },
+    {
+      n: 17, name: 'Protein Add-ons', kind: 'addon', selection: 'multi',
+      options: [
+        { name: 'Grilled chicken', price: '7.00' }, { name: 'Prawns', price: '9.00' },
+        { name: 'Lobster', price: '14.00' }, { name: 'Tofu', price: '5.00' },
+        { name: 'Salmon', price: '10.00' },
+      ],
+    },
+    {
+      n: 18, name: 'Removals', kind: 'removal', selection: 'multi',
+      prompt: 'No charge',
+      options: [
+        { name: 'No onions' }, { name: 'No garlic' }, { name: 'No pickles' },
+        { name: 'No lettuce' }, { name: 'No tomato' }, { name: 'No salt' },
+        { name: 'Less oil' }, { name: 'No sugar' },
+      ],
+    },
+    {
+      n: 19, name: 'Substitutions', kind: 'sub', selection: 'single',
+      options: [
+        { name: 'Sub fries for sweet potato fries', price: '2.00' },
+        { name: 'Sub fries for truffle fries', price: '3.00' },
+        { name: 'Premium bun', price: '2.00' },
+        { name: 'Lettuce wrap instead of bun' },
+      ],
+    },
+    {
+      n: 20, name: 'Sushi Add-ons', kind: 'addon', selection: 'multi',
+      options: [
+        { name: 'Extra ginger' }, { name: 'Extra wasabi' },
+        { name: 'Spicy mayo', price: '1.00' }, { name: 'Soy paper', price: '1.00' },
+      ],
+    },
+    {
+      n: 21, name: 'Dessert Add-ons', kind: 'addon', selection: 'multi',
+      options: [
+        { name: 'Scoop of ice cream', price: '3.00' },
+        { name: 'Extra whipped cream', price: '1.00' }, { name: 'Berries', price: '2.00' },
+      ],
+    },
+  ];
+
+  for (const group of modifierSeed) {
+    await prisma.modifierGroup.create({
+      data: {
+        id: MODG(group.n),
+        restaurantId: RESTAURANT_ID,
+        name: group.name,
+        kind: group.kind,
+        selection: group.selection,
+        required: group.required ?? false,
+        minSelect: group.min ?? (group.required ? 1 : 0),
+        maxSelect: group.max ?? (group.selection === 'single' ? 1 : 10),
+        prompt: group.prompt ?? null,
+        displayOrder: group.n,
+      },
+    });
+    await prisma.modifierOption.createMany({
+      data: group.options.map((option, index) => ({
+        id: MODO(group.n * 100 + index + 1),
+        groupId: MODG(group.n),
+        name: option.name,
+        priceDelta: option.price ?? '0',
+        isDefault: option.default ?? false,
+        displayOrder: index,
+      })),
+    });
+  }
+
+  const groupsByCategory: Record<number, number[]> = {
+    1: [12, 13],
+    2: [12, 13],
+    3: [12, 13],
+    4: [12, 13],
+    5: [12, 13],
+    6: [],
+    7: [],
+    8: [12, 13],
+    9: [7, 8, 17, 11, 18],
+    10: [20, 11, 18, 8],
+    11: [8, 11, 18, 19],
+    12: [17, 5, 11, 18],
+    13: [8, 17, 11, 18],
+    14: [17, 9, 5, 11, 18],
+    15: [6, 9, 7, 16, 11, 18, 19],
+    16: [7, 8, 17, 11, 18, 19],
+    17: [1, 15, 8, 7, 11, 18],
+    18: [1, 15, 8, 7, 11, 18],
+    19: [21, 11, 18],
+    20: [7, 8, 11, 18, 19],
+    21: [12, 13],
+  };
+
+  const groupsForItem = (item: { cat: number; name: string }) => {
+    const groups = new Set<number>(groupsByCategory[item.cat] ?? [18, 11]);
+    const name = item.name.toLowerCase();
+    if (/(steak|sirloin|ribeye|striploin|filet|tenderloin)/.test(name)) {
+      [1, 15, 7, 8].forEach((group) => groups.add(group));
+    }
+    if (/(burger|sandwich|brioche|wrap)/.test(name)) {
+      [6, 9, 16, 7].forEach((group) => groups.add(group));
+    }
+    if (/(coffee|espresso|frapp|latte|tiramisu)/.test(name)) {
+      groups.add(14);
+    }
+    return [...groups];
+  };
+
+  await prisma.menuItemModifier.createMany({
+    data: menuSeed.flatMap((item) =>
+      groupsForItem(item).map((group) => ({
+        menuItemId: MENU(item.n),
+        groupId: MODG(group),
+      })),
+    ),
+    skipDuplicates: true,
   });
 
   console.log('→ ingredients');

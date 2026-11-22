@@ -22,6 +22,27 @@ export interface MenuItem {
     currentStock: number;
     unit: string;
   }>;
+  modifierGroups?: ModifierGroup[];
+}
+
+export interface ModifierOption {
+  id: string;
+  name: string;
+  priceDelta: number;
+  isDefault: boolean;
+}
+
+export interface ModifierGroup {
+  id: string;
+  name: string;
+  kind: string;
+  selection: 'single' | 'multi' | string;
+  required: boolean;
+  minSelect: number;
+  maxSelect: number;
+  prompt: string | null;
+  displayOrder: number;
+  options: ModifierOption[];
 }
 
 export interface MenuResponse {

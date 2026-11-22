@@ -29,6 +29,23 @@ export interface MenuItemDto {
     currentStock: number;
     unit: string;
   }>;
+  modifierGroups: Array<{
+    id: string;
+    name: string;
+    kind: string;
+    selection: string;
+    required: boolean;
+    minSelect: number;
+    maxSelect: number;
+    prompt: string | null;
+    displayOrder: number;
+    options: Array<{
+      id: string;
+      name: string;
+      priceDelta: number;
+      isDefault: boolean;
+    }>;
+  }>;
 }
 
 export function toMenuItemDto(item: any): MenuItemDto {
@@ -69,6 +86,25 @@ export function toMenuItemDto(item: any): MenuItemDto {
       currentStock: num(ri.ingredient.currentStock),
       unit: ri.ingredient.unit,
     })),
+    modifierGroups: (item.modifierGroups ?? [])
+      .map((link: any) => ({
+        id: link.group.id,
+        name: link.group.name,
+        kind: link.group.kind,
+        selection: link.group.selection,
+        required: link.group.required,
+        minSelect: link.group.minSelect,
+        maxSelect: link.group.maxSelect,
+        prompt: link.group.prompt,
+        displayOrder: link.group.displayOrder,
+        options: (link.group.options ?? []).map((option: any) => ({
+          id: option.id,
+          name: option.name,
+          priceDelta: num(option.priceDelta),
+          isDefault: option.isDefault,
+        })),
+      }))
+      .sort((a: { displayOrder: number }, b: { displayOrder: number }) => a.displayOrder - b.displayOrder),
   };
 }
 
@@ -77,6 +113,13 @@ const menuInclude = {
   recipe: {
     include: {
       recipeIngredients: { include: { ingredient: true } },
+    },
+  },
+  modifierGroups: {
+    include: {
+      group: {
+        include: { options: { orderBy: { displayOrder: 'asc' as const } } },
+      },
     },
   },
 };

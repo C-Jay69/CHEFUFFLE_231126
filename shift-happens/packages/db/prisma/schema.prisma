@@ -93,6 +93,7 @@ model Restaurant {
   trainingModules  TrainingModule[]
   notifications    Notification[]
   briefingSignoffs BriefingSignoff[]
+  modifierGroups   ModifierGroup[]
 
   @@map("restaurants")
 }
@@ -185,9 +186,55 @@ model MenuItem {
   category   MenuCategory? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
   recipe     Recipe?
   orderItems OrderItem[]
+  modifierGroups MenuItemModifier[]
 
   @@index([restaurantId, is86ed])
   @@map("menu_items")
+}
+
+model ModifierGroup {
+  id            String   @id @default(uuid()) @db.Uuid
+  restaurantId  String   @map("restaurant_id") @db.Uuid
+  name          String   @db.VarChar(100)
+  kind          String   @default("option") @db.VarChar(30)
+  selection     String   @default("single") @db.VarChar(20)
+  required      Boolean  @default(false)
+  minSelect     Int      @default(0) @map("min_select")
+  maxSelect     Int      @default(1) @map("max_select")
+  prompt        String?  @db.VarChar(160)
+  displayOrder  Int      @default(0) @map("display_order")
+
+  restaurant Restaurant           @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  options    ModifierOption[]
+  items      MenuItemModifier[]
+
+  @@index([restaurantId])
+  @@map("modifier_groups")
+}
+
+model ModifierOption {
+  id           String  @id @default(uuid()) @db.Uuid
+  groupId      String  @map("group_id") @db.Uuid
+  name         String  @db.VarChar(100)
+  priceDelta   Decimal @default(0) @map("price_delta") @db.Decimal(10, 2)
+  isDefault    Boolean @default(false) @map("is_default")
+  displayOrder Int     @default(0) @map("display_order")
+
+  group ModifierGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
+
+  @@index([groupId])
+  @@map("modifier_options")
+}
+
+model MenuItemModifier {
+  menuItemId String @map("menu_item_id") @db.Uuid
+  groupId    String @map("group_id") @db.Uuid
+
+  menuItem MenuItem      @relation(fields: [menuItemId], references: [id], onDelete: Cascade)
+  group    ModifierGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
+
+  @@id([menuItemId, groupId])
+  @@map("menu_item_modifiers")
 }
 
 model Ingredient {

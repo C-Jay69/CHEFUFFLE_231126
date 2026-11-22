@@ -10,7 +10,13 @@ import { initials, money, timeLabel } from '@/lib/format';
 import { useSession } from '@/lib/session';
 import { listen } from '@/lib/socket';
 import { showToast } from '@/lib/toast';
-import type { DiningTable, MenuItem, MenuResponse, Order } from '@/lib/types';
+import type {
+  DiningTable,
+  MenuItem,
+  MenuResponse,
+  ModifierGroup,
+  Order,
+} from '@/lib/types';
 
 interface StaffMember {
   id: string;
@@ -19,12 +25,20 @@ interface StaffMember {
   roleLabel: string;
 }
 
+interface SelectedModifier {
+  groupId: string;
+  groupName: string;
+  name: string;
+  priceDelta: number;
+}
+
 interface CartLine {
   key: string;
   guest: number;
   item: MenuItem;
   quantity: number;
   course: Course;
+  modifiers: SelectedModifier[];
 }
 
 const COURSE_ORDER: Course[] = ['starter', 'main', 'dessert', 'drink'];
@@ -79,6 +93,9 @@ export default function ServePage() {
   const [busy, setBusy] = useState(false);
   const [existingOpen, setExistingOpen] = useState(false);
   const [existingOrder, setExistingOrder] = useState<Order | null>(null);
+  const [modifierItem, setModifierItem] = useState<MenuItem | null>(null);
+  const [modifierGuest, setModifierGuest] = useState(1);
+  const [modifierSelections, setModifierSelections] = useState<Record<string, string[]>>({});
   const [loadingCheck, setLoadingCheck] = useState(false);
   const [appendOrderId, setAppendOrderId] = useState<string | null>(null);
   const prefillHandled = useRef(false);
@@ -245,15 +262,22 @@ export default function ServePage() {
     (guest: number) => lines.filter((line) => line.guest === guest),
     [lines],
   );
+  const lineUnitPrice = (line: CartLine) =>
+    line.item.price +
+    line.modifiers.reduce((sum, modifier) => sum + modifier.priceDelta, 0);
+
   const guestSubtotal = useCallback(
     (guest: number) =>
-      guestLines(guest).reduce((sum, line) => sum + line.item.price * line.quantity, 0),
+      guestLines(guest).reduce((sum, line) => sum + lineUnitPrice(line) * line.quantity, 0),
     [guestLines],
   );
   const guestCount = (guest: number) =>
     guestLines(guest).reduce((sum, line) => sum + line.quantity, 0);
 
-  const subtotal = lines.reduce((sum, line) => sum + line.item.price * line.quantity, 0);
+  const subtotal = lines.reduce(
+    (sum, line) => sum + lineUnitPrice(line) * line.quantity,
+    0,
+  );
   const tax = subtotal * TAX_RATE;
   const gratuityApplies = Boolean(
     selectedTable &&
@@ -265,14 +289,28 @@ export default function ServePage() {
   const hasMains = lines.some((line) => line.course === 'main');
   const mainsWillHold = hasStarters && hasMains;
 
-  const addItem = (item: MenuItem) => {
+  const addItem = (
+    item: MenuItem,
+    modifiers: SelectedModifier[] = [],
+    guest = activeGuest,
+  ) => {
     if (item.is86ed || item.stockStatus === 'out') {
       showToast(`${item.name} is 86'd and cannot be ordered.`, 'error');
       return;
     }
     setLines((current) => {
+      const signature = modifiers
+        .map((modifier) => modifier.name)
+        .sort()
+        .join('|');
       const existing = current.find(
-        (line) => line.item.id === item.id && line.guest === activeGuest,
+        (line) =>
+          line.item.id === item.id &&
+          line.guest === guest &&
+          line.modifiers
+            .map((modifier) => modifier.name)
+            .sort()
+            .join('|') === signature,
       );
       if (existing) {
         return current.map((line) =>
@@ -282,14 +320,105 @@ export default function ServePage() {
       return [
         ...current,
         {
-          key: `${item.id}-${activeGuest}-${Date.now()}`,
-          guest: activeGuest,
+          key: `${item.id}-${guest}-${Date.now()}`,
+          guest,
           item,
           quantity: 1,
           course: (item.course as Course) || courseForCategory(item.category, item.name),
+          modifiers,
         },
       ];
     });
+  };
+
+  const openModifiers = (item: MenuItem, guest = activeGuest) => {
+    const defaults: Record<string, string[]> = {};
+    for (const group of item.modifierGroups ?? []) {
+      const selected = group.options
+        .filter((option) => option.isDefault)
+        .map((option) => option.id);
+      if (selected.length > 0) {
+        defaults[group.id] =
+          group.selection === 'single' ? selected.slice(0, 1) : selected;
+      }
+    }
+    setModifierItem(item);
+    setModifierGuest(guest);
+    setModifierSelections(defaults);
+  };
+
+  const toggleModifier = (group: ModifierGroup, optionId: string) => {
+    setModifierSelections((current) => {
+      const selected = current[group.id] ?? [];
+      if (group.selection === 'single') {
+        if (selected.includes(optionId) && group.required) return current;
+        return { ...current, [group.id]: [optionId] };
+      }
+      const isOn = selected.includes(optionId);
+      const next = isOn
+        ? selected.filter((id) => id !== optionId)
+        : [...selected, optionId];
+      if (!isOn && next.length > group.maxSelect) {
+        showToast(`Choose up to ${group.maxSelect} for ${group.name}.`, 'warn');
+        return current;
+      }
+      return { ...current, [group.id]: next };
+    });
+  };
+
+  const modifierDelta = modifierItem
+    ? (modifierItem.modifierGroups ?? []).reduce(
+        (sum, group) =>
+          sum +
+          (modifierSelections[group.id] ?? []).reduce(
+            (groupSum, optionId) =>
+              groupSum +
+              (group.options.find((option) => option.id === optionId)?.priceDelta ?? 0),
+            0,
+          ),
+        0,
+      )
+    : 0;
+
+  const confirmModifiers = () => {
+    if (!modifierItem) return;
+    const groups = modifierItem.modifierGroups ?? [];
+    for (const group of groups) {
+      const selected = modifierSelections[group.id] ?? [];
+      if (selected.length < group.minSelect) {
+        showToast(
+          `${group.name}: choose ${
+            group.minSelect === 1 ? 'an option' : `at least ${group.minSelect}`
+          }.`,
+          'warn',
+        );
+        return;
+      }
+    }
+    const chosen = groups.flatMap((group) =>
+      (modifierSelections[group.id] ?? []).map((optionId) => {
+        const option = group.options.find((entry) => entry.id === optionId);
+        return {
+          groupId: group.id,
+          groupName: group.name,
+          name: `${group.name}: ${option?.name ?? ''}`,
+          priceDelta: option?.priceDelta ?? 0,
+        };
+      }),
+    );
+    addItem(modifierItem, chosen, modifierGuest);
+    setModifierItem(null);
+  };
+
+  const itemNeedsModifiers = (item: MenuItem) =>
+    (item.modifierGroups ?? []).some((group) => group.required);
+
+  const handleItemTap = (item: MenuItem) => {
+    if (itemNeedsModifiers(item)) {
+      openModifiers(item);
+      return;
+    }
+    addItem(item);
   };
 
   const adjustLine = (key: string, delta: number) => {
@@ -332,7 +461,10 @@ export default function ServePage() {
       const roundItems = lines.map((line) => ({
         menuItemId: line.item.id,
         quantity: line.quantity,
-        modifiers: [],
+        modifiers: line.modifiers.map((modifier) => ({
+          name: modifier.name,
+          priceDelta: modifier.priceDelta,
+        })),
         course: line.course,
         seat: String(line.guest),
       }));
@@ -641,11 +773,21 @@ export default function ServePage() {
                       (line) => line.item.id === item.id && line.guest === activeGuest,
                     );
                     return (
-                      <button
+                      <div
                         key={item.id}
                         data-item-id={item.id}
-                        onClick={() => addItem(item)}
-                        disabled={out}
+                        role="button"
+                        tabIndex={out ? -1 : 0}
+                        aria-disabled={out}
+                        onClick={() => {
+                          if (!out) handleItemTap(item);
+                        }}
+                        onKeyDown={(event) => {
+                          if (!out && (event.key === 'Enter' || event.key === ' ')) {
+                            event.preventDefault();
+                            handleItemTap(item);
+                          }
+                        }}
                         className={`relative flex min-h-[150px] flex-col justify-between rounded-xl border p-space-sm text-left shadow-sm transition-all ${
                           out
                             ? 'cursor-not-allowed border-status-urgent/30 bg-surface-container-lowest/60 opacity-60'
@@ -680,11 +822,25 @@ export default function ServePage() {
                               {COURSE_LABELS[course]}
                             </span>
                           </div>
-                          <span className={`material-symbols-outlined text-body-base ${out ? 'text-text-subtle' : inGuest ? 'text-accent-cyan-bright' : 'text-secondary'}`}>
-                            {out ? 'do_not_disturb_on' : inGuest ? 'add_circle' : 'add_circle_outline'}
-                          </span>
+                          <div className="flex items-center gap-1">
+                            {(item.modifierGroups?.length ?? 0) > 0 && !out && (
+                              <button
+                                type="button"
+                                onClick={(event) => {
+                                  event.stopPropagation();
+                                  openModifiers(item);
+                                }}
+                                className="rounded bg-surface-container px-1.5 py-0.5 font-label-badge text-label-badge font-bold uppercase text-secondary transition-colors hover:bg-surface-container-high hover:text-text-primary"
+                              >
+                                Modifiers
+                              </button>
+                            )}
+                            <span className={`material-symbols-outlined text-body-base ${out ? 'text-text-subtle' : inGuest ? 'text-accent-cyan-bright' : 'text-secondary'}`}>
+                              {out ? 'do_not_disturb_on' : inGuest ? 'add_circle' : 'add_circle_outline'}
+                            </span>
+                          </div>
                         </div>
-                      </button>
+                      </div>
                     );
                   })}
                 </div>
@@ -739,8 +895,13 @@ export default function ServePage() {
                                     {line.item.name}
                                   </span>
                                   <span className="font-mono-metric-sm text-mono-metric-sm text-text-tertiary">
-                                    {money(line.item.price)} each
+                                    {money(lineUnitPrice(line))} each
                                   </span>
+                                  {line.modifiers.length > 0 && (
+                                    <span className="font-body-sm text-body-sm text-text-tertiary">
+                                      {line.modifiers.map((modifier) => modifier.name).join(' · ')}
+                                    </span>
+                                  )}
                                 </div>
                                 <div className="flex items-center gap-1">
                                   <button
@@ -760,7 +921,7 @@ export default function ServePage() {
                                   </button>
                                 </div>
                                 <span className="w-16 text-right font-mono-metric-sm text-mono-metric-sm font-bold text-text-primary">
-                                  {money(line.item.price * line.quantity)}
+                                  {money(lineUnitPrice(line) * line.quantity)}
                                 </span>
                               </div>
                             ))}
@@ -893,11 +1054,20 @@ export default function ServePage() {
                                   key={line.key}
                                   className="flex items-center justify-between rounded-lg bg-surface-container px-space-sm py-1.5"
                                 >
-                                  <span className="font-body-sm text-body-sm text-text-primary">
-                                    {line.quantity} × {line.item.name}
+                                  <span className="flex min-w-0 flex-col">
+                                    <span className="font-body-sm text-body-sm text-text-primary">
+                                      {line.quantity} × {line.item.name}
+                                    </span>
+                                    {line.modifiers.length > 0 && (
+                                      <span className="font-body-sm text-body-sm text-text-tertiary">
+                                        {line.modifiers
+                                          .map((modifier) => modifier.name)
+                                          .join(' · ')}
+                                      </span>
+                                    )}
                                   </span>
                                   <span className="font-mono-metric-sm text-mono-metric-sm text-text-secondary">
-                                    {money(line.item.price * line.quantity)}
+                                    {money(lineUnitPrice(line) * line.quantity)}
                                   </span>
                                 </div>
                               ))}
@@ -1133,6 +1303,104 @@ export default function ServePage() {
                 Start Order · Guest 1
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {modifierItem && (
+        <div className="fixed inset-0 z-[75] flex items-center justify-center bg-bg-canvas/80 p-space-md backdrop-blur-md">
+          <div className="flex max-h-[92vh] w-full max-w-xl flex-col overflow-hidden rounded-2xl border border-border-subtle bg-surface-container-high shadow-2xl">
+            <header className="flex items-start justify-between gap-space-sm border-b border-border-subtle p-space-md">
+              <div className="flex min-w-0 flex-col">
+                <span className="font-headline-lg text-headline-lg font-bold text-text-primary">
+                  {modifierItem.name}
+                </span>
+                <span className="font-body-sm text-body-sm text-text-secondary">
+                  {money(modifierItem.price)} base · Guest {modifierGuest}
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={() => setModifierItem(null)}
+                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-surface-container text-text-tertiary hover:text-text-primary"
+                aria-label="Close modifiers"
+              >
+                <span className="material-symbols-outlined">close</span>
+              </button>
+            </header>
+
+            <div className="flex flex-1 flex-col gap-space-md overflow-y-auto p-space-md">
+              {(modifierItem.modifierGroups ?? []).map((group) => {
+                const selected = modifierSelections[group.id] ?? [];
+                return (
+                  <section key={group.id} className="flex flex-col gap-1.5">
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="font-headline-md text-headline-md font-bold text-text-primary">
+                        {group.name}
+                      </span>
+                      <span
+                        className={`rounded px-1.5 py-0.5 font-label-badge text-label-badge font-bold uppercase ${
+                          group.required
+                            ? 'bg-status-caution/20 text-status-caution'
+                            : 'bg-surface-container text-text-tertiary'
+                        }`}
+                      >
+                        {group.required
+                          ? 'Required'
+                          : group.selection === 'multi'
+                            ? `Up to ${group.maxSelect}`
+                            : 'Optional'}
+                      </span>
+                    </div>
+                    {group.prompt && (
+                      <span className="font-body-sm text-body-sm text-text-subtle">
+                        {group.prompt}
+                      </span>
+                    )}
+                    <div className="flex flex-wrap gap-1.5">
+                      {group.options.map((option) => {
+                        const active = selected.includes(option.id);
+                        return (
+                          <button
+                            key={option.id}
+                            type="button"
+                            onClick={() => toggleModifier(group, option.id)}
+                            className={`rounded-full px-3 py-1.5 font-body-sm text-body-sm font-bold transition-colors ${
+                              active
+                                ? 'bg-accent-cyan-bright text-bg-canvas'
+                                : 'bg-surface-container text-text-secondary hover:bg-surface-container-high hover:text-text-primary'
+                            }`}
+                          >
+                            {option.name}
+                            {option.priceDelta > 0 && (
+                              <span className="ml-1 opacity-80">+{money(option.priceDelta)}</span>
+                            )}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </section>
+                );
+              })}
+            </div>
+
+            <footer className="flex items-center gap-space-sm border-t border-border-subtle p-space-md">
+              <button
+                type="button"
+                onClick={() => setModifierItem(null)}
+                className="h-12 flex-1 rounded-lg bg-surface-container font-body-base font-bold text-text-secondary hover:bg-surface-container-high"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={confirmModifiers}
+                className="flex h-12 flex-[1.8] items-center justify-center gap-space-xs rounded-lg bg-gradient-to-r from-accent-purple-glow to-secondary font-body-base font-bold text-bg-canvas shadow-lg transition-all hover:brightness-110 active:scale-[0.98]"
+              >
+                <span className="material-symbols-outlined">add</span>
+                Add to Guest {modifierGuest} · {money(modifierItem.price + modifierDelta)}
+              </button>
+            </footer>
           </div>
         </div>
       )}

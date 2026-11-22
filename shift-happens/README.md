@@ -172,6 +172,28 @@ Open Checks and **Pay check** on a table):
 Payments live in the `payments` table (`amount`, `method`, `card_brand`,
 `label`) and feed the End of Night tender mix and slip counts.
 
+### Modifiers
+
+Every menu item can carry shared modifier groups from a single library
+(`modifier_groups`, `modifier_options`, `menu_item_modifiers`):
+
+* **Required groups** force the choice before an item can be added — steak
+  temperature is a required, single-select group labelled *Non-negotiable*, and
+  the modifier sheet opens automatically when a steak is tapped.
+* **Optional groups** cover side dishes, sauces, cooking method, spice, bread,
+  cheese, drink size and ice, dietary notes, toppings, add-ons, removals and
+  substitutions. Groups are single- or multi-select with a max, and every option
+  carries its own price delta (for example *Prawn skewer +$9.00*).
+* The item card has a **Modifiers** button; items with required groups open the
+  sheet on tap, other items quick-add and can be customised via the button.
+* Selections are stored on the order item as `modifiers` (name and priceDelta),
+  so the price, the printed bill, the KDS ticket and reporting all agree.
+
+The seed builds 21 shared groups and attaches them by category (steaks get
+temperature + steak add-ons + side + sauce; handhelds get bun, cheese, burger
+add-ons and side; drinks get drink size and ice; everything gets dietary and
+removals). `GET /api/menu` returns `modifierGroups` with each item.
+
 ### Courses: starters versus mains
 
 Every item carries a course derived from its menu category:
