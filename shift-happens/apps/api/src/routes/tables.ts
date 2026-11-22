@@ -134,17 +134,18 @@ const tableRoutes: FastifyPluginAsync = async (app) => {
   });
 
   app.post('/tables/:id/close', async (request) => {
-    await requirePermission(request, 'floor.close');
+    const staff = await requirePermission(request, 'floor.close');
     const { id } = parse(z.object({ id: z.string().uuid() }), request.params);
     const body = parse(
       z.object({
         action: z.enum(['settle', 'void', 'clear']),
         method: z.enum(['card', 'cash', 'gift_card', 'house']).optional(),
-        reason: z.string().max(300).optional(),
+        reason: z.string().trim().max(300).optional(),
+        refund: z.boolean().optional(),
       }),
       request.body ?? {},
     );
-    return closeTable(id, body);
+    return closeTable(id, { ...body, actorStaffId: staff?.id ?? null });
   });
 
   app.get('/floor-layout', async () => getTables());
