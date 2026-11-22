@@ -5,41 +5,48 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import type { Permission } from '@shift-happens/shared/permissions';
 import { api } from '@/lib/api';
-import { clearSession, readStaff, writeShift, writeStaff } from '@/lib/session';
+import {
+  clearSession,
+  readStaff,
+  readToken,
+  writeShift,
+  writeStaff,
+  writeToken,
+} from '@/lib/session';
 
-interface StaffSummary {
-  id: string;
-  name: string;
-  role: string;
-  roleLabel: string;
-}
+const PIN_MIN_LENGTH = 4;
+const PIN_MAX_LENGTH = 8;
 
 export default function LoginPage() {
   const router = useRouter();
   const [pin, setPin] = useState('');
-  const [staff, setStaff] = useState<StaffSummary[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [signedIn, setSignedIn] = useState<{ name: string; roleLabel: string } | null>(null);
 
   useEffect(() => {
-    api
-      .get<{ staff: StaffSummary[] }>('/auth/staff')
-      .then((response) => setStaff(response.staff))
-      .catch(() => undefined);
     const stored = readStaff();
-    if (stored) setSignedIn({ name: stored.name, roleLabel: stored.roleLabel });
+    if (stored && readToken()) {
+      setSignedIn({ name: stored.name, roleLabel: stored.roleLabel });
+    } else if (stored) {
+      clearSession();
+    }
   }, []);
 
-  const signOut = () => {
+  const signOut = async () => {
+    try {
+      await api.post('/auth/logout');
+    } catch {
+      /* the token may already be invalid */
+    }
     clearSession();
     setSignedIn(null);
     setPin('');
   };
 
   const submit = async (value = pin) => {
-    if (value.length < 3) {
-      setError('Enter at least 3 digits.');
+    if (value.length < PIN_MIN_LENGTH) {
+      setError(`Enter at least ${PIN_MIN_LENGTH} digits.`);
       return;
     }
     setBusy(true);
@@ -63,11 +70,7 @@ export default function LoginPage() {
           status: string;
         } | null;
       }>('/auth/pin', { pin: value });
-      try {
-        localStorage.setItem('sh-token', response.token);
-      } catch {
-        /* private mode */
-      }
+      writeToken(response.token);
       writeStaff({
         id: response.staff.id,
         name: response.staff.name,
@@ -97,7 +100,7 @@ export default function LoginPage() {
       setPin('');
       return;
     }
-    setPin((current) => (current.length >= 6 ? current : current + digit));
+    setPin((current) => (current.length >= PIN_MAX_LENGTH ? current : current + digit));
   };
 
   return (
@@ -133,7 +136,7 @@ export default function LoginPage() {
               </Link>
               <button
                 type="button"
-                onClick={signOut}
+                onClick={() => void signOut()}
                 className="font-body-sm text-body-sm font-bold text-text-tertiary underline-offset-4 hover:text-status-urgent hover:underline"
               >
                 Sign out
@@ -149,7 +152,7 @@ export default function LoginPage() {
                 </span>
               </div>
               <div className="mb-space-md flex items-center justify-center gap-space-sm">
-                {Array.from({ length: 6 }).map((_, index) => (
+                {Array.from({ length: PIN_MAX_LENGTH }).map((_, index) => (
                   <span
                     key={index}
                     className={`h-3 w-3 rounded-full ${
@@ -189,45 +192,14 @@ export default function LoginPage() {
               </div>
               <button
                 onClick={() => void submit()}
-                disabled={busy || pin.length < 3}
+                disabled={busy || pin.length < PIN_MIN_LENGTH}
                 className="mt-space-md flex h-12 w-full items-center justify-center gap-space-xs rounded-lg bg-gradient-to-r from-accent-purple-glow to-secondary font-headline-md text-body-base font-bold text-bg-canvas shadow-lg transition-all hover:brightness-110 active:scale-95 disabled:opacity-50"
               >
                 <span className="material-symbols-outlined">lock_open</span>
                 {busy ? 'Verifying…' : 'Enter Ops Grid'}
               </button>
-              <button
-                onClick={() => {
-                  setPin('1111');
-                  void submit('1111');
-                }}
-                className="mt-space-sm w-full text-center font-label-badge text-label-badge uppercase tracking-widest text-text-subtle hover:text-text-secondary"
-              >
-                Demo GM PIN: 1111
-              </button>
             </>
           )}
-        </div>
-
-        <div className="rounded-xl border border-border-subtle bg-surface-container-low p-space-sm">
-          <span className="font-label-eyebrow text-label-eyebrow uppercase text-text-tertiary">
-            Roster PINs
-          </span>
-          <div className="mt-space-xs grid grid-cols-2 gap-1">
-            {(staff.length
-              ? staff.slice(0, 8)
-              : [
-                  { id: '1', name: 'Chef Marco Vance', roleLabel: 'GM', role: '' },
-                  { id: '2', name: 'Zach Arroyo', roleLabel: 'Server', role: '' },
-                  { id: '3', name: 'Maya Santos', roleLabel: 'Bartender', role: '' },
-                  { id: '4', name: 'Priya Kapoor', roleLabel: 'Host', role: '' },
-                ]
-            ).map((member) => (
-              <div key={member.id} className="flex items-center justify-between gap-2 rounded bg-surface-container px-space-xs py-1">
-                <span className="min-w-0 flex-1 truncate font-body-sm text-body-sm text-text-secondary">{member.name}</span>
-                <span className="shrink-0 font-label-badge text-label-badge text-text-subtle">{member.roleLabel}</span>
-              </div>
-            ))}
-          </div>
         </div>
       </div>
     </main>
