@@ -7,6 +7,7 @@ import {
   Button,
   Card,
   EmptyState,
+  Modal,
   PageHeader,
   SearchInput,
   Stat,
@@ -14,7 +15,7 @@ import {
 import { api } from '@/lib/api';
 import { listen } from '@/lib/socket';
 import { showToast } from '@/lib/toast';
-import { timeLabel } from '@/lib/format';
+import { dateLabel, timeLabel } from '@/lib/format';
 import type { VoiceResponse } from '@/lib/types';
 
 interface KnowledgeEntry {
@@ -45,6 +46,19 @@ interface SimulationResult {
 
 type Telephony = { configured: boolean; geminiConfigured: boolean; webhookPath: string };
 
+const KB_CATEGORIES = [
+  'Allergens',
+  'Hours',
+  'Dress Code',
+  'Reservations',
+  'Parking',
+  'Private Dining',
+  'Menu',
+  'Voice AI',
+  'Local',
+  'Events',
+];
+
 const PROMPTS = [
   'Do you have a table for 4 at 7:30?',
   'Are the dry-aged steaks gluten-free?',
@@ -62,6 +76,12 @@ export default function VoiceAiPage() {
   const [busy, setBusy] = useState(false);
   const [result, setResult] = useState<SimulationResult | null>(null);
   const [kbSearch, setKbSearch] = useState('');
+  const [kbEditorOpen, setKbEditorOpen] = useState(false);
+  const [kbEditing, setKbEditing] = useState<KnowledgeEntry | null>(null);
+  const [kbForm, setKbForm] = useState({ category: 'Hours', title: '', content: '' });
+  const [kbSaving, setKbSaving] = useState(false);
+  const [kbDelete, setKbDelete] = useState<KnowledgeEntry | null>(null);
+  const [kbDeleting, setKbDeleting] = useState(false);
 
   const load = useCallback(async () => {
     try {
@@ -126,6 +146,69 @@ export default function VoiceAiPage() {
   }, [knowledge, kbSearch]);
 
   const stats = calls?.stats;
+
+  const openCreateEntry = () => {
+    setKbEditing(null);
+    setKbForm({ category: 'Hours', title: '', content: '' });
+    setKbEditorOpen(true);
+  };
+
+  const openEditEntry = (entry: KnowledgeEntry) => {
+    setKbEditing(entry);
+    setKbForm({
+      category: entry.category,
+      title: entry.title,
+      content: entry.content,
+    });
+    setKbEditorOpen(true);
+  };
+
+  const saveKnowledge = async () => {
+    const category = kbForm.category.trim();
+    const title = kbForm.title.trim();
+    const content = kbForm.content.trim();
+    if (!category || !title || !content) {
+      showToast('Category, title and content are required.', 'warn');
+      return;
+    }
+    setKbSaving(true);
+    try {
+      if (kbEditing) {
+        await api.patch(`/voice/knowledge/${kbEditing.id}`, { category, title, content });
+        showToast('Knowledge entry updated.', 'success');
+      } else {
+        await api.post('/voice/knowledge', { category, title, content });
+        showToast('Knowledge entry added to the voice agent.', 'success');
+      }
+      setKbEditorOpen(false);
+      await load();
+    } catch (error) {
+      showToast(
+        error instanceof Error ? error.message : 'Could not save this entry.',
+        'error',
+      );
+    } finally {
+      setKbSaving(false);
+    }
+  };
+
+  const deleteKnowledge = async () => {
+    if (!kbDelete) return;
+    setKbDeleting(true);
+    try {
+      await api.del(`/voice/knowledge/${kbDelete.id}`);
+      showToast(`“${kbDelete.title}” removed from the knowledge base.`, 'success');
+      setKbDelete(null);
+      await load();
+    } catch (error) {
+      showToast(
+        error instanceof Error ? error.message : 'Could not delete this entry.',
+        'error',
+      );
+    } finally {
+      setKbDeleting(false);
+    }
+  };
 
   return (
     <AppShell>
@@ -351,6 +434,11 @@ export default function VoiceAiPage() {
               title="Knowledge base"
               icon="menu_book"
               subtitle={`${knowledge.length} entries · ${knowledge.filter((entry) => entry.hasEmbedding).length} embedded`}
+              actions={
+                <Button variant="primary" size="sm" icon="add" onClick={openCreateEntry}>
+                  Add entry
+                </Button>
+              }
             >
               <SearchInput
                 value={kbSearch}
@@ -366,6 +454,29 @@ export default function VoiceAiPage() {
                       <Badge tone="neutral">{entry.category}</Badge>
                     </summary>
                     <p className="mt-1.5 font-body-sm text-body-sm text-text-secondary">{entry.content}</p>
+                    <div className="mt-2 flex flex-wrap items-center justify-between gap-2 border-t border-border-subtle pt-2">
+                      <span className="font-body-sm text-[11px] text-text-subtle">
+                        Updated {dateLabel(entry.updatedAt)}
+                      </span>
+                      <div className="flex gap-1">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          icon="edit"
+                          onClick={() => openEditEntry(entry)}
+                        >
+                          Edit
+                        </Button>
+                        <Button
+                          variant="danger"
+                          size="sm"
+                          icon="delete"
+                          onClick={() => setKbDelete(entry)}
+                        >
+                          Delete
+                        </Button>
+                      </div>
+                    </div>
                   </details>
                 ))}
                 {filteredKnowledge.length === 0 && (
@@ -376,6 +487,116 @@ export default function VoiceAiPage() {
           </div>
         </div>
       </div>
+
+      <Modal
+        open={kbEditorOpen}
+        onClose={() => setKbEditorOpen(false)}
+        title={kbEditing ? 'Edit knowledge entry' : 'Add knowledge entry'}
+        description="The voice agent searches titles and content on every call, so changes are live immediately."
+        icon="menu_book"
+        maxWidth="max-w-xl"
+        footer={
+          <>
+            <Button variant="ghost" size="md" onClick={() => setKbEditorOpen(false)}>
+              Cancel
+            </Button>
+            <Button
+              variant="primary"
+              size="md"
+              icon="check"
+              loading={kbSaving}
+              onClick={() => void saveKnowledge()}
+            >
+              {kbEditing ? 'Save changes' : 'Add entry'}
+            </Button>
+          </>
+        }
+      >
+        <div className="flex flex-col gap-3">
+          <label className="flex flex-col gap-1">
+            <span className="font-label-badge text-label-badge uppercase text-text-tertiary">
+              Category
+            </span>
+            <input
+              list="kb-categories"
+              value={kbForm.category}
+              onChange={(event) =>
+                setKbForm((current) => ({ ...current, category: event.target.value }))
+              }
+              placeholder="Hours, Allergens, Local…"
+              className="h-11 w-full rounded-lg border border-border-subtle bg-surface-container-lowest px-3 font-body-sm text-body-sm text-text-primary outline-none focus:border-secondary"
+            />
+            <datalist id="kb-categories">
+              {KB_CATEGORIES.map((category) => (
+                <option key={category} value={category} />
+              ))}
+            </datalist>
+          </label>
+
+          <label className="flex flex-col gap-1">
+            <span className="font-label-badge text-label-badge uppercase text-text-tertiary">
+              Title
+            </span>
+            <input
+              autoFocus
+              value={kbForm.title}
+              onChange={(event) =>
+                setKbForm((current) => ({ ...current, title: event.target.value }))
+              }
+              placeholder="e.g. Weekend brunch"
+              className="h-11 w-full rounded-lg border border-border-subtle bg-surface-container-lowest px-3 font-body-sm text-body-sm text-text-primary outline-none focus:border-secondary"
+            />
+          </label>
+
+          <label className="flex flex-col gap-1">
+            <span className="font-label-badge text-label-badge uppercase text-text-tertiary">
+              What should the agent know?
+            </span>
+            <textarea
+              value={kbForm.content}
+              onChange={(event) =>
+                setKbForm((current) => ({ ...current, content: event.target.value }))
+              }
+              placeholder="Write the answer the way a well-briefed host would say it."
+              className="min-h-[160px] w-full rounded-lg border border-border-subtle bg-surface-container-lowest p-3 font-body-sm text-body-sm text-text-primary outline-none placeholder:text-text-subtle focus:border-secondary"
+            />
+          </label>
+
+          <p className="font-body-sm text-body-sm text-text-subtle">
+            Keep entries short and factual. Live data such as the 86 list and table
+            availability is checked separately and always wins over this text.
+          </p>
+        </div>
+      </Modal>
+
+      <Modal
+        open={Boolean(kbDelete)}
+        onClose={() => setKbDelete(null)}
+        title={`Delete “${kbDelete?.title ?? 'entry'}”?`}
+        description="The agent stops using this answer immediately."
+        icon="delete"
+        footer={
+          <>
+            <Button variant="ghost" size="md" onClick={() => setKbDelete(null)}>
+              Cancel
+            </Button>
+            <Button
+              variant="danger"
+              size="md"
+              icon="delete"
+              loading={kbDeleting}
+              onClick={() => void deleteKnowledge()}
+            >
+              Delete entry
+            </Button>
+          </>
+        }
+      >
+        <p className="font-body-sm text-body-sm text-text-secondary">
+          This removes the entry from the knowledge base. Calls already logged keep
+          their transcripts and sources.
+        </p>
+      </Modal>
     </AppShell>
   );
 }

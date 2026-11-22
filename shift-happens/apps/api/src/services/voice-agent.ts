@@ -1,6 +1,7 @@
 import { createHash } from 'node:crypto';
 import { prisma } from '@shift-happens/db';
 import { env } from '../env.js';
+import { notFound } from '../errors.js';
 import { emitRestaurant } from '../realtime.js';
 import { checkAvailability, createReservation, serializeReservation } from './reservation-engine.js';
 
@@ -409,19 +410,89 @@ export async function listCallLogs(restaurantId = env.RESTAURANT_ID, limit = 30)
   };
 }
 
-export async function listKnowledgeBase(restaurantId = env.RESTAURANT_ID) {
-  const rows = await prisma.knowledgeBase.findMany({
-    where: { restaurantId },
-    orderBy: [{ category: 'asc' }, { title: 'asc' }],
-  });
-  return rows.map((row) => ({
+function serializeKnowledge(row: {
+  id: string;
+  category: string;
+  title: string;
+  content: string;
+  embedding: unknown;
+  updatedAt: Date;
+}) {
+  return {
     id: row.id,
     category: row.category,
     title: row.title,
     content: row.content,
     hasEmbedding: Boolean(row.embedding),
     updatedAt: row.updatedAt.toISOString(),
-  }));
+  };
+}
+
+function knowledgeEmbedding(title: string, content: string) {
+  return embedText(`${title}\n${content}`);
+}
+
+export async function listKnowledgeBase(restaurantId = env.RESTAURANT_ID) {
+  const rows = await prisma.knowledgeBase.findMany({
+    where: { restaurantId },
+    orderBy: [{ category: 'asc' }, { title: 'asc' }],
+  });
+  return rows.map(serializeKnowledge);
+}
+
+export async function createKnowledgeEntry(
+  input: { category: string; title: string; content: string },
+  restaurantId = env.RESTAURANT_ID,
+) {
+  const title = input.title.trim();
+  const content = input.content.trim();
+  const entry = await prisma.knowledgeBase.create({
+    data: {
+      restaurantId,
+      category: input.category.trim(),
+      title,
+      content,
+      embedding: knowledgeEmbedding(title, content),
+    },
+  });
+  return serializeKnowledge(entry);
+}
+
+export async function updateKnowledgeEntry(
+  id: string,
+  input: { category?: string; title?: string; content?: string },
+  restaurantId = env.RESTAURANT_ID,
+) {
+  const existing = await prisma.knowledgeBase.findFirst({
+    where: { id, restaurantId },
+  });
+  if (!existing) throw notFound('Knowledge entry not found');
+
+  const title = input.title?.trim() ?? existing.title;
+  const content = input.content?.trim() ?? existing.content;
+  const entry = await prisma.knowledgeBase.update({
+    where: { id },
+    data: {
+      ...(input.category !== undefined ? { category: input.category.trim() } : {}),
+      title,
+      content,
+      embedding: knowledgeEmbedding(title, content),
+      updatedAt: new Date(),
+    },
+  });
+  return serializeKnowledge(entry);
+}
+
+export async function deleteKnowledgeEntry(
+  id: string,
+  restaurantId = env.RESTAURANT_ID,
+) {
+  const existing = await prisma.knowledgeBase.findFirst({
+    where: { id, restaurantId },
+  });
+  if (!existing) throw notFound('Knowledge entry not found');
+  await prisma.knowledgeBase.delete({ where: { id } });
+  return { id, deleted: true };
 }
 
 export function inboundTwiml(webOrigin = env.WEB_ORIGIN) {

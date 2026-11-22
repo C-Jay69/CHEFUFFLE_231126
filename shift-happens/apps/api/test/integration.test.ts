@@ -16,6 +16,12 @@ import {
 } from '../src/services/pos-engine';
 import { getEndOfNight } from '../src/services/end-of-night-engine';
 import { getTables } from '../src/services/stage-engine';
+import {
+  createKnowledgeEntry,
+  deleteKnowledgeEntry,
+  searchKnowledge,
+  updateKnowledgeEntry,
+} from '../src/services/voice-agent';
 import { bumpTicket, getTickets } from '../src/services/kds-engine';
 
 /**
@@ -444,6 +450,32 @@ describe('POS → KDS → Floor Plan → Inventory integration', () => {
     expect(reopened.status).not.toBe('paid');
     expect(reopened.closedAt).toBeNull();
     expect(reopened.payments).toHaveLength(1);
+  });
+
+  it('adds, edits and removes a voice knowledge base entry', async () => {
+    const entry = await createKnowledgeEntry(
+      {
+        category: 'Local',
+        title: 'Rooftop events',
+        content: 'Live music on Fridays at 9pm.',
+      },
+      restaurantId,
+    );
+    expect(entry.hasEmbedding).toBe(true);
+
+    const found = await searchKnowledge('rooftop live music', restaurantId, 3);
+    expect(found.some((match) => match.id === entry.id)).toBe(true);
+
+    const updated = await updateKnowledgeEntry(
+      entry.id,
+      { content: 'Live music on Saturdays at 9pm.' },
+      restaurantId,
+    );
+    expect(updated.content).toContain('Saturdays');
+
+    await deleteKnowledgeEntry(entry.id, restaurantId);
+    const after = await searchKnowledge('rooftop live music', restaurantId, 3);
+    expect(after.some((match) => match.id === entry.id)).toBe(false);
   });
 
 });

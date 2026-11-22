@@ -2,14 +2,24 @@ import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
 import { voiceSimulateSchema } from '@shift-happens/shared';
 import { parse } from '../lib/validate.js';
+import { requirePermission } from '../lib/staff-auth.js';
 import {
   answerUtterance,
+  createKnowledgeEntry,
+  deleteKnowledgeEntry,
   gatherTwiml,
   inboundTwiml,
   listCallLogs,
   listKnowledgeBase,
   simulateCall,
+  updateKnowledgeEntry,
 } from '../services/voice-agent.js';
+
+const knowledgeSchema = z.object({
+  category: z.string().min(1).max(100),
+  title: z.string().min(1).max(255),
+  content: z.string().min(1).max(5000),
+});
 
 const voiceRoutes: FastifyPluginAsync = async (app) => {
   app.get('/voice/calls', async (request) => {
@@ -23,6 +33,27 @@ const voiceRoutes: FastifyPluginAsync = async (app) => {
   app.get('/voice/knowledge', async () => ({
     entries: await listKnowledgeBase(),
   }));
+
+  app.post('/voice/knowledge', async (request, reply) => {
+    await requirePermission(request, 'voice.manage');
+    const body = parse(knowledgeSchema, request.body);
+    const entry = await createKnowledgeEntry(body);
+    return reply.code(201).send({ entry });
+  });
+
+  app.patch('/voice/knowledge/:id', async (request) => {
+    await requirePermission(request, 'voice.manage');
+    const { id } = parse(z.object({ id: z.string().uuid() }), request.params);
+    const body = parse(knowledgeSchema.partial(), request.body);
+    const entry = await updateKnowledgeEntry(id, body);
+    return { entry };
+  });
+
+  app.delete('/voice/knowledge/:id', async (request) => {
+    await requirePermission(request, 'voice.manage');
+    const { id } = parse(z.object({ id: z.string().uuid() }), request.params);
+    return deleteKnowledgeEntry(id);
+  });
 
   app.post('/voice/ask', async (request) => {
     const body = parse(

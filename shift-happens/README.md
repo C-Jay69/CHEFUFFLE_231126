@@ -395,6 +395,13 @@ Twilio `SpeechResult`, runs the RAG pipeline, and replies. `POST
   notification is persisted as `simulated`).
 * Call logs, transcripts, sentiment, outcome, and duration are stored in
   `call_logs` and shown in `/voice-ai`.
+* **Knowledge base editing** — on `/voice-ai`, owners and general managers can
+  add, edit and delete entries (category, title, content). Each save regenerates
+  the local embedding, so the next call can use the new answer immediately.
+  Live data — the 86 list and table availability — is still checked separately
+  and overrides the text. The API routes are `POST /api/voice/knowledge`,
+  `PATCH /api/voice/knowledge/:id` and `DELETE /api/voice/knowledge/:id`
+  (`voice.manage` permission).
 
 ### Inventory
 
@@ -501,6 +508,8 @@ GET    /api/architect                     POST  /api/architect/publish
 POST   /api/architect/publish-all         POST  /api/architect/sync-voice
 POST   /api/architect/layout
 GET    /api/voice/calls                   GET   /api/voice/knowledge
+POST   /api/voice/knowledge               PATCH /api/voice/knowledge/:id
+DELETE /api/voice/knowledge/:id
 POST   /api/voice/ask                     POST  /api/voice/simulate
 POST   /api/voice/inbound                 POST  /api/voice/gather
 GET    /api/voice/twilio-status
