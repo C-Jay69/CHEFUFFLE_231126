@@ -45,7 +45,7 @@ cp .env.example .env           # already present in this workspace; adjust if ne
 pnpm install
 pnpm db:up                     # starts a local PG16 cluster on :5433 (trust auth)
 pnpm db:push                   # prisma db push + generate
-pnpm db:seed                   # realistic 24-table Downtown Flagship dataset
+pnpm db:seed                   # demo dataset (WIPES existing data)
 pnpm dev                       # ensures the DB is up, then API :4000 + web :3010
 ```
 

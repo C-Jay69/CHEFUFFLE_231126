@@ -47,6 +47,9 @@ export default function SiteFooter() {
           <Link href="/serve" className="font-body-sm text-body-sm text-text-secondary hover:text-text-primary">
             Open the terminal
           </Link>
+          <Link href="/setup" className="font-body-sm text-body-sm text-text-secondary hover:text-text-primary">
+            Setup &amp; diagnostics
+          </Link>
         </div>
       </div>
 
