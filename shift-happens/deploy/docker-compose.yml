@@ -1,0 +1,88 @@
+name: chefuffle
+
+services:
+  db:
+    image: pgvector/pgvector:pg16
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: chefuffle
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in deploy/.env}
+      POSTGRES_DB: chefuffle
+    volumes:
+      - chefuffle-db:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U chefuffle -d chefuffle']
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  api:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile.api
+    restart: unless-stopped
+    init: true
+    env_file: .env
+    environment:
+      NODE_ENV: production
+      API_HOST: 0.0.0.0
+      API_PORT: '4000'
+      DATABASE_URL: postgresql://chefuffle:${POSTGRES_PASSWORD}@db:5432/chefuffle?schema=public
+      CORS_ORIGIN: ${PUBLIC_ORIGIN:?Set PUBLIC_ORIGIN in deploy/.env}
+      WEB_ORIGIN: ${PUBLIC_ORIGIN}
+      RESTAURANT_ID: ${RESTAURANT_ID:-11111111-1111-4111-8111-111111111111}
+    volumes:
+      - chefuffle-uploads:/app/apps/api/uploads
+    depends_on:
+      db:
+        condition: service_healthy
+    command:
+      - sh
+      - -c
+      - >
+        pnpm --filter @shift-happens/db exec prisma db push --skip-generate &&
+        pnpm --filter @shift-happens/api start
+    healthcheck:
+      test: ['CMD-SHELL', 'wget -qO- http://127.0.0.1:4000/api/health >/dev/null || exit 1']
+      interval: 15s
+      timeout: 5s
+      retries: 10
+
+  web:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile.web
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      NODE_ENV: production
+      PUBLIC_API_URL: ${PUBLIC_API_URL:-same-origin}
+      NEXT_PUBLIC_RESTAURANT_ID: ${RESTAURANT_ID:-11111111-1111-4111-8111-111111111111}
+    depends_on:
+      api:
+        condition: service_started
+
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    environment:
+      SITE_ADDRESS: ${SITE_ADDRESS:?Set SITE_ADDRESS in deploy/.env}
+    ports:
+      - '80:80'
+      - '443:443'
+      - '443:443/udp'
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - chefuffle-caddy-data:/data
+      - chefuffle-caddy-config:/config
+    depends_on:
+      web:
+        condition: service_started
+      api:
+        condition: service_started
+
+volumes:
+  chefuffle-db:
+  chefuffle-uploads:
+  chefuffle-caddy-data:
+  chefuffle-caddy-config:
